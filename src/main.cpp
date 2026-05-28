@@ -56,6 +56,13 @@ int main()
         -0.5,   0.5, -0.5
     };
 
+    // vertex buffer object
+    unsigned int VBO;
+    glGenBuffers(1, &VBO);
+
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
     std::cout << "GLAD load success!\n";
     
     // custom window color
