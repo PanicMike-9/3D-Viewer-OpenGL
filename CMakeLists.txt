@@ -4,7 +4,7 @@ project(3dViewerOpenGL)
 
 set(CMAKE_CXX_STANDARD 17)
 
-add_executable(app src/main.cpp src/glad.c)
+add_executable(app src/main.cpp src/glad.c src/shader.cpp)
 
 include_directories(app PRIVATE ${CMAKE_SOURCE_DIR}/include)
 
