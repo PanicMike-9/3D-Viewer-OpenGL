@@ -32,7 +32,10 @@ Shader::Shader(const char* vertex_path, const char* fragment_path)
     }
     catch(std::ifstream::failure e)
     {
-        std::cout << "ERROR::SHADER::FILE_NOT_SUCCESSFULLY_READ\n" << std::endl;
+        std::cout << "ERROR::SHADER::FILE_NOT_SUCCESSFULLY_READ\n" << std::endl
+                  << "Vertex Path: " << vertex_path << '\n'
+                  << "Fragment Path: " << fragment_path << '\n' 
+                  << "Error: " << e.what() << '\n';
     }
 
     const char* v_shader_code = vertex_code.c_str();
@@ -106,10 +109,3 @@ void Shader::set_float(const std::string& name, float value) const
 {
     glUniform1i(glGetUniformLocation(ID, name.c_str()), value);
 }
-
-
-
-
-
-
-
