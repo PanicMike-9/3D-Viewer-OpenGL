@@ -43,47 +43,40 @@ int main()
     }
 
     // cube vertices
-    //float vertices[] =
-    //{
-    //    // x     y     z
-    //    -0.5,  -0.5,  0.5,
-    //     0.5,  -0.5,  0.5,
-    //     0.5,   0.5,  0.5,
-    //    -0.5,   0.5,  0.5,
+    float vertices[] =
+    {
+        // x     y     z
+        -0.5,  -0.5,  0.5,
+         0.5,  -0.5,  0.5,
+         0.5,   0.5,  0.5,
+        -0.5,   0.5,  0.5,
 
-    //    -0.5,  -0.5, -0.5,
-    //     0.5,  -0.5, -0.5,
-    //     0.5,   0.5, -0.5,
-    //    -0.5,   0.5, -0.5
-    //};
+        -0.5,  -0.5, -0.5,
+         0.5,  -0.5, -0.5,
+         0.5,   0.5, -0.5,
+        -0.5,   0.5, -0.5
+    };
 
     // cube indices
-    //unsigned int indices[]
-    //{
-    //    0, 1, 2,
-    //    0, 2, 3,
-
-    //    4, 5, 6,
-    //    4, 6, 7,
-
-    //    1, 5, 6,
-    //    1, 6, 2,
-
-    //    0, 4, 7,
-    //    0, 7, 3,
-
-    //    2, 3, 7,
-    //    2, 7, 6,
-
-    //    0, 1, 5,
-    //    0, 5, 4,
-    //};
-
-    float vertices[]
+    unsigned int indices[]
     {
-        -0.5f, -0.5f, 0.0f,
-         0.5f, -0.5f, 0.0f,
-         0.0f,  0.5f, 0.0f,
+        0, 1, 2,
+        0, 2, 3,
+
+        4, 5, 6,
+        4, 6, 7,
+
+        1, 5, 6,
+        1, 6, 2,
+
+        0, 4, 7,
+        0, 7, 3,
+
+        2, 3, 7,
+        2, 7, 6,
+
+        0, 1, 5,
+        0, 5, 4,
     };
 
     // vertex array object
@@ -101,23 +94,25 @@ int main()
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
 
-    // element buffer object
-    //unsigned int EBO;
-    //glGenBuffers(1, &EBO);
+    //element buffer object
+    unsigned int EBO;
+    glGenBuffers(1, &EBO);
 
-    //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    //glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
     std::cout << "GLAD load success!\n";
     
     // custom window color
-    glClearColor(0.2f, 0.2f, 0.2f, 1.0f); 
+    glClearColor(1.0f, 0.0f, 1.0f, 1.0f); 
 
     // load shader files
     Shader shader("shader/v_shader.vert", "shader/f_shader.frag");
 
-    glDisable(GL_DEPTH_TEST);
-    glDisable(GL_CULL_FACE);
+    //glEnable(GL_DEPTH_TEST);
+    //glDisable(GL_CULL_FACE);
+
+    /* Fix vertices and indices */
 
     // main window loop
     while(!glfwWindowShouldClose(window))
@@ -131,8 +126,7 @@ int main()
 
         // draw 
         glBindVertexArray(VAO);
-        //glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
-        glDrawArrays(GL_TRIANGLES, 0, 3);
+        glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
 
         glfwSwapBuffers(window);
         glfwPollEvents();
