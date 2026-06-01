@@ -8,7 +8,18 @@ add_executable(app src/main.cpp src/glad.c src/shader.cpp)
 
 include_directories(app PRIVATE ${CMAKE_SOURCE_DIR}/include)
 
+include(FetchContent)
+FetchContent_Declare( 
+    glm
+    GIT_REPOSITORY https://github.com/g-truc/glm.git
+    GIT_TAG 1.0.0
+)
+FetchContent_MakeAvailable(glm)
+
+target_include_directories(app PRIVATE ${glm_SOURCE_DIR})
+
 target_link_libraries(app
+PRIVATE 
 opengl32
 ${CMAKE_SOURCE_DIR}/lib/glfw3.lib
 )
