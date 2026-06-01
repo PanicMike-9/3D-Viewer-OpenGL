@@ -1,6 +1,6 @@
 #pragma once
 
-#include <glad/glad.h>
+#include <glad/glad.h> // all OpenGL headers
 
 #include <string>
 #include <fstream>
@@ -10,13 +10,16 @@
 class Shader
 {
     public:
-         unsigned int ID;
+        unsigned int ID;
 
-         Shader(const char* vertex_path, const char* fragment_path);
+        // constructor builds shader and reads 
+        Shader(const char* vertex_path, const char* fragment_path);
 
-         void use();
+        // activate shader
+        void use();
 
-         void set_bool(const std::string& name, bool value) const;
-         void set_int(const std::string& name, int value) const;
-         void set_float(const std::string& name, float value) const;
+        // utility uniform functions
+        void set_bool(const std::string &name, bool value) const;
+        void set_int(const std::string &name, int value) const;
+        void set_float(const std::string &name, float value) const;
 };
