@@ -1,139 +1,151 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-#include "shader.hpp"
-
 #include <iostream>
 
-const int win_height = 800;
-const int win_width = 600;
+#include "shader.hpp"
 
-// close windowf with ESC or Q key
+constexpr const int win_width = 800;
+constexpr const int win_height = 600;
+
+constexpr const double PI = 3.141592653589793; 
+
+// press q key to close window
 void process_input(GLFWwindow *window)
 {
-    if(glfwGetKey(window, GLFW_KEY_ESCAPE) || glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
-    {
-        glfwSetWindowShouldClose(window, true);
-    }
+  if(glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+      glfwSetWindowShouldClose(window, true);
 }
 
 int main()
 {
-    glfwInit();
+  glfwInit();
 
-    GLFWwindow* window = glfwCreateWindow(win_height, win_width, "3D Object Viewer", NULL, NULL);
+  // declare window name and size
+  GLFWwindow* window = glfwCreateWindow(win_width, win_height, "3d Viewer", NULL, NULL);
 
-    // window creation failure
-    if(!window)
-    {
-        std::cerr << "Failed to create window!\n";
-        glfwTerminate();
-        return -1;
-    }
-
-    std::cout << "Window creation success!\n";
-
-    // create window
-    glfwMakeContextCurrent(window);
-
-    // glad fail check
-    if(!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
-    {
-        std::cerr << "Failed to initialize GLAD!\n";
-        return -1;
-    }
-
-    // cube vertices
-    float vertices[] =
-    {
-        // x     y     z
-        -0.5,  -0.5,  0.5,
-         0.5,  -0.5,  0.5,
-         0.5,   0.5,  0.5,
-        -0.5,   0.5,  0.5,
-
-        -0.5,  -0.5, -0.5,
-         0.5,  -0.5, -0.5,
-         0.5,   0.5, -0.5,
-        -0.5,   0.5, -0.5
-    };
-
-    // cube indices
-    unsigned int indices[]
-    {
-        0, 1, 2,
-        0, 2, 3,
-
-        4, 5, 6,
-        4, 6, 7,
-
-        1, 5, 6,
-        1, 6, 2,
-
-        0, 4, 7,
-        0, 7, 3,
-
-        2, 3, 7,
-        2, 7, 6,
-
-        0, 1, 5,
-        0, 5, 4,
-    };
-
-    // vertex array object
-    unsigned int VAO;
-    glGenVertexArrays(1, &VAO);
-    glBindVertexArray(VAO);
-
-    // vertex buffer object
-    unsigned int VBO;
-    glGenBuffers(1, &VBO);
-
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-
-    //element buffer object
-    unsigned int EBO;
-    glGenBuffers(1, &EBO);
-
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-    std::cout << "GLAD load success!\n";
-    
-    // custom window color
-    glClearColor(1.0f, 0.0f, 1.0f, 1.0f); 
-
-    // load shader files
-    Shader shader("shader/v_shader.vert", "shader/f_shader.frag");
-
-    //glEnable(GL_DEPTH_TEST);
-    //glDisable(GL_CULL_FACE);
-
-    /* Fix vertices and indices */
-
-    // main window loop
-    while(!glfwWindowShouldClose(window))
-    {
-        // close window using q or esc
-        process_input(window);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-        // use shader code
-        shader.use();
-
-        // draw 
-        glBindVertexArray(VAO);
-        glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
-
-        glfwSwapBuffers(window);
-        glfwPollEvents();
-    }
-
+  if(!window)
+  {
+    std::cerr << "Could not create window!\n";
     glfwTerminate();
-    std::cout << "Exit main loop!\n";
+    return -1;
+  }
 
-    return 0;
+  std::cout << "Window created!\n";
+
+  // create window
+  glfwMakeContextCurrent(window);
+
+  if(!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+  {
+    std::cerr << "Could not initialize GLAD\n";
+    return -1;
+  }
+
+  std::cout << "GLAD Loaded\n";
+
+  // black color window
+  glClearColor(0.1f, 0.0f, 0.1f, 1.0f); 
+
+  // triangle vertex data points
+  // (x, y, z, r, g, b) in-order data points on the plane and color
+  float tri_vertices[] = 
+  {
+    0.0f,  0.5f, 0.0f,  1.0f, 0.0f, 0.0f,
+    0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f,
+   -0.5f, -0.5f, 0.0f,  0.0f, 0.0f, 1.0f,
+  };
+
+  // vertex buffer object (VBO)
+  GLuint vbo = 0;
+  glGenBuffers(1, &vbo);
+  glBindBuffer(GL_ARRAY_BUFFER, vbo);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(tri_vertices), tri_vertices, GL_STATIC_DRAW);
+
+  // vertex array object(VAO)
+  GLuint vao = 0;
+  glGenVertexArrays(1, &vao);
+  glBindVertexArray(vao);
+  glEnableVertexAttribArray(0);
+  glBindBuffer(GL_ARRAY_BUFFER, vao);
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+
+  // position
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+  glEnableVertexAttribArray(0);
+
+  // color
+  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+  glEnableVertexAttribArray(1);
+
+  // shader code files
+  Shader shader("shaders/v_shader.vert", "shaders/f_shader.frag");
+
+  float angle = 0.0f; // angle changes
+
+  // x and y coordinate values
+  float x_offset = 0.0f;
+  float y_offset = 0.0f;
+
+  // main window loop
+  while(!glfwWindowShouldClose(window))
+  {
+    // animation values
+    float time = glfwGetTime();
+    float speed = 0.01f;
+
+    process_input(window);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    shader.use(); // shader code
+
+    // change angle with keys a and s
+    if(glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+    {
+      //x_offset -= 0.01f;
+      angle -= 0.01f;
+    }
+    if(glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+    {
+      //x_offset += 0.01f;
+      angle += 0.01f;
+    }
+
+    // change position based on angle with keys w and s
+    if(glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+    {
+      x_offset += cos(angle) * speed;
+      y_offset += sin(angle) * speed;
+    }
+    if(glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+    {
+      x_offset += -(cos(angle) * speed);
+      y_offset += -(sin(angle) * speed);
+    }
+
+    // set size
+    float size = 0.5f;
+
+    shader.set_float("xOffset", x_offset); // movement in x axis
+    shader.set_float("yOffset", y_offset); // movement in y axis
+
+    shader.set_float("size", size); 
+
+    shader.set_float("angle", angle);
+
+    shader.set_float("u_time", glfwGetTime()); // color breath animation
+
+    glBindVertexArray(vao); // use vertex array obj
+
+    glDrawArrays(GL_TRIANGLES, 0, 3); // draw triangle
+
+    glfwSwapBuffers(window);
+    glfwPollEvents();
+  }
+
+  // terminate glfw
+  glfwTerminate();
+
+  std::cout << "Exited Main loop!\n";
+
+  return 0;
 }
