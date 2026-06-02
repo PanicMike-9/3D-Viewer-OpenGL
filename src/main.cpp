@@ -136,6 +136,9 @@ int main()
   // enable depth test
   glEnable(GL_DEPTH_TEST);
 
+  // angle rotation
+  float angle = 0.0f;
+
   // main window loop
   while(!glfwWindowShouldClose(window))
   {
@@ -151,8 +154,11 @@ int main()
                                  glm::vec3(0.0f, 1.0f, 0.0f));
     glm::mat4 projection = glm::perspective(glm::radians(90.0f), 800.0f/600.0f, 0.1f, 100.0f);
 
-    // rotates the cube                                         x     y     z
-    model = glm::rotate(model, (float)glfwGetTime(), glm::vec3(1.0f, 0.0f, 1.0f));
+    // increment angle by 0.01 for slower rotation speed
+    angle += 0.01f;
+
+    // rotates the cube                             
+    model = glm::rotate(model, angle * 2.0f, glm::vec3(1.0f, 0.0f, 1.0f));
 
     // set values
     shader.set_mat4("model", model);
