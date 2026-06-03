@@ -63,15 +63,16 @@ int main()
 
   float cube_vertices[]
   {
-    -0.5f, -0.5f, 0.5f,
-     0.5f, -0.5f, 0.5f,
-     0.5f,  0.5f, 0.5f,
-    -0.5f,  0.5f, 0.5f,
+//   x      y     z        r     g     b
+    -0.5f, -0.5f, 0.5f,   1.0f, 0.0f, 0.0f,
+     0.5f, -0.5f, 0.5f,   0.0f, 1.0f, 0.0f,
+     0.5f,  0.5f, 0.5f,   0.0f, 0.0f, 1.0f,
+    -0.5f,  0.5f, 0.5f,   1.0f, 0.0f, 0.0f,
 
-    -0.5f, -0.5f, -0.5f,
-     0.5f, -0.5f, -0.5f,
-     0.5f,  0.5f, -0.5f,
-    -0.5f,  0.5f, -0.5f,
+    -0.5f, -0.5f, -0.5f,  1.0f, 0.0f, 0.0f,
+     0.5f, -0.5f, -0.5f,  0.0f, 1.0f, 0.0f,
+     0.5f,  0.5f, -0.5f,  0.0f, 0.0f, 1.0f,
+    -0.5f,  0.5f, -0.5f,  1.0f, 0.0f, 0.0f,
   };
 
   GLuint cube_indices[]
@@ -113,11 +114,11 @@ int main()
   glBindVertexArray(vao);
 
   // position
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
   glEnableVertexAttribArray(0);
 
   // color
-  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)(3 * sizeof(float)));
+  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
   glEnableVertexAttribArray(1);
   glBindBuffer(GL_ARRAY_BUFFER, 0);
 
@@ -152,18 +153,21 @@ int main()
     glm::mat4 view = glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f), 
                                  glm::vec3(0.0f, 0.0f, 0.0f), 
                                  glm::vec3(0.0f, 1.0f, 0.0f));
-    glm::mat4 projection = glm::perspective(glm::radians(90.0f), 800.0f/600.0f, 0.1f, 100.0f);
+    glm::mat4 projection = glm::perspective(glm::radians(45.0f), 800.0f/600.0f, 0.1f, 100.0f);
 
     // increment angle by 0.01 for slower rotation speed
     angle += 0.01f;
 
     // rotates the cube                             
-    model = glm::rotate(model, angle * 2.0f, glm::vec3(1.0f, 0.0f, 1.0f));
+    model = glm::rotate(model, angle, glm::vec3(0.5f, 0.5f, 0.5f));
 
     // set values
     shader.set_mat4("model", model);
     shader.set_mat4("view", view);
     shader.set_mat4("projection", projection);
+
+    // color breath effect
+    shader.set_float("u_time", glfwGetTime());
 
     glBindVertexArray(vao); // use vertex array obj
 
