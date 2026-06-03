@@ -12,13 +12,11 @@ An OpenGL project build in C++ to explore 3D rendering, shaders, camera systems 
 - CMake
 - MSVC or MinGW
 
-## Build the project
+## Generate & Build
 
 ```bash
    git clone https://github.com/PanicMike-9/3D-Viewer-OpenGL.git
 ```
-## Generate & Build
-
 ```bash
    cmake -S . -B build
    cmake --build build
