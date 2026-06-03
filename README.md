@@ -17,7 +17,7 @@ An OpenGL project build in C++ to explore 3D rendering, shaders, camera systems 
 ```bash
    git clone https://github.com/PanicMike-9/3D-Viewer-OpenGL.git
 ```
-## Generate files
+## Generate & Build
 
 ```bash
    cmake -S . -B build
