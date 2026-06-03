@@ -7,6 +7,7 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include <iostream>
+#include <iomanip>
 
 #include "shader.hpp"
 
@@ -140,6 +141,10 @@ int main()
   // angle rotation
   float angle = 0.0f;
 
+  // speed logic
+  float speed = 0.0f;
+  float max_speed = 2.5f;
+
   // main window loop
   while(!glfwWindowShouldClose(window))
   {
@@ -155,11 +160,42 @@ int main()
                                  glm::vec3(0.0f, 1.0f, 0.0f));
     glm::mat4 projection = glm::perspective(glm::radians(45.0f), 800.0f/600.0f, 0.1f, 100.0f);
 
+    // increase speed using left and right arrow keys
+    if(glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
+    {
+      speed += 0.01f;
+
+      if(speed > max_speed)
+      {
+        speed = max_speed;
+      }
+
+      std::cout << "Speed: " << std::fixed << std::setprecision(2) << speed << '\n';
+    }
+    else if(glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
+    {
+      speed -= 0.01f;
+
+      if(speed <= 0.0f)
+      {
+        speed = 0.0f;
+      }
+
+      std::cout << "Speed: " << std::fixed << std::setprecision(2) << speed << '\n';
+    }
+
     // increment angle by 0.01 for slower rotation speed
-    angle += 0.01f;
+    if(glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
+    {
+      angle += 0.01f * speed;
+    }
+    if(glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
+    {
+      angle += -0.01f * speed;
+    }
 
     // rotates the cube                             
-    model = glm::rotate(model, angle, glm::vec3(0.5f, 0.5f, 0.5f));
+    model = glm::rotate(model, angle, glm::vec3(0.0f, 0.0f, 1.0f));
 
     // set values
     shader.set_mat4("model", model);
@@ -177,10 +213,13 @@ int main()
     glfwPollEvents();
   }
 
+  // destroy window
+  glfwDestroyWindow(window);
+  std::cout << "glfwDestroyWindow(window) executed\n";
+
   // terminate glfw
   glfwTerminate();
-
-  std::cout << "Exited Main loop!\n";
+  std::cout << "glfwTerminate() executed\n";
 
   return 0;
 }
