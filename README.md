@@ -1,6 +1,6 @@
 # 3D Object Viewer
 
-An OpenGL project build in C++ to explore 3D rendering, shaders, camera systems and 3D model loading.
+An OpenGL project built in C++ to explore 3D rendering, shaders, camera systems and 3D model loading.
 
 ## Minimum Requirements
 
@@ -9,13 +9,14 @@ An OpenGL project build in C++ to explore 3D rendering, shaders, camera systems 
 - GLFW
 - GLAD
 - GLM Math Library
-- CMake
+- CMake 4.2.0
 - MSVC or MinGW
 
 ## Generate & Build
 
 ```bash
    git clone https://github.com/PanicMike-9/3D-Viewer-OpenGL.git
+   cd 3D-Viewer-OpenGL
 ```
 ```bash
    cmake -S . -B build
@@ -23,3 +24,8 @@ An OpenGL project build in C++ to explore 3D rendering, shaders, camera systems 
 
    ./build/Debug/app.exe
 ```
+## Project Images
+
+![rendered cube with colors](screenshots/colored_cube1.png)
+
+![](screenshots/colored_cube1.png)
