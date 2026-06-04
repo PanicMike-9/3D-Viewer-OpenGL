@@ -28,4 +28,4 @@ An OpenGL project built in C++ to explore 3D rendering, shaders, camera systems 
 
 ![rendered cube with colors](screenshots/colored_cube1.png)
 
-![](screenshots/colored_cube1.png)
+![](screenshots/colored_cube2.png)
