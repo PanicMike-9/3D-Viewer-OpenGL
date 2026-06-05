@@ -23,6 +23,24 @@ void process_input(GLFWwindow *window)
       glfwSetWindowShouldClose(window, true);
 }
 
+void update_transform_matrices(Shader& shader, float angle)
+{
+    // cube matrices
+    glm::mat4 model = glm::mat4(1.0f);
+    glm::mat4 view = glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f), 
+                                 glm::vec3(0.0f, 0.0f, 0.0f), 
+                                 glm::vec3(0.0f, 1.0f, 0.0f));
+    glm::mat4 projection = glm::perspective(glm::radians(45.0f), 800.0f/600.0f, 0.1f, 100.0f);
+
+    // rotates the cube                             
+    model = glm::rotate(model, angle, glm::vec3(0.0f, 0.0f, 1.0f));
+
+    // set values
+    shader.set_mat4("model", model);
+    shader.set_mat4("view", view);
+    shader.set_mat4("projection", projection);
+}
+
 int main()
 {
   glfwInit();
@@ -68,12 +86,12 @@ int main()
     -0.5f, -0.5f, 0.5f,   1.0f, 0.0f, 0.0f,
      0.5f, -0.5f, 0.5f,   0.0f, 1.0f, 0.0f,
      0.5f,  0.5f, 0.5f,   0.0f, 0.0f, 1.0f,
-    -0.5f,  0.5f, 0.5f,   1.0f, 0.0f, 0.0f,
+    -0.5f,  0.5f, 0.5f,   1.0f, 0.0f, 1.0f,
 
     -0.5f, -0.5f, -0.5f,  1.0f, 0.0f, 0.0f,
      0.5f, -0.5f, -0.5f,  0.0f, 1.0f, 0.0f,
      0.5f,  0.5f, -0.5f,  0.0f, 0.0f, 1.0f,
-    -0.5f,  0.5f, -0.5f,  1.0f, 0.0f, 0.0f,
+    -0.5f,  0.5f, -0.5f,  1.0f, 0.0f, 1.0f,
   };
 
   GLuint cube_indices[]
@@ -153,12 +171,7 @@ int main()
 
     shader.use(); // shader code
 
-    // cube matrices
-    glm::mat4 model = glm::mat4(1.0f);
-    glm::mat4 view = glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f), 
-                                 glm::vec3(0.0f, 0.0f, 0.0f), 
-                                 glm::vec3(0.0f, 1.0f, 0.0f));
-    glm::mat4 projection = glm::perspective(glm::radians(45.0f), 800.0f/600.0f, 0.1f, 100.0f);
+   update_transform_matrices(shader, angle); // cube view and rotation
 
     // increase speed using left and right arrow keys
     if(glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
@@ -193,17 +206,6 @@ int main()
     {
       angle += -0.01f * speed;
     }
-
-    // rotates the cube                             
-    model = glm::rotate(model, angle, glm::vec3(0.0f, 0.0f, 1.0f));
-
-    // set values
-    shader.set_mat4("model", model);
-    shader.set_mat4("view", view);
-    shader.set_mat4("projection", projection);
-
-    // color breath effect
-    shader.set_float("u_time", glfwGetTime());
 
     glBindVertexArray(vao); // use vertex array obj
 
