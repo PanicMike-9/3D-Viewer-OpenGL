@@ -23,7 +23,7 @@ void process_input(GLFWwindow *window)
       glfwSetWindowShouldClose(window, true);
 }
 
-void update_transform_matrices(Shader& shader, float angle)
+void update_transform_matrices(Shader& shader, float& angle)
 {
     // cube matrices
     glm::mat4 model = glm::mat4(1.0f);
@@ -39,6 +39,44 @@ void update_transform_matrices(Shader& shader, float angle)
     shader.set_mat4("model", model);
     shader.set_mat4("view", view);
     shader.set_mat4("projection", projection);
+}
+
+// rotate, increase and decrease speed and angle of the cube vertices
+void update_input(GLFWwindow *window, float& angle, float& speed)
+{
+    // increase speed using left and right arrow keys
+    if(glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
+    {
+      speed += 0.01f;
+
+      if(speed > 2.5f)
+      {
+        speed = 2.5f;
+      }
+
+      std::cout << "Speed: " << std::fixed << std::setprecision(2) << speed << '\n';
+    }
+    else if(glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
+    {
+      speed -= 0.01f;
+
+      if(speed <= 0.0f)
+      {
+        speed = 0.0f;
+      }
+
+      std::cout << "Speed: " << std::fixed << std::setprecision(2) << speed << '\n';
+    }
+
+    // increment angle by 0.01 for slower rotation speed
+    if(glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
+    {
+      angle += 0.01f * speed;
+    }
+    if(glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
+    {
+      angle += -0.01f * speed;
+    }
 }
 
 int main()
@@ -68,17 +106,8 @@ int main()
 
   std::cout << "GLAD Loaded\n";
 
-  // black color window
+  // low contrast, dark pink
   glClearColor(0.1f, 0.0f, 0.1f, 1.0f); 
-
-  // triangle vertex data points
-  // (x, y, z, r, g, b) in-order data points on the plane and color
-  float tri_vertices[] = 
-  {
-    0.0f,  0.5f, 0.0f,  1.0f, 0.0f, 0.0f,
-    0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f,
-   -0.5f, -0.5f, 0.0f,  0.0f, 0.0f, 1.0f,
-  };
 
   float cube_vertices[]
   {
@@ -156,12 +185,12 @@ int main()
   // enable depth test
   glEnable(GL_DEPTH_TEST);
 
-  // angle rotation
+
+  // angle for rotation
   float angle = 0.0f;
 
-  // speed logic
+  // speed for rotation
   float speed = 0.0f;
-  float max_speed = 2.5f;
 
   // main window loop
   while(!glfwWindowShouldClose(window))
@@ -171,41 +200,9 @@ int main()
 
     shader.use(); // shader code
 
-   update_transform_matrices(shader, angle); // cube view and rotation
+    update_transform_matrices(shader, angle); // cube view and rotation
 
-    // increase speed using left and right arrow keys
-    if(glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
-    {
-      speed += 0.01f;
-
-      if(speed > max_speed)
-      {
-        speed = max_speed;
-      }
-
-      std::cout << "Speed: " << std::fixed << std::setprecision(2) << speed << '\n';
-    }
-    else if(glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
-    {
-      speed -= 0.01f;
-
-      if(speed <= 0.0f)
-      {
-        speed = 0.0f;
-      }
-
-      std::cout << "Speed: " << std::fixed << std::setprecision(2) << speed << '\n';
-    }
-
-    // increment angle by 0.01 for slower rotation speed
-    if(glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
-    {
-      angle += 0.01f * speed;
-    }
-    if(glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
-    {
-      angle += -0.01f * speed;
-    }
+    update_input(window, angle, speed); // cube movement logic
 
     glBindVertexArray(vao); // use vertex array obj
 
