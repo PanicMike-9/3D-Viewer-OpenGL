@@ -1,22 +1,32 @@
+// glad and glfw libraries
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
-// include glm for openGL math
+// OpenGL math or glm
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+// basic C++ libs
 #include <iostream>
 #include <iomanip>
 
+// shader code
 #include "shader.hpp"
 
+// window height and width values
 constexpr const int win_width = 800;
 constexpr const int win_height = 600;
 
 constexpr const double PI = 3.141592653589793; 
 
-// press q key to close window
+// draw elements
+void render()
+{
+    glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0); 
+}
+
+// exit window with q or esc keys
 void process_input(GLFWwindow *window)
 {
   if(glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
@@ -27,16 +37,25 @@ void update_transform_matrices(Shader& shader, float& angle)
 {
     // cube matrices
     glm::mat4 model = glm::mat4(1.0f);
+
+    glm::mat4 model_2 = glm::mat4(1.0f);
+    model_2 = glm::translate(model_2, glm::vec3(2.0f, 0.0f, 0.0f));
+
     glm::mat4 view = glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f), 
                                  glm::vec3(0.0f, 0.0f, 0.0f), 
                                  glm::vec3(0.0f, 1.0f, 0.0f));
-    glm::mat4 projection = glm::perspective(glm::radians(45.0f), 800.0f/600.0f, 0.1f, 100.0f);
+    glm::mat4 projection = glm::perspective(glm::radians(90.0f), 800.0f/600.0f, 0.1f, 100.0f);
 
     // rotates the cube                             
-    model = glm::rotate(model, angle, glm::vec3(0.0f, 0.0f, 1.0f));
+    model = glm::rotate(model, angle, glm::vec3(1.0f, 0.5f, 1.0f));
 
-    // set values
+    // set values and draw
     shader.set_mat4("model", model);
+    render();
+
+    shader.set_mat4("model", model_2);
+    render();
+
     shader.set_mat4("view", view);
     shader.set_mat4("projection", projection);
 }
@@ -79,6 +98,7 @@ void update_input(GLFWwindow *window, float& angle, float& speed)
     }
 }
 
+// main
 int main()
 {
   glfwInit();
@@ -106,21 +126,21 @@ int main()
 
   std::cout << "GLAD Loaded\n";
 
-  // low contrast, dark pink
-  glClearColor(0.1f, 0.0f, 0.1f, 1.0f); 
+  // window background color
+  glClearColor(0.0f, 0.0f, 0.0f, 1.0f); 
 
   float cube_vertices[]
   {
 //   x      y     z        r     g     b
-    -0.5f, -0.5f, 0.5f,   1.0f, 0.1f, 0.8f, 
-     0.5f, -0.5f, 0.5f,   0.1f, 1.0f, 0.5f, 
-     0.5f,  0.5f, 0.5f,   0.5f, 0.2f, 1.0f,
-    -0.5f,  0.5f, 0.5f,   0.7f, 0.4f, 0.6f,
+    -0.5f, -0.5f, 0.5f,   1.0f, 0.5f, 1.0f, 
+     0.5f, -0.5f, 0.5f,   0.8f, 0.2f, 1.0f, 
+     0.5f,  0.5f, 0.5f,   0.5f, 0.6f, 1.0f,
+    -0.5f,  0.5f, 0.5f,   0.7f, 0.4f, 1.0f,
 
-    -0.5f, -0.5f, -0.5f,  1.0f, 0.8f, 0.1f,
-     0.5f, -0.5f, -0.5f,  0.5f, 1.0f, 0.2f,
-     0.5f,  0.5f, -0.5f,  0.1f, 0.5f, 1.0f,
-    -0.5f,  0.5f, -0.5f,  0.8f, 0.2f, 0.3f,
+    -0.5f, -0.5f, -0.5f,  1.0f, 1.0f, 0.5f,
+     0.5f, -0.5f, -0.5f,  0.5f, 1.0f, 0.6f,
+     0.5f,  0.5f, -0.5f,  0.8f, 1.0f, 1.0f,
+    -0.5f,  0.5f, -0.5f,  0.4f, 1.0f, 0.6f,
   };
 
   GLuint cube_indices[]
@@ -185,7 +205,6 @@ int main()
   // enable depth test
   glEnable(GL_DEPTH_TEST);
 
-
   // angle for rotation
   float angle = 0.0f;
 
@@ -200,13 +219,11 @@ int main()
 
     shader.use(); // shader code
 
+    glBindVertexArray(vao); // use vertex array obj
+
     update_transform_matrices(shader, angle); // cube view and rotation
 
     update_input(window, angle, speed); // cube movement logic
-
-    glBindVertexArray(vao); // use vertex array obj
-
-    glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
 
     glfwSwapBuffers(window);
     glfwPollEvents();
