@@ -39,10 +39,10 @@ void update_transform_matrices(Shader& shader, float& angle)
     glm::mat4 model_1 = glm::mat4(1.0f);
 
     glm::mat4 model_2 = glm::mat4(1.0f);
-    model_2 = glm::translate(model_2, glm::vec3(2.0f, 2.0f, 0.0f));
+    model_2 = glm::translate(model_2, glm::vec3(1.0f, 1.0f, 0.0f));
 
     glm::mat4 model_3 = glm::mat4(1.0f);
-    model_3 = glm::translate(model_3, glm::vec3(-2.0f, -2.0f, 0.0f));
+    model_3 = glm::translate(model_3, glm::vec3(-1.0f, -1.0f, 0.0f));
 
     glm::mat4 view = glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f), 
                                  glm::vec3(0.0f, 0.0f, 0.0f), 
