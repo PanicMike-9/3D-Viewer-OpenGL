@@ -223,6 +223,11 @@ int main()
 
     update_transform_matrices(shader, angle); // cube view and rotation
 
+    // camera logic
+    glm::vec3 camera_pos = glm::vec3(0.0f, 0.0f, 3.0f); 
+    glm::vec3 camera_target = glm::vec3(0.0f, 0.0f, 0.0f);
+    glm::vec3 camera_direction = glm::normalize(camera_pos - camera_target);
+
     update_input(window, angle, speed); // cube movement logic
 
     glfwSwapBuffers(window);
