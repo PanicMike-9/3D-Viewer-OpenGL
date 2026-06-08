@@ -36,10 +36,13 @@ void process_input(GLFWwindow *window)
 void update_transform_matrices(Shader& shader, float& angle)
 {
     // cube matrices
-    glm::mat4 model = glm::mat4(1.0f);
+    glm::mat4 model_1 = glm::mat4(1.0f);
 
     glm::mat4 model_2 = glm::mat4(1.0f);
-    model_2 = glm::translate(model_2, glm::vec3(2.0f, 0.0f, 0.0f));
+    model_2 = glm::translate(model_2, glm::vec3(2.0f, 2.0f, 0.0f));
+
+    glm::mat4 model_3 = glm::mat4(1.0f);
+    model_3 = glm::translate(model_3, glm::vec3(-2.0f, -2.0f, 0.0f));
 
     glm::mat4 view = glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f), 
                                  glm::vec3(0.0f, 0.0f, 0.0f), 
@@ -47,13 +50,16 @@ void update_transform_matrices(Shader& shader, float& angle)
     glm::mat4 projection = glm::perspective(glm::radians(90.0f), 800.0f/600.0f, 0.1f, 100.0f);
 
     // rotates the cube                             
-    model = glm::rotate(model, angle, glm::vec3(1.0f, 0.5f, 1.0f));
+    model_1 = glm::rotate(model_1, angle, glm::vec3(1.0f, 0.0f, 0.0f));
 
     // set values and draw
-    shader.set_mat4("model", model);
+    shader.set_mat4("model", model_1);
     render();
 
     shader.set_mat4("model", model_2);
+    render();
+
+    shader.set_mat4("model", model_3);
     render();
 
     shader.set_mat4("view", view);
@@ -98,20 +104,21 @@ void update_input(GLFWwindow *window, float& angle, float& speed)
     }
 }
 
+// simple origin orbit camera logic
 void orbit_camera(Shader& shader)
 {
     // camera orbit
-    float radius = 10.0f;
+    float radius = 7.5f;
     float cam_x = sin(glfwGetTime()) * radius;
     float cam_z = cos(glfwGetTime()) * radius;
 
     float aspect = win_width/win_height;
 
-    // camera model, view and projection(camera MVP)
+    // camera view and projection
     glm::mat4 camera_projection = glm::perspective(glm::radians(45.0f), aspect, 0.1f, 100.0f);
-    glm::mat4 camera_view = glm::lookAt(glm::vec3(cam_x, 0.0f, cam_z),  //position
-                                        glm::vec3(0.0f, 0.0f, 0.0f),  // target
-                                        glm::vec3(0.0f, 1.0f, 0.0f)); // up vector
+    glm::mat4 camera_view = glm::lookAt(glm::vec3(cam_x, 0.0f, cam_z), //position
+                                        glm::vec3(0.0f, 0.0f, 0.0f),   // target
+                                        glm::vec3(0.0f, 1.0f, 0.0f));  // up vector
 
     // set shader values
     shader.set_mat4("projection", camera_projection);
@@ -222,7 +229,7 @@ int main()
   // shader code files
   Shader shader("shaders/v_shader.vert", "shaders/f_shader.frag");
 
-  // enable depth test
+  // enable depth test to view in 3d
   glEnable(GL_DEPTH_TEST);
 
   // angle for rotation
