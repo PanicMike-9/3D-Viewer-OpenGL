@@ -98,6 +98,38 @@ void update_input(GLFWwindow *window, float& angle, float& speed)
     }
 }
 
+void orbit_camera(Shader& shader)
+{
+    // camera 
+    glm::vec3 camera_pos = glm::vec3(0.0f, 0.0f, 3.0f); 
+    glm::vec3 camera_target = glm::vec3(0.0f, 0.0f, 0.0f);
+    glm::vec3 camera_direction = glm::normalize(camera_pos - camera_target);
+
+    // right camera axis
+    glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
+    glm::vec3 camera_right = glm::normalize(glm::cross(up, camera_direction));
+
+    // up camera axis
+    glm::vec3 camera_up = glm::cross(camera_direction, camera_right);
+
+    // camera orbit
+    float radius = 10.0f;
+    float cam_x = sin(glfwGetTime()) * radius;
+    float cam_z = cos(glfwGetTime()) * radius;
+
+    // camera model, view and projection(camera MVP)
+    glm::mat4 camera_model = glm::mat4(1.0f);
+    glm::mat4 camera_projection = glm::perspective(glm::radians(45.0f), 800.0f/600.0f, 0.1f, 100.0f);
+    glm::mat4 camera_view = glm::lookAt(glm::vec3(cam_x, 0.0f, cam_z),  //position
+                                        glm::vec3(0.0f, 0.0f, 0.0f),  // target
+                                        glm::vec3(0.0f, 1.0f, 0.0f)); // up vector
+
+    // set shader values
+    shader.set_mat4("model", camera_model);
+    shader.set_mat4("projection", camera_projection);
+    shader.set_mat4("view", camera_view);
+}
+
 // main
 int main()
 {
@@ -223,10 +255,7 @@ int main()
 
     update_transform_matrices(shader, angle); // cube view and rotation
 
-    // camera logic
-    glm::vec3 camera_pos = glm::vec3(0.0f, 0.0f, 3.0f); 
-    glm::vec3 camera_target = glm::vec3(0.0f, 0.0f, 0.0f);
-    glm::vec3 camera_direction = glm::normalize(camera_pos - camera_target);
+    orbit_camera(shader);
 
     update_input(window, angle, speed); // cube movement logic
 
