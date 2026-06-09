@@ -10,6 +10,7 @@
 // basic C++ libs
 #include <iostream>
 #include <iomanip>
+#include <vector>
 
 // shader code
 #include "shader.hpp"
@@ -33,35 +34,36 @@ void process_input(GLFWwindow *window)
       glfwSetWindowShouldClose(window, true);
 }
 
+std::vector<glm::vec3> cube_position 
+{
+  //          x      y      z
+  glm::vec3( 0.0f,  0.0f,  0.0f),
+  glm::vec3( 1.0f, -1.0f, -1.0f),
+  glm::vec3(-1.0f, -1.0f,  1.0f),
+  glm::vec3( 2.0f,  2.0f,  2.0f),
+};
+
 void update_transform_matrices(Shader& shader, float& angle)
 {
-    // cube matrices
-    glm::mat4 model_1 = glm::mat4(1.0f);
+    // cube matrices loop
+    for(const glm::vec3& pos : cube_position)
+    {
+      glm::mat4 model_1 = glm::mat4(1.0f);
+      model_1 = glm::translate(model_1, pos);
 
-    glm::mat4 model_2 = glm::mat4(1.0f);
-    model_2 = glm::translate(model_2, glm::vec3(1.0f, 1.0f, 0.0f));
+      // rotates the cube                             
+      model_1 = glm::rotate(model_1, angle, glm::vec3(1.0f, 0.0f, 0.0f));
 
-    glm::mat4 model_3 = glm::mat4(1.0f);
-    model_3 = glm::translate(model_3, glm::vec3(-1.0f, -1.0f, 0.0f));
+      shader.set_mat4("model", model_1);
+      render();
+    }
 
     glm::mat4 view = glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f), 
                                  glm::vec3(0.0f, 0.0f, 0.0f), 
                                  glm::vec3(0.0f, 1.0f, 0.0f));
     glm::mat4 projection = glm::perspective(glm::radians(90.0f), 800.0f/600.0f, 0.1f, 100.0f);
 
-    // rotates the cube                             
-    model_1 = glm::rotate(model_1, angle, glm::vec3(1.0f, 0.0f, 0.0f));
-
-    // set values and draw
-    shader.set_mat4("model", model_1);
-    render();
-
-    shader.set_mat4("model", model_2);
-    render();
-
-    shader.set_mat4("model", model_3);
-    render();
-
+    // set view and projection
     shader.set_mat4("view", view);
     shader.set_mat4("projection", projection);
 }
@@ -108,7 +110,7 @@ void update_input(GLFWwindow *window, float& angle, float& speed)
 void orbit_camera(Shader& shader)
 {
     // camera orbit
-    float radius = 7.5f;
+    float radius = 10.0f;
     float cam_x = sin(glfwGetTime()) * radius;
     float cam_z = cos(glfwGetTime()) * radius;
 
@@ -201,7 +203,7 @@ int main()
   GLuint vbo = 0;
   glGenBuffers(1, &vbo);
   glBindBuffer(GL_ARRAY_BUFFER, vbo);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(cube_vertices), cube_vertices, GL_STATIC_DRAW);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(cube_vertices) * sizeof(float), cube_vertices, GL_STATIC_DRAW);
 
   // vertex array object(VAO)
   GLuint vao = 0;
