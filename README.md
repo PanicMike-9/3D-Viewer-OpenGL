@@ -4,12 +4,12 @@ An OpenGL project built in C++ to explore 3D rendering, shaders, camera systems 
 
 ## Minimum Requirements
 
-- C++ 17 or above
+- C++ 17 or higher
 - OpenGL 4.1 
 - GLFW
 - GLAD
 - GLM Math Library
-- CMake 4.2.0
+- CMake 3.10 or higher
 - MSVC or MinGW
 
 ## Generate & Build
@@ -21,11 +21,12 @@ An OpenGL project built in C++ to explore 3D rendering, shaders, camera systems 
 ```bash
    cmake -S . -B build
    cmake --build build
-
+```
+```bash
    ./build/Debug/app.exe
 ```
 ## Project Images
 
-![rendered cube with colors](screenshots/X-cube1.png)
+![](screenshots/X-cube1.png)
 
 ![](screenshots/X-cube2.png)
