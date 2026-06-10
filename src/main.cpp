@@ -52,7 +52,7 @@ void update_transform_matrices(Shader& shader, float& angle)
       model_1 = glm::translate(model_1, pos);
 
       // rotates the cube                             
-      model_1 = glm::rotate(model_1, angle, glm::vec3(1.0f, 0.0f, 0.0f));
+      //model_1 = glm::rotate(model_1, angle, glm::vec3(1.0f, 0.0f, 0.0f));
 
       shader.set_mat4("model", model_1);
       render();
@@ -69,42 +69,42 @@ void update_transform_matrices(Shader& shader, float& angle)
 }
 
 // rotate, increase and decrease speed and angle of the cube vertices
-void update_input(GLFWwindow *window, float& angle, float& speed)
-{
-    // increase speed using left and right arrow keys
-    if(glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
-    {
-      speed += 0.01f;
-
-      if(speed > 2.5f)
-      {
-        speed = 2.5f;
-      }
-
-      std::cout << "Speed: " << std::fixed << std::setprecision(2) << speed << '\n';
-    }
-    else if(glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
-    {
-      speed -= 0.01f;
-
-      if(speed <= 0.0f)
-      {
-        speed = 0.0f;
-      }
-
-      std::cout << "Speed: " << std::fixed << std::setprecision(2) << speed << '\n';
-    }
-
-    // increment angle by 0.01 for slower rotation speed
-    if(glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
-    {
-      angle += 0.01f * speed;
-    }
-    if(glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
-    {
-      angle += -0.01f * speed;
-    }
-}
+//void update_input(GLFWwindow *window, float& angle, float& speed)
+//{
+//    // increase speed using left and right arrow keys
+//    if(glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
+//    {
+//      speed += 0.01f;
+//
+//      if(speed > 2.5f)
+//      {
+//        speed = 2.5f;
+//      }
+//
+//      std::cout << "Speed: " << std::fixed << std::setprecision(2) << speed << '\n';
+//    }
+//    else if(glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
+//    {
+//      speed -= 0.01f;
+//
+//      if(speed <= 0.0f)
+//      {
+//        speed = 0.0f;
+//      }
+//
+//      std::cout << "Speed: " << std::fixed << std::setprecision(2) << speed << '\n';
+//    }
+//
+//    // increment angle by 0.01 for slower rotation speed
+//    if(glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
+//    {
+//      angle += 0.01f * speed;
+//    }
+//    if(glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
+//    {
+//      angle += -0.01f * speed;
+//    }
+//}
 
 // simple origin orbit camera logic
 void orbit_camera(Shader& shader)
@@ -254,7 +254,7 @@ int main()
 
     orbit_camera(shader);
 
-    update_input(window, angle, speed); // cube movement logic
+    //update_input(window, angle, speed); // cube movement logic
 
     glfwSwapBuffers(window);
     glfwPollEvents();
