@@ -16,9 +16,9 @@
 #include "shader.hpp"
 
 // window height, width and aspect ratio values
-const float win_width = 800.0f;
-const float win_height = 600.0f;
-const float win_aspect = win_width / win_height;
+constexpr const float win_width = 800.0f;
+constexpr const float win_height = 600.0f;
+constexpr const float win_aspect = win_width / win_height;
 
 constexpr const double PI = 3.141592653589793; 
 
@@ -31,7 +31,6 @@ void render()
 // exit window with q or esc keys
 void process_input(GLFWwindow *window)
 {
-
     if(glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
 }
@@ -61,9 +60,6 @@ void update_transform_matrices(Shader& shader, float& angle)
         glm::mat4 model_1 = glm::mat4(1.0f);
         model_1 = glm::translate(model_1, pos);
 
-        // rotates the cube                             
-        //model_1 = glm::rotate(model_1, angle, glm::vec3(1.0f, 0.0f, 0.0f));
-
         shader.set_mat4("model", model_1);
         render();
     }
@@ -78,69 +74,54 @@ void update_transform_matrices(Shader& shader, float& angle)
     shader.set_mat4("projection", projection);
 }
 
-// rotate, increase and decrease speed and angle of the cube vertices
-/*
-void update_input(GLFWwindow *window, float& angle, float& speed)
+// simple walk around camera for basic movement
+glm::vec3 camera_position = glm::vec3(0.0f, 0.0f, 3.0f); // make global temporary
+
+void walk_around_camera(GLFWwindow* window, Shader& shader)
 {
-    // increase speed using left and right arrow keys
-    if(glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
-    {
-      speed += 0.01f;
+    /*
+    // values needed for rotation and yaw camera
+    // camera direction
+    glm::vec3 camera_target = glm::vec3(0.0f, 0.0f, 0.0f);
+    glm::vec3 camera_direction = glm::normalize(camera_position - camera_target);
+    */
 
-      if(speed > 2.5f)
-      {
-        speed = 2.5f;
-      }
-
-      std::cout << "Speed: " << std::fixed << std::setprecision(2) << speed << '\n';
-    }
-    else if(glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
-    {
-      speed -= 0.01f;
-
-      if(speed <= 0.0f)
-      {
-        speed = 0.0f;
-      }
-
-      std::cout << "Speed: " << std::fixed << std::setprecision(2) << speed << '\n';
-    }
-
-    // increment angle by 0.01 for slower rotation speed
-    if(glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
-    {
-      angle += 0.01f * speed;
-    }
-    if(glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
-    {
-      angle += -0.01f * speed;
-    }
-}
-*/
-
-// simple origin orbit camera logic
-void orbit_camera(Shader& shader)
-{
-    // camera orbit
-    float radius = 10.0f;
-    float cam_x = sin(glfwGetTime()) * radius;
-    float cam_z = cos(glfwGetTime()) * radius;
+    // camera values
+    glm::vec3 camera_front = glm::vec3(0.0f, 0.0f, -1.0f);
+    glm::vec3 camera_up = glm::vec3(0.0f, 1.0f, 0.0f);
+    glm::vec3 camera_right = glm::normalize(glm::cross(camera_front, camera_up));
 
     // camera view and projection
     glm::mat4 camera_projection = glm::perspective(glm::radians(45.0f), win_aspect, 0.1f, 100.0f);
-    glm::mat4 camera_view = glm::lookAt(glm::vec3(cam_x, 0.0f, cam_z), //position
-                                        glm::vec3(0.0f, 0.0f, 0.0f),   // target
-                                        glm::vec3(0.0f, 1.0f, 0.0f));  // up vector
+    glm::mat4 camera_view = glm::lookAt(camera_position, camera_position + camera_front, camera_up);  
 
     // set shader values
     shader.set_mat4("projection", camera_projection);
     shader.set_mat4("view", camera_view);
+
+    // walk around camera with WASD
+    const float camera_speed = 0.05f;
+    if(glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+    {
+        camera_position += camera_speed * camera_front;
+    }
+    if(glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+    {
+        camera_position -= camera_speed * camera_front;
+    }
+    if(glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+    {
+        camera_position -= camera_right * camera_speed;
+    }
+    if(glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+    {
+        camera_position += camera_right * camera_speed;
+    }
 }
 
 // main
 int main()
 {
-
     glfwInit();
 
     // declare window name and size
@@ -263,7 +244,7 @@ int main()
 
         update_transform_matrices(shader, angle); // cube view and rotation
 
-        orbit_camera(shader);
+        walk_around_camera(window,shader);
 
         //update_input(window, angle, speed); // cube movement logic
 
