@@ -79,12 +79,9 @@ glm::vec3 camera_position = glm::vec3(0.0f, 0.0f, 3.0f); // make global temporar
 
 void walk_around_camera(GLFWwindow* window, Shader& shader)
 {
-    /*
-    // values needed for rotation and yaw camera
     // camera direction
     glm::vec3 camera_target = glm::vec3(0.0f, 0.0f, 0.0f);
     glm::vec3 camera_direction = glm::normalize(camera_position - camera_target);
-    */
 
     // camera values
     glm::vec3 camera_front = glm::vec3(0.0f, 0.0f, -1.0f);
