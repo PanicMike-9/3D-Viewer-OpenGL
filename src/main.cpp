@@ -77,6 +77,10 @@ void update_transform_matrices(Shader& shader, float& angle)
 // simple walk around camera for basic movement
 glm::vec3 camera_position = glm::vec3(0.0f, 0.0f, 3.0f); // make global temporary
 
+// camera values for movement
+float delta_time = 0.0f;
+float last_frame = 0.0f;
+
 void walk_around_camera(GLFWwindow* window, Shader& shader)
 {
     // camera direction
@@ -97,7 +101,13 @@ void walk_around_camera(GLFWwindow* window, Shader& shader)
     shader.set_mat4("view", camera_view);
 
     // walk around camera with WASD
-    const float camera_speed = 0.05f;
+    float current_frame = static_cast<float>(glfwGetTime());
+
+    delta_time = current_frame - last_frame;
+    last_frame = current_frame;
+
+    const float camera_speed = 2.5f * delta_time;
+
     if(glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
     {
         camera_position += camera_speed * camera_front;
