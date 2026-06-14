@@ -82,7 +82,7 @@ float delta_time = 0.0f;
 float last_frame = 0.0f;
 
 // Euler angles variables
-float yaw = 0.0f;
+float yaw = -90.0f;
 float pitch = 0.0f;
 
 void walk_around_camera(GLFWwindow* window, Shader& shader)
@@ -116,20 +116,29 @@ void walk_around_camera(GLFWwindow* window, Shader& shader)
     last_frame = current_frame;
 
     // walk around camera with WASD
-    const float camera_speed = 5.5f * delta_time;
+    float camera_speed = 5.5f * delta_time;
 
+    // increase speed when shift is pressed
+    if(glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
+    {
+        camera_speed *= 2.0f; 
+    }
+    // press W for camera forward
     if(glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
     {
         camera_position += camera_speed * camera_front;
     }
+    // press S for camera backward
     if(glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
     {
         camera_position -= camera_speed * camera_front;
     }
+    // press A for camera left
     if(glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
     {
         camera_position -= camera_right * camera_speed;
     }
+    // press D for camera right
     if(glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
     {
         camera_position += camera_right * camera_speed;
