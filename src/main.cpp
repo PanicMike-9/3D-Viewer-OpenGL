@@ -87,10 +87,10 @@ float pitch = 0.0f;
 
 void walk_around_camera(GLFWwindow* window, Shader& shader)
 {
-    // camera movement vector
+    // look at target
     glm::vec3 direction;
 
-    // x, y and z camera rotation direction
+    // spherical angles to 3D cartesian direction vector (x, y, z)
     direction.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
     direction.y = sin(glm::radians(pitch));
     direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
@@ -116,7 +116,7 @@ void walk_around_camera(GLFWwindow* window, Shader& shader)
     last_frame = current_frame;
 
     // walk around camera with WASD
-    const float camera_speed = 2.5f * delta_time;
+    const float camera_speed = 5.5f * delta_time;
 
     if(glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
     {
