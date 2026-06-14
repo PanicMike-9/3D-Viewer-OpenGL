@@ -76,27 +76,15 @@ void update_transform_matrices(Shader& shader, float& angle)
 
 // simple walk around camera for basic movement
 glm::vec3 camera_position = glm::vec3(0.0f, 0.0f, 3.0f); // make global temporary
+glm::vec3 camera_front = glm::vec3(0.0f, 0.0f, -1.0f);
 
 // camera values for movement
 float delta_time = 0.0f;
 float last_frame = 0.0f;
 
-// Euler angles variables
-float yaw = -90.0f;
-float pitch = 0.0f;
-
 void walk_around_camera(GLFWwindow* window, Shader& shader)
 {
-    // look at target
-    glm::vec3 direction;
-
-    // spherical angles to 3D cartesian direction vector (x, y, z)
-    direction.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
-    direction.y = sin(glm::radians(pitch));
-    direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
-
     // camera values
-    glm::vec3 camera_front = glm::vec3(0.0f, 0.0f, -1.0f);
     glm::vec3 camera_up = glm::vec3(0.0f, 1.0f, 0.0f);
     glm::vec3 camera_right = glm::normalize(glm::cross(camera_front, camera_up));
 
@@ -118,10 +106,10 @@ void walk_around_camera(GLFWwindow* window, Shader& shader)
     // walk around camera with WASD
     float camera_speed = 5.5f * delta_time;
 
-    // increase speed when shift is pressed
+    // press left shift to increase camera speed by 2x
     if(glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
     {
-        camera_speed *= 2.0f; 
+        camera_speed *= 2.0f;
     }
     // press W for camera forward
     if(glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
@@ -143,6 +131,61 @@ void walk_around_camera(GLFWwindow* window, Shader& shader)
     {
         camera_position += camera_right * camera_speed;
     }
+}
+
+// Euler angles variables
+float yaw = -90.0f;
+float pitch = 0.0f;
+
+// cursor to the center of the window
+float last_x = win_width / 2.0f;
+float last_y = win_height / 2.0f;
+
+// first time receiving mouse input
+bool first_mouse = true;
+
+// use mouse for rotation and look around
+void mouse_callback(GLFWwindow *window, double x_pos, double y_pos)
+{
+    if(first_mouse)
+    {
+        last_x = x_pos;
+        last_y = y_pos;
+        first_mouse = false; 
+    }
+
+    // calculate offset movement between last frame and current frame
+    float x_offset = x_pos - last_x;
+    float y_offset = last_y - y_pos;
+
+    // new cursor values
+    last_x = x_pos;
+    last_y = y_pos;
+
+    // control sensitivity
+    const float sensitivity = 0.1f;
+    x_offset *= sensitivity;
+    y_offset *= sensitivity;
+
+    // add offsets values to yaw and pitch
+    yaw   += x_offset;
+    pitch += y_offset;
+
+    // minimum and maximum pitch values
+    float min_pitch = -89.0f; 
+    float max_pitch = 89.0f;
+
+    // clamp between min and max values
+    pitch = glm::clamp(pitch, min_pitch, max_pitch);
+
+    // look at target
+    glm::vec3 direction;
+
+    // spherical angles to 3D cartesian direction vector (x, y, z)
+    direction.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
+    direction.y = sin(glm::radians(pitch));
+    direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
+    camera_front = glm::normalize(direction);
 }
 
 // main
@@ -258,6 +301,12 @@ int main()
     // speed for rotation
     float speed = 0.0f;
 
+    // hide cursor when window is in focus
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
+    // set cursor position and call the mouse_callback
+    glfwSetCursorPosCallback(window, mouse_callback);
+
     // main window loop
     while(!glfwWindowShouldClose(window))
     {
@@ -271,8 +320,6 @@ int main()
         update_transform_matrices(shader, angle); // cube view and rotation
 
         walk_around_camera(window,shader);
-
-        //update_input(window, angle, speed); // cube movement logic
 
         glfwSwapBuffers(window);
         glfwPollEvents();
