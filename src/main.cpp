@@ -81,11 +81,19 @@ glm::vec3 camera_position = glm::vec3(0.0f, 0.0f, 3.0f); // make global temporar
 float delta_time = 0.0f;
 float last_frame = 0.0f;
 
+// Euler angles variables
+float yaw = 0.0f;
+float pitch = 0.0f;
+
 void walk_around_camera(GLFWwindow* window, Shader& shader)
 {
-    // camera direction
-    glm::vec3 camera_target = glm::vec3(0.0f, 0.0f, 0.0f);
-    glm::vec3 camera_direction = glm::normalize(camera_position - camera_target);
+    // camera movement vector
+    glm::vec3 direction;
+
+    // x, y and z camera rotation direction
+    direction.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
+    direction.y = sin(glm::radians(pitch));
+    direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
 
     // camera values
     glm::vec3 camera_front = glm::vec3(0.0f, 0.0f, -1.0f);
