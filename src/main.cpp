@@ -21,6 +21,30 @@ constexpr const float win_aspect = win_width / win_height;
 
 constexpr const double PI = 3.141592653589793; 
 
+// camera values
+glm::vec3 camera_position = glm::vec3(0.0f, 0.0f, 3.0f); // make global temporary
+glm::vec3 camera_front = glm::vec3(0.0f, 0.0f, -1.0f);
+glm::vec3 camera_up = glm::vec3(0.0f, 1.0f, 0.0f);
+glm::vec3 camera_right = glm::normalize(glm::cross(camera_front, camera_up));
+
+// field of view for zoom
+float fov = 45.0f;
+
+// camera values for movement
+float delta_time = 0.0f;
+float last_frame = 0.0f;
+
+// Euler angles variables
+float yaw = -90.0f;
+float pitch = 0.0f;
+
+// cursor to the center of the window
+float last_x = win_width / 2.0f;
+float last_y = win_height / 2.0f;
+
+// first time receiving mouse input
+bool first_mouse = true;
+
 // draw elements
 void render()
 {
@@ -63,10 +87,9 @@ void update_transform_matrices(Shader& shader, float& angle)
         render();
     }
 
-    glm::mat4 view = glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f), 
-                                 glm::vec3(0.0f, 0.0f, 0.0f), 
-                                 glm::vec3(0.0f, 1.0f, 0.0f));
-    glm::mat4 projection = glm::perspective(glm::radians(45.0f), win_aspect, 0.1f, 100.0f);
+    // update view and projection with camera values and fov
+    glm::mat4 view = glm::lookAt(camera_position, camera_position + camera_front, camera_up);
+    glm::mat4 projection = glm::perspective(glm::radians(fov), win_aspect, 0.1f, 100.0f);
 
     // set view and projection
     shader.set_mat4("view", view);
@@ -74,29 +97,8 @@ void update_transform_matrices(Shader& shader, float& angle)
 }
 
 // simple walk around camera for basic movement
-glm::vec3 camera_position = glm::vec3(0.0f, 0.0f, 3.0f); // make global temporary
-glm::vec3 camera_front = glm::vec3(0.0f, 0.0f, -1.0f);
-
-// camera values for movement
-float delta_time = 0.0f;
-float last_frame = 0.0f;
-
-float fov = 45.0f;// field of view for zoom
-
-void walk_around_camera(GLFWwindow* window, Shader& shader)
+void walk_around_camera(GLFWwindow* window)
 {
-    // camera values
-    glm::vec3 camera_up = glm::vec3(0.0f, 1.0f, 0.0f);
-    glm::vec3 camera_right = glm::normalize(glm::cross(camera_front, camera_up));
-
-    // camera view and projection
-    glm::mat4 camera_view = glm::lookAt(camera_position, camera_position + camera_front, camera_up);  
-    glm::mat4 camera_projection = glm::perspective(glm::radians(fov), win_aspect, 0.1f, 100.0f);
-
-    // set shader values
-    shader.set_mat4("view", camera_view);
-    shader.set_mat4("projection", camera_projection);
-
     // cast to float because glfwGetTime returns double
     float current_frame = static_cast<float>(glfwGetTime()); 
 
@@ -134,16 +136,6 @@ void walk_around_camera(GLFWwindow* window, Shader& shader)
     }
 }
 
-// Euler angles variables
-float yaw = -90.0f;
-float pitch = 0.0f;
-
-// cursor to the center of the window
-float last_x = win_width / 2.0f;
-float last_y = win_height / 2.0f;
-
-// first time receiving mouse input
-bool first_mouse = true;
 
 // use mouse for rotation and look around
 void mouse_callback(GLFWwindow *window, double x_pos, double y_pos)
@@ -316,7 +308,7 @@ int main()
     float speed = 0.0f;
 
     // hide cursor when window is in focus
-    //glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
     // set cursor position and call the mouse_callback
     glfwSetCursorPosCallback(window, mouse_callback);
@@ -336,7 +328,7 @@ int main()
 
         update_transform_matrices(shader, angle); // cube view and rotation
 
-        walk_around_camera(window, shader);
+        walk_around_camera(window);
 
         glfwSwapBuffers(window);
         glfwPollEvents();
