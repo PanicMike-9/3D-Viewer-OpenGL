@@ -66,7 +66,7 @@ void update_transform_matrices(Shader& shader, float& angle)
     glm::mat4 view = glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f), 
                                  glm::vec3(0.0f, 0.0f, 0.0f), 
                                  glm::vec3(0.0f, 1.0f, 0.0f));
-    glm::mat4 projection = glm::perspective(glm::radians(90.0f), win_aspect, 0.1f, 100.0f);
+    glm::mat4 projection = glm::perspective(glm::radians(45.0f), win_aspect, 0.1f, 100.0f);
 
     // set view and projection
     shader.set_mat4("view", view);
@@ -81,6 +81,8 @@ glm::vec3 camera_front = glm::vec3(0.0f, 0.0f, -1.0f);
 float delta_time = 0.0f;
 float last_frame = 0.0f;
 
+float fov = 45.0f;// field of view for zoom
+
 void walk_around_camera(GLFWwindow* window, Shader& shader)
 {
     // camera values
@@ -88,12 +90,12 @@ void walk_around_camera(GLFWwindow* window, Shader& shader)
     glm::vec3 camera_right = glm::normalize(glm::cross(camera_front, camera_up));
 
     // camera view and projection
-    glm::mat4 camera_projection = glm::perspective(glm::radians(45.0f), win_aspect, 0.1f, 100.0f);
     glm::mat4 camera_view = glm::lookAt(camera_position, camera_position + camera_front, camera_up);  
+    glm::mat4 camera_projection = glm::perspective(glm::radians(fov), win_aspect, 0.1f, 100.0f);
 
     // set shader values
-    shader.set_mat4("projection", camera_projection);
     shader.set_mat4("view", camera_view);
+    shader.set_mat4("projection", camera_projection);
 
     // cast to float because glfwGetTime returns double
     float current_frame = static_cast<float>(glfwGetTime()); 
@@ -146,6 +148,7 @@ bool first_mouse = true;
 // use mouse for rotation and look around
 void mouse_callback(GLFWwindow *window, double x_pos, double y_pos)
 {
+    // check if this is the first time receiving mouse input
     if(first_mouse)
     {
         last_x = x_pos;
@@ -187,13 +190,25 @@ void mouse_callback(GLFWwindow *window, double x_pos, double y_pos)
     camera_front = glm::normalize(direction);
 }
 
+// zoom with scroll wheel
+void scroll_callback(GLFWwindow *window, double x_offset, double y_offset)
+{
+    // min max values for field of view
+    float max_fov = 45.0f;
+    float min_fov = 1.0f;
+
+    // adjust field of view based on scroll wheel input
+    fov -= static_cast<float>(y_offset);
+    fov = glm::clamp(fov, min_fov, max_fov);
+}
+
 // main
 int main()
 {
     glfwInit();
 
     // declare window name and size
-    GLFWwindow* window = glfwCreateWindow(win_width, win_height, "OpenGL Cube", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(win_width, win_height, "3D Viewer OpenGL", NULL, NULL);
 
     if(!window)
     {
@@ -301,10 +316,13 @@ int main()
     float speed = 0.0f;
 
     // hide cursor when window is in focus
-    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    //glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
     // set cursor position and call the mouse_callback
     glfwSetCursorPosCallback(window, mouse_callback);
+
+    // set scroll wheel callback for zoom
+    glfwSetScrollCallback(window, scroll_callback);
 
     // main window loop
     while(!glfwWindowShouldClose(window))
@@ -318,7 +336,7 @@ int main()
 
         update_transform_matrices(shader, angle); // cube view and rotation
 
-        walk_around_camera(window,shader);
+        walk_around_camera(window, shader);
 
         glfwSwapBuffers(window);
         glfwPollEvents();
