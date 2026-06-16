@@ -1,33 +1,26 @@
 #pragma once
 
+// glm libs
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-class Camera
+struct Camera
 {
-    public:
-        Camera();
+    Camera();
 
-    private:
-        glm::vec3 m_position = glm::vec3(0.0f, 0.0f, 3.0f); 
-        glm::vec3 m_front = glm::vec3(0.0f, 0.0f, -1.0f);
-        glm::vec3 m_up = glm::vec3(0.0f, 1.0f, 0.0f);
-        glm::vec3 m_right = glm::normalize(glm::cross(m_front, m_up));
-        
-        float m_speed = 5.5f;
+    glm::vec3 m_position = glm::vec3(0.0f, 0.0f, 3.0f); 
+    glm::vec3 m_front    = glm::vec3(0.0f, 0.0f, -1.0f);
+    glm::vec3 m_up       = glm::vec3(0.0f, 1.0f, 0.0f);
+    glm::vec3 m_right;
+    
+    float m_speed = 5.5f;
+    float m_fov   = 45.0f;
 
-        // field of view for zoom
-        float m_fov = 45.0f;
+    float m_delta_time = 0.0f;
+    float m_last_frame = 0.0f;
 
-        // camera values for movement
-        float m_delta_time = 0.0f;
-        float m_last_frame = 0.0f;
-
-        // Euler angles variables
-        float m_yaw = -90.0f;
-        float m_pitch = 0.0f;
-
-        // receive mouse input 
-        bool m_first_mouse = true;
+    float m_yaw        = -90.0f;
+    float m_pitch      = 0.0f;
+    bool m_first_mouse = true;
 };
