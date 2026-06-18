@@ -124,18 +124,4 @@ class Camera
             m_right = glm::normalize(glm::cross(m_front, m_world_up));
             m_up = glm::normalize(glm::cross(m_right, m_front));
         }
-        // update the camera's front, right, and up vectors based on Euler angles
-        void update_camera_vectors()
-        {
-            // look at target
-            glm::vec3 direction;
-
-            // spherical angles to 3D cartesian direction vector (x, y, z)
-            direction.x = cos(glm::radians(m_yaw)) * cos(glm::radians(m_pitch));
-            direction.y = sin(glm::radians(m_pitch));
-            direction.z = sin(glm::radians(m_yaw)) * cos(glm::radians(m_pitch));
-            m_front = glm::normalize(direction);
-            m_right = glm::normalize(glm::cross(m_front, m_world_up));
-            m_up = glm::normalize(glm::cross(m_right, m_front));
-        }
 }; 
