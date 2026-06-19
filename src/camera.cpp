@@ -6,10 +6,16 @@ Camera::Camera()
     update_camera_vectors();
 }
 
-// matrix functions
+// matrix function
 glm::mat4 Camera::get_view_matrix()
 {
     return glm::lookAt(m_position, m_position + m_front, m_up);
+}
+
+// get projection
+glm::mat4 Camera::get_projection_matrix()
+{
+    return glm::perspective(glm::radians(m_fov), 800.0f/600.0f, 0.1f, 100.0f);
 }
 
 // process keyboard input for camera movement
@@ -77,6 +83,8 @@ void Camera::process_scroll_wheel(double y_offset)
     // adjust field of view based on scroll wheel input
     m_fov -= static_cast<float>(y_offset);
     m_fov = glm::clamp(m_fov, min_fov, max_fov);
+
+    update_camera_vectors();
 }
 
 // update the camera's front, right, and up vectors based on Euler angles
