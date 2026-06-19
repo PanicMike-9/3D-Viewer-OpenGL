@@ -37,8 +37,9 @@ class Camera
         // constructor
         Camera();
 
-        // view function
+        // matrix functions
         glm::mat4 get_view_matrix();
+        glm::mat4 get_projection_matrix();
 
         // process keyboard for camera movement
         void process_keyboard(camera_movement direction, float delta_time);
