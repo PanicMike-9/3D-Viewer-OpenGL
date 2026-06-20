@@ -6,16 +6,16 @@ Camera::Camera()
     update_camera_vectors();
 }
 
-// matrix function
+// get view matrix
 glm::mat4 Camera::get_view_matrix()
 {
     return glm::lookAt(m_position, m_position + m_front, m_up);
 }
 
 // get projection
-glm::mat4 Camera::get_projection_matrix()
+glm::mat4 Camera::get_projection_matrix(float aspect_ratio)
 {
-    return glm::perspective(glm::radians(m_fov), 800.0f/600.0f, 0.1f, 100.0f);
+    return glm::perspective(glm::radians(m_fov), aspect_ratio, 0.1f, 100.0f);
 }
 
 // process keyboard input for camera movement
@@ -24,11 +24,6 @@ void Camera::process_keyboard(camera_movement direction, float delta_time)
     // walk around camera with WASD
     float velocity = m_speed * delta_time;
 
-    // press left shift to increase camera speed by 2x
-    if(direction == camera_movement::SPEED_UP)
-    {
-        velocity *= 2.0f;
-    }
     // press W for camera forward
     if(direction == camera_movement::FORWARD)
     {
