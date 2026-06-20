@@ -11,39 +11,16 @@
 #include <iostream>
 #include <vector>
 
-// shader code
+// header files
 #include "shader.hpp"
+#include "camera.hpp"
 
 // window height, width and aspect ratio values
-constexpr const float win_width = 800.0f;
-constexpr const float win_height = 600.0f;
+constexpr const float win_width = 1200.0f;
+constexpr const float win_height = 720.0f;
 constexpr const float win_aspect = win_width / win_height;
 
 constexpr const double PI = 3.141592653589793; 
-
-// camera values
-glm::vec3 camera_position = glm::vec3(0.0f, 0.0f, 3.0f); // make global temporary
-glm::vec3 camera_front = glm::vec3(0.0f, 0.0f, -1.0f);
-glm::vec3 camera_up = glm::vec3(0.0f, 1.0f, 0.0f);
-glm::vec3 camera_right = glm::normalize(glm::cross(camera_front, camera_up));
-
-// field of view for zoom
-float fov = 45.0f;
-
-// camera values for movement
-float delta_time = 0.0f;
-float last_frame = 0.0f;
-
-// Euler angles variables
-float yaw = -90.0f;
-float pitch = 0.0f;
-
-// cursor to the center of the window
-float last_x = win_width / 2.0f;
-float last_y = win_height / 2.0f;
-
-// first time receiving mouse input
-bool first_mouse = true;
 
 // draw elements
 void render()
@@ -52,7 +29,7 @@ void render()
 }
 
 // exit window with q or esc keys
-void process_input(GLFWwindow *window)
+void exit_window(GLFWwindow *window)
 {
     if(glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
@@ -75,71 +52,36 @@ std::vector<glm::vec3> cube_position
     glm::vec3( 1.0f,  1.0f,  2.0f),
 };
 
-void update_transform_matrices(Shader& shader, float& angle)
+// create cubes at different positions
+void create_cubes(Shader &shader, glm::mat4 view, glm::mat4 projection)
 {
-    // cube matrices loop
-    for(const glm::vec3& pos : cube_position)
+    for(const glm::vec3 &pos : cube_position)
     {
-        glm::mat4 model_1 = glm::mat4(1.0f);
-        model_1 = glm::translate(model_1, pos);
+        // create model matrix
+        glm::mat4 model = glm::mat4(1.0f);
+        model = glm::translate(model, pos);
 
-        shader.set_mat4("model", model_1);
+        // set shader values
+        shader.set_mat4("model", model);
+        shader.set_mat4("view", view);
+        shader.set_mat4("projection", projection);
+
+        // render each cube
         render();
     }
-
-    // update view and projection with camera values and fov
-    glm::mat4 view = glm::lookAt(camera_position, camera_position + camera_front, camera_up);
-    glm::mat4 projection = glm::perspective(glm::radians(fov), win_aspect, 0.1f, 100.0f);
-
-    // set view and projection
-    shader.set_mat4("view", view);
-    shader.set_mat4("projection", projection);
 }
 
-// simple walk around camera for basic movement
-void walk_around_camera(GLFWwindow* window)
-{
-    // cast to float because glfwGetTime returns double
-    float current_frame = static_cast<float>(glfwGetTime()); 
-
-    // consistent camera movement
-    delta_time = current_frame - last_frame;
-    last_frame = current_frame;
-
-    // walk around camera with WASD
-    float camera_speed = 5.5f * delta_time;
-
-    // press left shift to increase camera speed by 2x
-    if(glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
-    {
-        camera_speed *= 2.0f;
-    }
-    // press W for camera forward
-    if(glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-    {
-        camera_position += camera_speed * camera_front;
-    }
-    // press S for camera backward
-    if(glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-    {
-        camera_position -= camera_speed * camera_front;
-    }
-    // press A for camera left
-    if(glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-    {
-        camera_position -= camera_right * camera_speed;
-    }
-    // press D for camera right
-    if(glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-    {
-        camera_position += camera_right * camera_speed;
-    }
-}
+// cursor to the center of the window
+float last_x = win_width / 2.0f;
+float last_y = win_height / 2.0f;
+bool first_mouse = true;
 
 
-// use mouse for rotation and look around
 void mouse_callback(GLFWwindow *window, double x_pos, double y_pos)
 {
+    // create camera pointer
+    Camera* cam = static_cast<Camera*>(glfwGetWindowUserPointer(window));
+
     // check if this is the first time receiving mouse input
     if(first_mouse)
     {
@@ -156,42 +98,44 @@ void mouse_callback(GLFWwindow *window, double x_pos, double y_pos)
     last_x = x_pos;
     last_y = y_pos;
 
-    // control sensitivity
-    const float sensitivity = 0.1f;
-    x_offset *= sensitivity;
-    y_offset *= sensitivity;
-
-    // add offsets values to yaw and pitch
-    yaw   += x_offset;
-    pitch += y_offset;
-
-    // minimum and maximum pitch values
-    float min_pitch = -89.0f; 
-    float max_pitch = 89.0f;
-
-    // clamp between min and max values
-    pitch = glm::clamp(pitch, min_pitch, max_pitch);
-
-    // look at target
-    glm::vec3 direction;
-
-    // spherical angles to 3D cartesian direction vector (x, y, z)
-    direction.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
-    direction.y = sin(glm::radians(pitch));
-    direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
-    camera_front = glm::normalize(direction);
+    cam->process_mouse_movement(x_offset, y_offset);
 }
 
-// zoom with scroll wheel
+// take scroll wheel input
 void scroll_callback(GLFWwindow *window, double x_offset, double y_offset)
 {
-    // min max values for field of view
-    float max_fov = 45.0f;
-    float min_fov = 1.0f;
+    // create camera pointer
+    Camera* cam = static_cast<Camera*>(glfwGetWindowUserPointer(window));
 
-    // adjust field of view based on scroll wheel input
-    fov -= static_cast<float>(y_offset);
-    fov = glm::clamp(fov, min_fov, max_fov);
+    cam->process_scroll_wheel(y_offset);
+}
+
+// control camera with WASD
+void camera_controller(GLFWwindow *window, Camera &camera, float delta_time)
+{
+    // move forward with W key
+    if(glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+    {
+        camera.process_keyboard(camera_movement::FORWARD, delta_time);
+    }
+
+    // move forward with A key
+    if(glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+    {
+        camera.process_keyboard(camera_movement::LEFT, delta_time);
+    }
+
+    // move forward with S key
+    if(glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+    {
+        camera.process_keyboard(camera_movement::BACKWARD, delta_time);
+    }
+
+    // move forward with D key
+    if(glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+    {
+        camera.process_keyboard(camera_movement::RIGHT, delta_time);
+    }
 }
 
 // main
@@ -228,7 +172,7 @@ int main()
     float cube_vertices[]
     {
     //    x      y     z       r     g     b
-        -0.5f, -0.5f, 0.5f,   1.0f, 0.5f, 1.0f, 
+        -0.5f, -0.5f, 0.5f,   1.0f, 0.0f, 0.0f, 
          0.5f, -0.5f, 0.5f,   0.8f, 0.2f, 1.0f, 
          0.5f,  0.5f, 0.5f,   0.5f, 0.6f, 1.0f,
         -0.5f,  0.5f, 0.5f,   0.7f, 0.4f, 1.0f,
@@ -307,6 +251,16 @@ int main()
     // speed for rotation
     float speed = 0.0f;
 
+    // for consistent timing 
+    float delta_time = 0.0f;
+    float last_frame = 0.0f;
+
+    // camera class obj
+    Camera camera;
+
+
+    glfwSetWindowUserPointer(window, &camera);
+
     // hide cursor when window is in focus
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
@@ -319,16 +273,24 @@ int main()
     // main window loop
     while(!glfwWindowShouldClose(window))
     {
-        process_input(window);
+        exit_window(window); // exit window using q or esc key
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        shader.use(); // shader code
+        // calculate delta time 
+        float current_frame = static_cast<float>(glfwGetTime()); 
+        delta_time = current_frame - last_frame;
+        last_frame = current_frame;
 
+        camera_controller(window, camera, delta_time);
+
+        // return the view values
+        glm::mat4 view = camera.get_view_matrix();
+        glm::mat4 projection = camera.get_projection_matrix(win_aspect);
+
+        shader.use(); // shader code
         glBindVertexArray(vao); // use vertex array obj
 
-        update_transform_matrices(shader, angle); // cube view and rotation
-
-        walk_around_camera(window);
+        create_cubes(shader, view, projection);
 
         glfwSwapBuffers(window);
         glfwPollEvents();
