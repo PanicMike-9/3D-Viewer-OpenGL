@@ -12,7 +12,6 @@ enum class camera_movement
     BACKWARD,
     LEFT,
     RIGHT,
-    SPEED_UP, 
 };
 
 class Camera
@@ -39,7 +38,7 @@ class Camera
 
         // matrix functions
         glm::mat4 get_view_matrix();
-        glm::mat4 get_projection_matrix();
+        glm::mat4 get_projection_matrix(float aspect_ratio);
 
         // process keyboard for camera movement
         void process_keyboard(camera_movement direction, float delta_time);
