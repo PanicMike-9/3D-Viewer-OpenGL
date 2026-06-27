@@ -22,6 +22,8 @@ FetchContent_MakeAvailable(glm)
 
 target_include_directories(app PRIVATE ${glm_SOURCE_DIR})
 
+add_subdirectory(assimp)
+
 target_link_libraries(app
 PRIVATE 
 opengl32
