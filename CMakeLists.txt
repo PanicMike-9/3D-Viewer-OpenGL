@@ -4,12 +4,14 @@ project(3dViewerOpenGL)
 
 set(CMAKE_CXX_STANDARD 17)
 
+# all required project files
 add_executable(app src/main.cpp 
                    src/glad.c 
                    src/shader.cpp 
                    src/camera.cpp
               )
 
+# final app.exe
 include_directories(app PRIVATE ${CMAKE_SOURCE_DIR}/include)
 
 include(FetchContent)
@@ -20,8 +22,10 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(glm)
 
+# GLM itegration
 target_include_directories(app PRIVATE ${glm_SOURCE_DIR})
 
+# Assimp integration
 add_subdirectory(assimp)
 
 target_link_libraries(app
