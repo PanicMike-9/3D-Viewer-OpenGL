@@ -76,7 +76,6 @@ float last_x = win_width / 2.0f;
 float last_y = win_height / 2.0f;
 bool first_mouse = true;
 
-
 void mouse_callback(GLFWwindow *window, double x_pos, double y_pos)
 {
     // create camera pointer
@@ -257,7 +256,6 @@ int main()
 
     // camera class obj
     Camera camera;
-
 
     glfwSetWindowUserPointer(window, &camera);
 
