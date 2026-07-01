@@ -9,6 +9,7 @@ add_executable(app src/main.cpp
                    src/glad.c 
                    src/shader.cpp 
                    src/camera.cpp
+                   src/mesh.cpp
               )
 
 # final app.exe
