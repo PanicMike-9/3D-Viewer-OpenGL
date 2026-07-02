@@ -1,3 +1,5 @@
+#pragma once
+
 // C++ libs
 #include <vector>
 #include <string>
