@@ -67,10 +67,12 @@ void Mesh::draw(Shader &shader)
         glBindTexture(GL_TEXTURE_2D, textures[i].id);
     }
 
-    glActiveTexture(GL_TEXTURE0);
-
     // draw the mesh
     glBindVertexArray(VAO);
+    
+    // static_cast<unsigned int> for indices.size() is required as .size() return size_t
     glDrawElements(GL_TRIANGLES, static_cast<unsigned int>(indices.size()), GL_UNSIGNED_INT, 0);
     glBindVertexArray(0);
+
+    glActiveTexture(GL_TEXTURE0);
 }
