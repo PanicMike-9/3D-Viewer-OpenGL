@@ -31,3 +31,20 @@ void Model::load_model(std::string path)
 
     process_node(scene->mRootNode, scene);
 }
+
+// process to retrive mesh indices and for each children node
+void Model::process_node(aiNode *node, const aiScene *scene)
+{
+    // process all nodes meshes
+    for(unsigned int i = 0; i < node->mNumMeshes; i++)
+    {
+        aiMesh *mesh = scene->mMeshes[node->mMeshes[i]];
+        meshes.push_back(process_mesh(mesh, scene));
+    }
+
+    // process all child nodes
+    for(unsigned int i = 0; i < node->mNumChildren; i++)
+    {
+        process_node(node->mChildren[i], scene);
+    }
+}
