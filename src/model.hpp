@@ -12,7 +12,6 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 
-
 class Model
 {
     public:
