@@ -59,7 +59,13 @@ Mesh Model::process_mesh(aiMesh *mesh, const aiScene *scene)
     {
         Vertex vertex;
 
-        // todo: process vertex, indices and texture data
-        
+        glm::vec3 vector;
+        vector.x = mesh->mVertices[i].x;
+        vector.y = mesh->mVertices[i].y;
+        vector.z = mesh->mVertices[i].z;
+
+        vertex.position = vector;
+
+        vertices.push_back(vertex);
     }
 }
