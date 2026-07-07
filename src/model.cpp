@@ -49,6 +49,7 @@ void Model::process_node(aiNode *node, const aiScene *scene)
     }
 }
 
+// process mesh data and create a Mesh object
 Mesh Model::process_mesh(aiMesh *mesh, const aiScene *scene)
 {
     std::vector<Vertex> vertices;
@@ -90,5 +91,36 @@ Mesh Model::process_mesh(aiMesh *mesh, const aiScene *scene)
         }
 
         vertices.push_back(vertex);
+
+        // process indices
+        for(unsigned int i = 0; i < mesh->mNumFaces; i++)
+        {
+            aiFace face = mesh->mFaces[i];
+
+            for(unsigned int j = 0; j < face.mNumIndices; j++)
+            {
+                indices.push_back(face.mIndices[j]);
+            }
+        }
+
+        // process material
+        if(mesh->mMaterialIndex >= 0)
+        {
+            aiMaterial *material = scene->mMaterials[mesh->mMaterialIndex];
+
+            // create diffuse map, load the material texture and insert into textures vector
+            std::vector<Texture> diffuse_map = load_material_textures(material, 
+                                                                      aiTextureType_DIFFUSE, 
+                                                                      "texture_diffuse");
+            textures.insert(textures.end(), diffuse_map.begin(), diffuse_map.end());
+
+            // create specular map, load the material texture and insert into textures vector
+            std::vector<Texture> specular_map = load_material_textures(material, 
+                                                                       aiTextureType_SPECULAR, 
+                                                                       "texture_specular");
+            textures.insert(textures.end(), specular_map.begin(), specular_map.end());
+        }
     }
+
+    return Mesh(vertices, indices, textures);
 }
