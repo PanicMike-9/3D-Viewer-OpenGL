@@ -12,6 +12,8 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 
+unsigned int texture_from_file(const char *path, const std::string &directory);
+
 class Model
 {
     public:
