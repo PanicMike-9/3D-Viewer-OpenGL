@@ -124,3 +124,23 @@ Mesh Model::process_mesh(aiMesh *mesh, const aiScene *scene)
 
     return Mesh(vertices, indices, textures);
 }
+
+// load and generate texture objects from a material
+std::vector<Texture> Model::load_material_textures(aiMaterial *mat, aiTextureType type, std::string type_name)
+{
+    std::vector<Texture> textures;
+
+    for(unsigned int i = 0; i < mat->GetTextureCount(type); i++)
+    {
+        aiString str;
+        mat->GetTexture(type, i, &str);
+
+        Texture texture;
+        texture.id = texture_from_file(str.C_Str(), directory);
+        texture.type = type_name;
+        texture.path = str.C_Str();
+        textures.push_back(texture);
+    }
+
+    return textures;
+}
