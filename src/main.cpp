@@ -79,7 +79,7 @@ bool first_mouse = true;
 void mouse_callback(GLFWwindow *window, double x_pos, double y_pos)
 {
     // create camera pointer
-    Camera* cam = static_cast<Camera*>(glfwGetWindowUserPointer(window));
+    Camera *cam = static_cast<Camera*>(glfwGetWindowUserPointer(window));
 
     // check if this is the first time receiving mouse input
     if(first_mouse)
@@ -113,25 +113,25 @@ void scroll_callback(GLFWwindow *window, double x_offset, double y_offset)
 void camera_controller(GLFWwindow *window, Camera &camera, float delta_time)
 {
     // move forward with W key
-    if(glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
     {
         camera.process_keyboard(camera_movement::FORWARD, delta_time);
     }
 
     // move forward with A key
-    if(glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
     {
         camera.process_keyboard(camera_movement::LEFT, delta_time);
     }
 
     // move forward with S key
-    if(glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
     {
         camera.process_keyboard(camera_movement::BACKWARD, delta_time);
     }
 
     // move forward with D key
-    if(glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
     {
         camera.process_keyboard(camera_movement::RIGHT, delta_time);
     }
@@ -143,9 +143,9 @@ int main()
     glfwInit();
 
     // declare window name and size
-    GLFWwindow* window = glfwCreateWindow(win_width, win_height, "3D Viewer OpenGL", NULL, NULL);
+    GLFWwindow *window = glfwCreateWindow(win_width, win_height, "3D Viewer OpenGL", NULL, NULL);
 
-    if(!window)
+    if (!window)
     {
         std::cerr << "Could not create window!\n";
         glfwTerminate();
@@ -157,7 +157,7 @@ int main()
     // create window
     glfwMakeContextCurrent(window);
 
-    if(!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
     {
         std::cerr << "Could not initialize GLAD\n";
         return -1;
@@ -269,7 +269,7 @@ int main()
     glfwSetScrollCallback(window, scroll_callback);
 
     // main window loop
-    while(!glfwWindowShouldClose(window))
+    while (!glfwWindowShouldClose(window))
     {
         exit_window(window); // exit window using q or esc key
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
