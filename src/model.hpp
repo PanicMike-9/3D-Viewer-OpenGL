@@ -4,6 +4,8 @@
 #include <vector>
 #include <string>
 
+#include "stb_image.h"
+
 #include "shader.hpp"
 #include "mesh.hpp"
 
