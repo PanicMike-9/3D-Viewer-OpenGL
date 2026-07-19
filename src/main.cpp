@@ -209,6 +209,8 @@ int main()
         0, 5, 4,
     };
 
+    // Todo: use model class, mesh class and Assimp to load a .obj file and a model
+
     // vertex buffer object (VBO)
     GLuint vbo = 0;
     glGenBuffers(1, &vbo);
