@@ -10,6 +10,7 @@ add_executable(app src/main.cpp
                    src/shader.cpp 
                    src/camera.cpp
                    src/mesh.cpp
+                   src/model.cpp
               )
 
 # final app.exe
@@ -28,6 +29,7 @@ target_include_directories(app PRIVATE ${glm_SOURCE_DIR})
 
 # Assimp integration
 add_subdirectory(assimp)
+target_link_libraries(app PRIVATE assimp)
 
 target_link_libraries(app
 PRIVATE 
