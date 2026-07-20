@@ -17,7 +17,7 @@
 #include "model.hpp"
 #include "mesh.hpp"
 
-Model model;
+//Model model;
 
 // window height, width and aspect ratio values
 constexpr const float win_width = 1200.0f;
@@ -147,7 +147,7 @@ int main()
     glfwInit();
 
     // declare window name and size
-    GLFWwindow *window = glfwCreateWindow(win_width, win_height, "3D Viewer OpenGL", NULL, NULL);
+    GLFWwindow *window = glfwCreateWindow(win_width, win_height, "Load 3D models", NULL, NULL);
 
     if (!window)
     {
