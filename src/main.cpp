@@ -14,6 +14,10 @@
 // header files
 #include "shader.hpp"
 #include "camera.hpp"
+#include "model.hpp"
+#include "mesh.hpp"
+
+Model model;
 
 // window height, width and aspect ratio values
 constexpr const float win_width = 1200.0f;
