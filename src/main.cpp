@@ -169,9 +169,8 @@ int main()
 
     std::cout << "GLAD Loaded\n";
 
-    // window background color
-    glClearColor(0.0f, 0.0f, 0.0f, 1.0f); 
 
+    #if 0
     float cube_vertices[]
     {
     //    x      y     z       r     g     b
@@ -243,6 +242,7 @@ int main()
 
     // unbind
     glBindVertexArray(0);
+    #endif
 
     // shader code files
     Shader shader("shaders/v_shader.vert", "shaders/f_shader.frag");
@@ -277,13 +277,16 @@ int main()
     // main window loop
     while (!glfwWindowShouldClose(window))
     {
-        exit_window(window); // exit window using q or esc key
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
         // calculate delta time 
         float current_frame = static_cast<float>(glfwGetTime()); 
         delta_time = current_frame - last_frame;
         last_frame = current_frame;
+
+        exit_window(window); // exit window using q or esc key
+
+        // window background color
+        glClearColor(0.0f, 0.0f, 0.0f, 1.0f); 
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         camera_controller(window, camera, delta_time);
 
@@ -292,9 +295,7 @@ int main()
         glm::mat4 projection = camera.get_projection_matrix(win_aspect);
 
         shader.use(); // shader code
-        glBindVertexArray(vao); // use vertex array obj
-
-        create_cubes(shader, view, projection);
+        //glBindVertexArray(vao); // use vertex array obj
 
         glfwSwapBuffers(window);
         glfwPollEvents();
