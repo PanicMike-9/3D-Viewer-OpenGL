@@ -7,7 +7,7 @@ layout (location = 2) in vec2 aTexCoord;
 out vec3 vertexColor;
 out vec2 TexCoords;
 
-// cube
+// MVP matrices
 uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
