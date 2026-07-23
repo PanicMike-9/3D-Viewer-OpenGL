@@ -33,12 +33,13 @@ void render()
 }
 
 // exit window with q or esc keys
-void exit_window(GLFWwindow *window)
+void exit_window(GLFWwindow* window)
 {
     if(glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
 }
 
+#if 0
 // unique cube position for each new cube
 std::vector<glm::vec3> cube_position 
 {
@@ -74,16 +75,23 @@ void create_cubes(Shader &shader, glm::mat4 view, glm::mat4 projection)
         render();
     }
 }
+#endif
+
+//  for window resizing
+void framebuffer_size_callback(GLFWwindow* window, float width, float height)
+{
+    glViewport(0, 0, width, height);
+}
 
 // cursor to the center of the window
 float last_x = win_width / 2.0f;
 float last_y = win_height / 2.0f;
 bool first_mouse = true;
 
-void mouse_callback(GLFWwindow *window, double x_pos, double y_pos)
+void mouse_callback(GLFWwindow* window, double x_pos, double y_pos)
 {
     // create camera pointer
-    Camera *cam = static_cast<Camera*>(glfwGetWindowUserPointer(window));
+    Camera* cam = static_cast<Camera*>(glfwGetWindowUserPointer(window));
 
     // check if this is the first time receiving mouse input
     if(first_mouse)
@@ -105,7 +113,7 @@ void mouse_callback(GLFWwindow *window, double x_pos, double y_pos)
 }
 
 // take scroll wheel input
-void scroll_callback(GLFWwindow *window, double x_offset, double y_offset)
+void scroll_callback(GLFWwindow* window, double x_offset, double y_offset)
 {
     // create camera pointer
     Camera* cam = static_cast<Camera*>(glfwGetWindowUserPointer(window));
@@ -114,7 +122,7 @@ void scroll_callback(GLFWwindow *window, double x_offset, double y_offset)
 }
 
 // control camera with WASD
-void camera_controller(GLFWwindow *window, Camera &camera, float delta_time)
+void camera_controller(GLFWwindow* window, Camera &camera, float delta_time)
 {
     // move forward with W key
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
@@ -147,7 +155,7 @@ int main()
     glfwInit();
 
     // declare window name and size
-    GLFWwindow *window = glfwCreateWindow(win_width, win_height, "Load 3D models", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(win_width, win_height, "Load 3D models", NULL, NULL);
 
     if (!window)
     {
@@ -168,7 +176,6 @@ int main()
     }
 
     std::cout << "GLAD Loaded\n";
-
 
     #if 0
     float cube_vertices[]
@@ -212,8 +219,6 @@ int main()
         0, 5, 4,
     };
 
-    // Todo: use model class, mesh class and Assimp to load a .obj file and a model
-
     // vertex buffer object (VBO)
     GLuint vbo = 0;
     glGenBuffers(1, &vbo);
@@ -244,11 +249,15 @@ int main()
     glBindVertexArray(0);
     #endif
 
-    // shader code files
-    Shader shader("shaders/v_shader.vert", "shaders/f_shader.frag");
+    //stbi_set_flip_vertically_on_load(true);
 
     // enable depth test to view in 3d
     glEnable(GL_DEPTH_TEST);
+
+    // shader code files
+    Shader shader("shaders/v_shader.vert", "shaders/f_shader.frag");
+
+    Model model_3d("assets/models/suzanne.gltf");
 
     // angle for rotation
     float angle = 0.0f;
@@ -285,18 +294,28 @@ int main()
         exit_window(window); // exit window using q or esc key
 
         // window background color
-        glClearColor(0.0f, 0.0f, 0.0f, 1.0f); 
+        glClearColor(0.1f, 0.1f, 0.1f, 1.0f); 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-        camera_controller(window, camera, delta_time);
 
         // return the view values
         glm::mat4 view = camera.get_view_matrix();
         glm::mat4 projection = camera.get_projection_matrix(win_aspect);
 
-        shader.use(); // shader code
-        //glBindVertexArray(vao); // use vertex array obj
+        camera_controller(window, camera, delta_time);
 
+        shader.use(); // shader code
+
+        shader.set_mat4("view", view);
+        shader.set_mat4("projection", projection);
+
+        // render the model
+        glm::mat4 model = glm::mat4(1.0f);
+        model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f)); // center the model
+        model = glm::scale(model, glm::vec3(0.2f, 0.2f, 0.2f)); // scale the model down
+
+        shader.set_mat4("model", model);
+        model_3d.draw(shader);
+ 
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
