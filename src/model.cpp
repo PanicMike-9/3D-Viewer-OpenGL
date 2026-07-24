@@ -3,13 +3,13 @@
 
 #include "model.hpp"
 // constructor
-Model::Model(char *path)
+Model::Model(char* path)
 {
     load_model(path);
 }
 
 // Draw meshes
-void Model::draw(Shader &shader)
+void Model::draw(Shader& shader)
 {
     for (unsigned int i = 0; i < meshes.size(); i++)
     {
@@ -21,7 +21,7 @@ void Model::draw(Shader &shader)
 void Model::load_model(std::string path)
 {
     Assimp::Importer import;
-    const aiScene *scene = import.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs);
+    const aiScene* scene = import.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs);
 
     if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
     {
@@ -35,12 +35,12 @@ void Model::load_model(std::string path)
 }
 
 // process to retrive mesh indices and for each children node
-void Model::process_node(aiNode *node, const aiScene *scene)
+void Model::process_node(aiNode* node, const aiScene* scene)
 {
     // process all nodes meshes
     for (unsigned int i = 0; i < node->mNumMeshes; i++)
     {
-        aiMesh *mesh = scene->mMeshes[node->mMeshes[i]];
+        aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
         meshes.push_back(process_mesh(mesh, scene));
     }
 
@@ -52,7 +52,7 @@ void Model::process_node(aiNode *node, const aiScene *scene)
 }
 
 // process mesh data and create a Mesh object
-Mesh Model::process_mesh(aiMesh *mesh, const aiScene *scene)
+Mesh Model::process_mesh(aiMesh* mesh, const aiScene* scene)
 {
     std::vector<Vertex> vertices;
     std::vector<unsigned int> indices;
@@ -108,7 +108,7 @@ Mesh Model::process_mesh(aiMesh *mesh, const aiScene *scene)
         // process material
         if (mesh->mMaterialIndex >= 0)
         {
-            aiMaterial *material = scene->mMaterials[mesh->mMaterialIndex];
+            aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
 
             // create diffuse map, load the material texture and insert into textures vector
             std::vector<Texture> diffuse_map = load_material_textures(material, 
@@ -128,7 +128,7 @@ Mesh Model::process_mesh(aiMesh *mesh, const aiScene *scene)
 }
 
 // read the texture data from the file path
-unsigned int texture_from_file(const char *path, const std::string &directory)
+unsigned int texture_from_file(const char* path, const std::string& directory)
 {
     std::string file_name = std::string(path);
     file_name = directory + '/' + file_name;
@@ -179,7 +179,7 @@ unsigned int texture_from_file(const char *path, const std::string &directory)
 }
 
 // load and generate texture objects from a material
-std::vector<Texture> Model::load_material_textures(aiMaterial *mat, aiTextureType type, std::string type_name)
+std::vector<Texture> Model::load_material_textures(aiMaterial* mat, aiTextureType type, std::string type_name)
 {
     std::vector<Texture> textures;
 
