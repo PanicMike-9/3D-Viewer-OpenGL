@@ -313,6 +313,8 @@ int main()
         model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f)); // center the model
         model = glm::scale(model, glm::vec3(0.2f, 0.2f, 0.2f)); // scale the model down
 
+        // todo: fix texture not loading
+
         shader.set_mat4("model", model);
         model_3d.draw(shader);
  
