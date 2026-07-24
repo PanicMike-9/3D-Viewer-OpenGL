@@ -140,7 +140,7 @@ unsigned int texture_from_file(const char* path, const std::string& directory)
     int height;
     int nr_components;
 
-    unsigned char *data = stbi_load(file_name.c_str(), &width, &height, &nr_components, 0);
+    unsigned char* data = stbi_load(file_name.c_str(), &width, &height, &nr_components, 0);
 
     if (data)
     {
