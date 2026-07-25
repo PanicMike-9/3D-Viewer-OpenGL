@@ -315,6 +315,8 @@ int main()
 
         shader.set_mat4("model", model);
         model_3d.draw(shader);
+
+        // todo: add lighting and test with other models
  
         glfwSwapBuffers(window);
         glfwPollEvents();
