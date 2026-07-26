@@ -138,7 +138,8 @@ int main()
     // shader code files
     Shader shader("shaders/v_shader.vert", "shaders/f_shader.frag");
 
-    Model model_3d("assets/models/low_poly_human/scene.gltf");
+    Model hum_model_1("assets/models/low_poly_human/scene.gltf");
+    Model hum_model_2("assets/models/low_poly_human/scene.gltf");
 
     // angle for rotation
     float angle = 0.0f;
@@ -197,12 +198,19 @@ int main()
         // render the model
         glm::mat4 model = glm::mat4(1.0f);
         model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f)); // center the model
-        model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f)); // scale the model down
+        model = glm::scale(model, glm::vec3(0.5f)); // scale the model down
 
         shader.set_mat4("model", model);
-        model_3d.draw(shader);
+        hum_model_1.draw(shader);
 
-        // todo: add lighting and test with other models
+        model = glm::mat4(1.0f);
+        model = glm::translate(model, glm::vec3(5.0f, 0.0f, 0.0f)); // center the model
+        model = glm::scale(model, glm::vec3(0.5f)); // scale the model down
+
+        shader.set_mat4("model", model);
+        hum_model_2.draw(shader);
+
+        // todo: add basic lighting and test with other models
  
         framebuffer_size_callback(window, win_width, win_height);
         glfwSwapBuffers(window);
