@@ -254,7 +254,7 @@ int main()
     // shader code files
     Shader shader("shaders/v_shader.vert", "shaders/f_shader.frag");
 
-    Model model_3d("assets/models/road_cone/road_cone.gltf");
+    Model model_3d("assets/models/low_poly_human/scene.gltf");
 
     // angle for rotation
     float angle = 0.0f;
@@ -311,7 +311,7 @@ int main()
         // render the model
         glm::mat4 model = glm::mat4(1.0f);
         model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f)); // center the model
-        model = glm::scale(model, glm::vec3(0.02f, 0.01f, 0.02f)); // scale the model down
+        model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f)); // scale the model down
 
         shader.set_mat4("model", model);
         model_3d.draw(shader);
