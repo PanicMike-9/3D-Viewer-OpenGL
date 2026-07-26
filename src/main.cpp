@@ -204,7 +204,7 @@ int main()
         hum_model_1.draw(shader);
 
         model = glm::mat4(1.0f);
-        model = glm::translate(model, glm::vec3(5.0f, 0.0f, 0.0f)); // center the model
+        model = glm::translate(model, glm::vec3(10.0f, 0.0f, 0.0f)); // center the model
         model = glm::scale(model, glm::vec3(0.5f)); // scale the model down
 
         shader.set_mat4("model", model);
