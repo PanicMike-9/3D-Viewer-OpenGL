@@ -1,0 +1,11 @@
+Model Information:
+* title:	Low poly Human
+* source:	https://sketchfab.com/3d-models/low-poly-human-a9d185620f3e468e84fcaf38ac33bc7b
+* author:	the24machinist (https://sketchfab.com/the24machinist)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Low poly Human" (https://sketchfab.com/3d-models/low-poly-human-a9d185620f3e468e84fcaf38ac33bc7b) by the24machinist (https://sketchfab.com/the24machinist) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
