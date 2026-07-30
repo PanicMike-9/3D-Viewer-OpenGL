@@ -12,6 +12,7 @@ uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
 
+// Todo: add diffuse lighting
 void main()
 {
     vertexColor = aColor;
