@@ -171,6 +171,7 @@ int main()
     // window background color
     glClearColor(0.1f, 0.1f, 0.1f, 1.0f); 
 
+
     // main window loop
     while (!glfwWindowShouldClose(window))
     {
@@ -195,23 +196,25 @@ int main()
         shader.set_mat4("view", view);
         shader.set_mat4("projection", projection);
 
-        // render the model
+        // ambient light color (purple)
+        shader.set_vec3("light_color", glm::vec3(0.5f, 0.2f, 1.0f));
+
+        // render the model 1
         glm::mat4 model = glm::mat4(1.0f);
         model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f)); // center the model
-        model = glm::scale(model, glm::vec3(0.5f)); // scale the model down
+        model = glm::scale(model, glm::vec3(0.2f)); // scale the model down
 
         shader.set_mat4("model", model);
         hum_model_1.draw(shader);
 
+        // render the model 2
         model = glm::mat4(1.0f);
         model = glm::translate(model, glm::vec3(10.0f, 0.0f, 0.0f)); // center the model
-        model = glm::scale(model, glm::vec3(0.5f)); // scale the model down
+        model = glm::scale(model, glm::vec3(0.2f)); // scale the model down
 
         shader.set_mat4("model", model);
         hum_model_2.draw(shader);
 
-        // todo: add basic lighting and test with other models
- 
         framebuffer_size_callback(window, win_width, win_height);
         glfwSwapBuffers(window);
         glfwPollEvents();
