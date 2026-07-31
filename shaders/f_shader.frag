@@ -3,8 +3,7 @@
 in vec2 TexCoords;
 out vec4 FragColor;
 
- uniform vec3 model_color;
- uniform vec3 light_color;
+uniform vec3 light_color;
 
 uniform sampler2D texture_diffuse1;
 
