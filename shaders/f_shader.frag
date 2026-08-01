@@ -16,5 +16,7 @@ void main()
 
     vec3 result = model_color * ambient_light;
     FragColor = vec4(result, 1.0);
+
+    // Todo: add diffuse lighting 
     //FragColor = vec4(0.5f, 0.0f, 0.5f, 1.0f); // magenta color for debugging
 }
