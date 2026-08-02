@@ -212,7 +212,7 @@ int main()
 
         // render the model 2
         model = glm::mat4(1.0f);
-        model = glm::translate(model, glm::vec3(10.0f, 0.0f, 0.0f)); // center the model
+        model = glm::translate(model, glm::vec3(2.0f, 0.0f, 0.0f)); // center the model
         model = glm::scale(model, glm::vec3(0.2f)); // scale the model down
 
         shader.set_mat4("model", model);
