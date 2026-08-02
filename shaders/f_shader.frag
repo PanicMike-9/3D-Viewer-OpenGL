@@ -6,6 +6,7 @@ in vec3 FragPos;
 out vec4 FragColor;
 
 uniform vec3 light_color;
+uniform vec3 light_pos;
 
 uniform sampler2D texture_diffuse1;
 
@@ -17,8 +18,13 @@ void main()
     vec3 ambient_light = ambient_strength * light_color;
 
     vec3 result = model_color * ambient_light;
-    FragColor = vec4(result, 1.0);
 
-    // Todo: add diffuse lighting 
-    //FragColor = vec4(0.5f, 0.0f, 0.5f, 1.0f); // magenta color for debugging
+    vec3 norm = normalize(Normal);
+    vec3 light_dir = normalize(light_pos - FragPos);
+
+    float diff = max(dot(norm, light_dir), 0.0);
+    vec3 diffuse = diff * light_color;
+
+    vec3 result = (ambient_light + diffuse) * model_color;
+    FragColor = vec4(result, 1.0);
 }
