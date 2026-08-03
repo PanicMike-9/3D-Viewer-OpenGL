@@ -17,14 +17,12 @@ void main()
     float ambient_strength = 0.1;
     vec3 ambient_light = ambient_strength * light_color;
 
-    vec3 result = model_color * ambient_light;
-
     vec3 norm = normalize(Normal);
     vec3 light_dir = normalize(light_pos - FragPos);
 
     float diff = max(dot(norm, light_dir), 0.0);
     vec3 diffuse = diff * light_color;
 
-    result = (ambient_light + diffuse) * model_color;
+    vec3 result = (ambient_light + diffuse) * model_color;
     FragColor = vec4(result, 1.0);
 }
