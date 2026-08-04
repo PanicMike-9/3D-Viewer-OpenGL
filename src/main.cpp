@@ -198,8 +198,10 @@ int main()
         // ambient light color (purple)
         shader.set_vec3("light_color", glm::vec3(1.0f));
 
+        // orbiting light position
+        glm::vec3 light_pos = glm::vec3(sin(glfwGetTime()) * 2.0f, 1.0f, cos(glfwGetTime()) * 2.0f);
         // position the light vector
-        shader.set_vec3("light_pos", glm::vec3(1.0f, 1.0f, 0.5f));
+        shader.set_vec3("light_pos", light_pos);
         shader.set_vec3("view_pos", camera.position);
 
         // render the model 1
