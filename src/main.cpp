@@ -171,7 +171,6 @@ int main()
     // window background color
     glClearColor(0.1f, 0.1f, 0.1f, 1.0f); 
 
-
     // main window loop
     while (!glfwWindowShouldClose(window))
     {
@@ -201,6 +200,7 @@ int main()
 
         // position the light vector
         shader.set_vec3("light_pos", glm::vec3(1.0f, 1.0f, 0.5f));
+        shader.set_vec3("view_pos", camera.position);
 
         // render the model 1
         glm::mat4 model = glm::mat4(1.0f);
