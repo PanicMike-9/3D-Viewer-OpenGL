@@ -11,6 +11,16 @@ uniform vec3 view_pos;
 
 uniform sampler2D texture_diffuse1;
 
+struct Light 
+{
+    vec3 position;
+    vec3 ambient;
+    vec3 diffuse;
+    vec3 specular;
+};
+
+uniform Light light;
+
 void main()
 {
     vec3 model_color = texture(texture_diffuse1, TexCoords).rgb;
