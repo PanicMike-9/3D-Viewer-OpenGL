@@ -195,7 +195,7 @@ int main()
         shader.set_mat4("view", view);
         shader.set_mat4("projection", projection);
 
-        // ambient light color (purple)
+        // ambient light color (white)
         shader.set_vec3("light_color", glm::vec3(1.0f));
 
         // orbiting light position
