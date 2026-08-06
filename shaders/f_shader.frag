@@ -11,6 +11,14 @@ uniform vec3 view_pos;
 
 uniform sampler2D texture_diffuse1;
 
+struct Material
+{
+    vec3 ambient;
+    vec3 diffuse;
+    vec3 specular;
+    float shine;
+};
+
 struct Light 
 {
     vec3 position;
@@ -19,6 +27,7 @@ struct Light
     vec3 specular;
 };
 
+uniform Material material;
 uniform Light light;
 
 void main()
