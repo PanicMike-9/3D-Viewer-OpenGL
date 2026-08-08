@@ -206,6 +206,12 @@ int main()
         shader.set_vec3("light_pos", glm::vec3(1.0f));
         shader.set_vec3("view_pos", camera.position);
 
+        // material properties
+        shader.set_vec3("material.ambient", glm::vec3(1.0f, 0.5f, 0.31f));
+        shader.set_vec3("material.diffuse", glm::vec3(1.0f, 0.5f, 0.31f));
+        shader.set_vec3("material.specular", glm::vec3(0.5f));
+        shader.set_float("material.shine", 32.0f);
+
         // render the model 1
         glm::mat4 model = glm::mat4(1.0f);
         model = glm::translate(model, glm::vec3(-5.0f, 0.0f, 0.0f)); // model position
