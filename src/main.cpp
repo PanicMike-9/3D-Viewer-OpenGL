@@ -20,8 +20,8 @@
 //Model model;
 
 // window height, width and aspect ratio values
-constexpr const float win_width = 1200.0f;
-constexpr const float win_height = 720.0f;
+constexpr const float win_width = 1920.0f;
+constexpr const float win_height = 1080.0f;
 constexpr const float win_aspect = win_width / win_height;
 
 constexpr const double PI = 3.141592653589793; 
