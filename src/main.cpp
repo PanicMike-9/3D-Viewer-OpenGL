@@ -196,8 +196,6 @@ int main()
         shader.set_mat4("view", view);
         shader.set_mat4("projection", projection);
 
-        //shader.set_vec3("light_color", glm::vec3(1.0f));
-
         // ambient light color (??)
         shader.set_vec3("light.ambient", glm::vec3(0.5f));
         shader.set_vec3("light.diffuse", glm::vec3(0.5f));
