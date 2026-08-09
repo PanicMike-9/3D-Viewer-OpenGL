@@ -38,7 +38,7 @@ void main()
     vec3 ambient_light = ambient_strength * light.ambient * material.ambient;
 
     vec3 norm = normalize(Normal);
-    vec3 light_dir = normalize(light_pos - FragPos);
+    vec3 light_dir = normalize(light.position - FragPos);
 
     float diff = max(dot(norm, light_dir), 0.0);
     vec3 diffuse = diff * light.diffuse * material.diffuse;
