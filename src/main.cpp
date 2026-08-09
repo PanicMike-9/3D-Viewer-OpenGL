@@ -111,7 +111,7 @@ int main()
     glfwInit();
 
     // declare window name and size
-    GLFWwindow* window = glfwCreateWindow(win_width, win_height, "Load 3D models", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(win_width, win_height, "Test Lighting", NULL, NULL);
 
     if (!window)
     {
@@ -200,17 +200,17 @@ int main()
         shader.set_vec3("light_color", glm::vec3(1.0f));
 
         // orbiting light position
-        //glm::vec3 light_pos = glm::vec3(sin(glfwGetTime()) * 2.0f, 1.0f, cos(glfwGetTime()) * 2.0f);
+        glm::vec3 light_pos = glm::vec3(sin(glfwGetTime()) * 2.0f, 0.0f, cos(glfwGetTime()) * 2.0f);
 
         // position the light vector
-        shader.set_vec3("light_pos", glm::vec3(1.0f));
+        shader.set_vec3("light_pos", light_pos);
         shader.set_vec3("view_pos", camera.position);
 
         // material properties
-        shader.set_vec3("material.ambient", glm::vec3(1.0f, 0.5f, 0.31f));
-        shader.set_vec3("material.diffuse", glm::vec3(1.0f, 0.5f, 0.31f));
+        shader.set_vec3("material.ambient", glm::vec3(1.0f, 0.5f, 0.3f));
+        shader.set_vec3("material.diffuse", glm::vec3(1.0f, 0.5f, 0.3f));
         shader.set_vec3("material.specular", glm::vec3(0.5f));
-        shader.set_float("material.shine", 64.0f);
+        shader.set_float("material.shine", 32.0f);
 
         // render the model 1
         glm::mat4 model = glm::mat4(1.0f);
