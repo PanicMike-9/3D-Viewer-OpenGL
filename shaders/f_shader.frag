@@ -5,8 +5,6 @@ in vec3 Normal;
 in vec3 FragPos;
 out vec4 FragColor;
 
-uniform vec3 light_color;
-uniform vec3 light_pos;
 uniform vec3 view_pos;
 
 uniform sampler2D texture_diffuse1;
