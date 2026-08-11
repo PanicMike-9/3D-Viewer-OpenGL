@@ -196,10 +196,21 @@ int main()
         shader.set_mat4("view", view);
         shader.set_mat4("projection", projection);
 
+        glm::vec3 light_color;
+
+        // multiple colors for presentation
+        light_color.x = sin(glfwGetTime() * 2.0f);
+        light_color.y = cos(glfwGetTime() * 0.7f);
+        light_color.z = sin(glfwGetTime() * 1.3f);
+
+        glm::vec3 diffuse_color  = light_color * glm::vec3(0.5f);
+        glm::vec3 ambient_color  = light_color * glm::vec3(0.2f);
+        glm::vec3 specular_color = light_color * glm::vec3(1.0f);
+
         // ambient light color (??)
-        shader.set_vec3("light.ambient", glm::vec3(0.5f));
-        shader.set_vec3("light.diffuse", glm::vec3(0.5f));
-        shader.set_vec3("light.specular", glm::vec3(1.0f));
+        shader.set_vec3("light.ambient", ambient_color);
+        shader.set_vec3("light.diffuse", diffuse_color);
+        shader.set_vec3("light.specular", specular_color);
 
         // orbiting light position
         // glm::vec3 light_pos = glm::vec3(sin(glfwGetTime()) * 2.0f, 0.0f, cos(glfwGetTime()) * 2.0f);
