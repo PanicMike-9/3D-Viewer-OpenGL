@@ -196,18 +196,20 @@ int main()
         shader.set_mat4("view", view);
         shader.set_mat4("projection", projection);
 
-        glm::vec3 light_color;
+        // while light color
+        glm::vec3 light_color = glm::vec3(1.0f);
 
+        #if 0
         // multiple colors for presentation
         light_color.x = sin(glfwGetTime() * 2.0f);
         light_color.y = cos(glfwGetTime() * 0.7f);
         light_color.z = sin(glfwGetTime() * 1.3f);
+        #endif
 
-        glm::vec3 diffuse_color  = light_color * glm::vec3(0.5f);
-        glm::vec3 ambient_color  = light_color * glm::vec3(0.2f);
-        glm::vec3 specular_color = light_color * glm::vec3(1.0f);
+        glm::vec3 ambient_color  = light_color * glm::vec3(0.1f); // shadow brightness
+        glm::vec3 diffuse_color  = light_color * glm::vec3(0.8f); // direct surface light 
+        glm::vec3 specular_color = light_color * glm::vec3(1.0f); // brightness of shine
 
-        // ambient light color (??)
         shader.set_vec3("light.ambient", ambient_color);
         shader.set_vec3("light.diffuse", diffuse_color);
         shader.set_vec3("light.specular", specular_color);
@@ -220,10 +222,16 @@ int main()
         shader.set_vec3("view_pos", camera.position);
 
         // material properties
-        shader.set_vec3("material.ambient", glm::vec3(1.0f, 0.5f, 0.3f));
-        shader.set_vec3("material.diffuse", glm::vec3(1.0f, 0.5f, 0.3f));
-        shader.set_vec3("material.specular", glm::vec3(0.5f));
-        shader.set_float("material.shine", 32.0f);
+        // replicating polished gold ingot
+        glm::vec3 mat_ambient = glm::vec3(0.247f, 0.199f, 0.074f); // base unlit color
+        glm::vec3 mat_diffuse = glm::vec3(0.35f, 0.25f, 0.1f); // base surface color
+        glm::vec3 mat_specular = glm::vec3(0.797f, 0.725f, 0.258f); // reflection intesity
+        float shininess = 64.0f;
+
+        shader.set_vec3("material.ambient", mat_ambient);
+        shader.set_vec3("material.diffuse", mat_diffuse);
+        shader.set_vec3("material.specular", mat_specular);
+        shader.set_float("material.shine", shininess);
 
         // render the model poly-human 1
         glm::mat4 model = glm::mat4(1.0f);
