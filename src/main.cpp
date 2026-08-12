@@ -140,7 +140,7 @@ int main()
 
     Model hum_model_1("assets/models/low_poly_human/scene.gltf");
     Model hum_model_2("assets/models/low_poly_human/scene.gltf");
-    Model cone("assets/models/road_cone/road_cone.gltf");
+    Model suzanne("assets/models/suzanne/suzanne.gltf");
 
     // angle for rotation
     float angle = 0.0f;
@@ -219,6 +219,7 @@ int main()
 
         // position the light vector
         shader.set_vec3("light.position", glm::vec3(0.0f, 1.0f, 0.0f));
+
         shader.set_vec3("view_pos", camera.position);
 
         // material properties
@@ -259,13 +260,15 @@ int main()
         hum_model_2.draw(shader);
 
         #if 0
-        // render cone model
+        // suzanne model is buggy
         model = glm::mat4(1.0f);
         model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
-        model = glm::scale(model, glm::vec3(0.005f));
+        model = glm::scale(model, glm::vec3(0.1f));
+
+        model = glm::rotate(model, rotate_by, glm::vec3(0.0f, 1.0f, 0.0f));
 
         shader.set_mat4("model", model);
-        cone.draw(shader);
+        suzanne.draw(shader);
         #endif
 
         framebuffer_size_callback(window, win_width, win_height);
