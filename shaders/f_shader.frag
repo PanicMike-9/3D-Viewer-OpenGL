@@ -7,8 +7,9 @@ in vec2 TexCoords;
 
 struct Material
 {
-    vec3 ambient;
+    sampler2D diffuse;
     vec3 diffuse;
+    vec3 ambient;
     vec3 specular;
     float shine;
 };
