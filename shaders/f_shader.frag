@@ -7,12 +7,12 @@ in vec2 TexCoords;
 
 struct Material
 {
-    sampler2D diffuse;
-    vec3 diffuse;
     vec3 ambient;
+    sampler2D texture_diffuse1;
     vec3 specular;
     float shine;
 };
+uniform Material material;
 
 struct Light 
 {
@@ -21,17 +21,13 @@ struct Light
     vec3 diffuse;
     vec3 specular;
 };
-
-uniform Material material;
 uniform Light light;
 
 uniform vec3 view_pos;
 
-uniform sampler2D texture_diffuse1;
-
 void main()
 {
-    vec3 model_color = texture(texture_diffuse1, TexCoords).rgb;
+    vec3 model_color = texture(material.texture_diffuse1, TexCoords).rgb;
 
     vec3 norm = normalize(Normal);
     vec3 light_dir = normalize(light.position - FragPos);
