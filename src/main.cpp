@@ -223,14 +223,13 @@ int main()
         shader.set_vec3("view_pos", camera.position);
 
         // material properties
-        // replicating polished gold ingot
-        glm::vec3 mat_ambient = glm::vec3(0.247f, 0.199f, 0.074f); // base unlit color
-        glm::vec3 mat_diffuse = glm::vec3(0.35f, 0.25f, 0.1f); // base surface color
-        glm::vec3 mat_specular = glm::vec3(0.797f, 0.725f, 0.258f); // reflection intesity
+        glm::vec3 mat_ambient = glm::vec3(1.0f); // base unlit color
+        int mat_diffuse = 0;
+        glm::vec3 mat_specular = glm::vec3(0.8f); // reflection intesity
         float shininess = 64.0f;
 
         shader.set_vec3("material.ambient", mat_ambient);
-        shader.set_vec3("material.diffuse", mat_diffuse);
+        shader.set_int("material.texture_diffuse1", mat_diffuse);
         shader.set_vec3("material.specular", mat_specular);
         shader.set_float("material.shine", shininess);
 
