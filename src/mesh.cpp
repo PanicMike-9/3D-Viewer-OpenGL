@@ -43,7 +43,7 @@ void Mesh::setup_mesh()
 }
 
 // render textures and geometry
-void Mesh::draw(Shader &shader)
+void Mesh::draw(Shader& shader)
 {
     unsigned int diffuse_nr  = 1;
     unsigned int specular_nr = 1;
