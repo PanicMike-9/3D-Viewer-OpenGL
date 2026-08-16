@@ -223,12 +223,10 @@ int main()
         shader.set_vec3("view_pos", camera.position);
 
         // material properties
-        glm::vec3 mat_ambient = glm::vec3(1.0f); // base unlit color
         int mat_diffuse = 0;
         int mat_specular = 1; 
-        float shininess = 64.0f;
+        float shininess = 128.0f;
 
-        shader.set_vec3("material.ambient", mat_ambient);
         shader.set_int("material.texture_diffuse1", mat_diffuse);
         shader.set_int("material.texture_specular1", mat_specular);
         shader.set_float("material.shine", shininess);
