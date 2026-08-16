@@ -40,7 +40,7 @@ void main()
     float diff = max(dot(norm, light_dir), 0.0);
     vec3 diffuse = light.diffuse * diff * model_color_diff;
 
-
+    // backface light leaks protection
     vec3 specular = vec3(0.0);
     if (diff > 0.0)
     {
