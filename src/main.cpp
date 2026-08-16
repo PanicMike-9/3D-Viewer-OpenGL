@@ -225,12 +225,12 @@ int main()
         // material properties
         glm::vec3 mat_ambient = glm::vec3(1.0f); // base unlit color
         int mat_diffuse = 0;
-        glm::vec3 mat_specular = glm::vec3(0.8f); // reflection intesity
+        int mat_specular = 1; 
         float shininess = 64.0f;
 
         shader.set_vec3("material.ambient", mat_ambient);
         shader.set_int("material.texture_diffuse1", mat_diffuse);
-        shader.set_vec3("material.specular", mat_specular);
+        shader.set_int("material.texture_specular1", mat_specular);
         shader.set_float("material.shine", shininess);
 
         // render the model poly-human 1
@@ -239,7 +239,7 @@ int main()
         model = glm::scale(model, glm::vec3(0.2f)); // model size/scale
 
         // model rotation speed
-        float rotate_by = glfwGetTime() * 1.0f;
+        float rotate_by = glfwGetTime() * 0.5f;
 
         // rotate the model on y-axis, for presentation
         model = glm::rotate(model, rotate_by, glm::vec3(0.0f, 1.0f, 0.0f));
