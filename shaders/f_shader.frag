@@ -7,9 +7,8 @@ in vec2 TexCoords;
 
 struct Material
 {
-    vec3 ambient;
     sampler2D texture_diffuse1;
-    vec3 specular;
+    sampler2D texture_specular1;
     float shine;
 };
 uniform Material material;
@@ -27,22 +26,29 @@ uniform vec3 view_pos;
 
 void main()
 {
-    vec3 model_color = texture(material.texture_diffuse1, TexCoords).rgb;
+    vec4 diff_sample = texture(material.texture_diffuse1, TexCoords);
+    vec3 model_color_diff = diff_sample.rgb;
+    vec3 model_color_spec = texture(material.texture_specular1, TexCoords).rgb;
 
     vec3 norm = normalize(Normal);
     vec3 light_dir = normalize(light.position - FragPos);
     vec3 view_dir = normalize(view_pos - FragPos);
     vec3 reflect_dir = reflect(-light_dir, norm);
 
-    vec3 ambient = light.ambient * model_color;
+    vec3 ambient = light.ambient * model_color_diff;
 
     float diff = max(dot(norm, light_dir), 0.0);
-    vec3 diffuse = light.diffuse * diff * model_color;
+    vec3 diffuse = light.diffuse * diff * model_color_diff;
 
-    float spec = pow(max(dot(view_dir, reflect_dir), 0.0), material.shine);
 
-    vec3 specular = light.specular * (spec * material.specular);
+    vec3 specular = vec3(0.0);
+    if (diff > 0.0)
+    {
+        float shine_clamp = max(material.shine, 1.0);
+        float spec = pow(max(dot(view_dir, reflect_dir), 0.0), shine_clamp);
+        specular = light.specular * (spec * model_color_spec);
+    }
 
     vec3 result = ambient + diffuse + specular;
-    FragColor = vec4(result, 1.0);
+    FragColor = vec4(result, diff_sample.a); // .a preserves alpha channel
 }
