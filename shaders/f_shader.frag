@@ -31,8 +31,10 @@ void main()
     vec3 model_color_diff = diff_sample.rgb;
     vec3 model_color_spec = texture(material.texture_specular1, TexCoords).rgb;
 
+    // vec3 light_dir = normalize(light.position - FragPos); // no longer needed with directional light
+
     vec3 norm = normalize(Normal);
-    vec3 light_dir = normalize(light.position - FragPos);
+    vec3 light_dir = normalize(-light.direction); // directional light
     vec3 view_dir = normalize(view_pos - FragPos);
     vec3 reflect_dir = reflect(-light_dir, norm);
 
