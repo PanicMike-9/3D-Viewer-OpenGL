@@ -210,6 +210,9 @@ int main()
         glm::vec3 diffuse_color  = light_color * glm::vec3(0.8f); // direct surface light 
         glm::vec3 specular_color = light_color * glm::vec3(1.0f); // brightness of shine
 
+        // set directional light vector
+        shader.set_vec3("light.direction", glm::vec3(-0.2f, -1.0f, -0.3f));
+
         shader.set_vec3("light.ambient", ambient_color);
         shader.set_vec3("light.diffuse", diffuse_color);
         shader.set_vec3("light.specular", specular_color);
@@ -219,9 +222,6 @@ int main()
 
         // position the light vector (not required anymore)
         // shader.set_vec3("light.position", glm::vec3(0.0f, 1.0f, 0.0f));
-
-        // set directional light vector
-        shader.set_vec3("light.direction", glm::vec3(-0.2f, -1.0f, -0.3f));
 
         shader.set_vec3("view_pos", camera.position);
 
@@ -242,7 +242,7 @@ int main()
         // model rotation speed
         float rotate_by = glfwGetTime() * 0.5f;
 
-        // rotate the model on y-axis, for presentation
+        // rotate the model on y-axis, for presentation 
         model = glm::rotate(model, rotate_by, glm::vec3(0.0f, 1.0f, 0.0f));
 
         shader.set_mat4("model", model);
