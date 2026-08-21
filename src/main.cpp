@@ -224,6 +224,7 @@ int main()
         // glm::vec3 light_pos = glm::vec3(sin(glfwGetTime()) * 2.0f, 0.0f, cos(glfwGetTime()) * 2.0f);
 
         shader.set_vec3("view_pos", camera.position);
+        // sick commit
 
         // material properties
         int mat_diffuse = 0;
