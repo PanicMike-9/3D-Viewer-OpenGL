@@ -37,8 +37,8 @@ void main()
 
 
     vec3 norm = normalize(Normal);
-    vec3 light_dir = normalize(-light.direction); // directional light
-    // vec3 light_dir = normalize(light.position - FragPos); // point light
+    // vec3 light_dir = normalize(-light.direction); // directional light
+    vec3 light_dir = normalize(light.position - FragPos); // point light
     vec3 view_dir = normalize(view_pos - FragPos);
     vec3 reflect_dir = reflect(-light_dir, norm);
 
