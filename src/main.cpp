@@ -211,20 +211,26 @@ int main()
         glm::vec3 specular_color = light_color * glm::vec3(1.0f); // brightness of shine
 
         // set directional light vector
-        shader.set_vec3("light.direction", glm::vec3(-0.2f, -1.0f, -0.3f)); 
+        // shader.set_vec3("light.direction", glm::vec3(-0.2f, -1.0f, -0.3f)); 
 
         // set point light
-        // shader.set_vec3("light.position", glm::vec3(0.0f, 1.0f, 0.0f));
+        shader.set_vec3("light.position", glm::vec3(1.2f, 1.0f, 10.0f));
 
         shader.set_vec3("light.ambient", ambient_color);
         shader.set_vec3("light.diffuse", diffuse_color);
         shader.set_vec3("light.specular", specular_color);
 
+        #if 1
+        // light attenuation values
+        shader.set_float("light.constant", 1.0f);
+        shader.set_float("light.linear", 0.009f);
+        shader.set_float("light.quadratic", 0.032f);
+        #endif
+
         // orbiting light position
         // glm::vec3 light_pos = glm::vec3(sin(glfwGetTime()) * 2.0f, 0.0f, cos(glfwGetTime()) * 2.0f);
 
         shader.set_vec3("view_pos", camera.position);
-        // sick commit
 
         // material properties
         int mat_diffuse = 0;
