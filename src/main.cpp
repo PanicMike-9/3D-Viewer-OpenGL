@@ -214,7 +214,7 @@ int main()
         // shader.set_vec3("light.direction", glm::vec3(-0.2f, -1.0f, -0.3f)); 
 
         // set point light
-        shader.set_vec3("light.position", glm::vec3(1.2f, 1.0f, 10.0f));
+        shader.set_vec3("light.position", glm::vec3(0.0f));
 
         shader.set_vec3("light.ambient", ambient_color);
         shader.set_vec3("light.diffuse", diffuse_color);
@@ -247,7 +247,7 @@ int main()
         model = glm::scale(model, glm::vec3(0.2f)); // model size/scale
 
         // model rotation speed
-        float rotate_by = glfwGetTime() * 0.5f;
+        float rotate_by = glfwGetTime() * 0.8f;
 
         // rotate the model on y-axis, for presentation 
         model = glm::rotate(model, rotate_by, glm::vec3(0.0f, 1.0f, 0.0f));
