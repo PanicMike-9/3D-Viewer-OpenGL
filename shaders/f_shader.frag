@@ -15,15 +15,19 @@ uniform Material material;
 
 struct Light 
 {
-    vec3 position;
-    vec3 direction;
+    vec3 position; // for point light
+    vec3 direction; // for directional light
     vec3 ambient;
     vec3 diffuse;
     vec3 specular;
 
+    // point light values
     float constant;
     float linear;
     float quadratic;
+
+    // spot light value(s)
+    float cut_off;
 };
 uniform Light light;
 
