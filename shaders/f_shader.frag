@@ -28,6 +28,7 @@ struct Light
 
     // spot light value(s)
     float cut_off;
+    float outer_cut_off;
 };
 uniform Light light;
 
@@ -60,10 +61,18 @@ void main()
         specular = light.specular * (spec * model_color_spec);
     }
 
+    // spot light calculation
+    float theta = dot(light_dir, normalize(-light.direction));
+    float epsilon = light.cut_off - light.outer_cut_off;
+    float intensity = clamp((theta - light.outer_cut_off) / epsilon, 0.0, 1.0);
+
+    diffuse  *= intensity;
+    specular *= intensity;
+
     // point light calculation
     float distance = length(light.position - FragPos);
     float attenuation = 1.0 / (light.constant + light.linear * distance + light.quadratic * 
-                        (distance * distance));
+                              (distance * distance));
 
     ambient  *= attenuation;
     diffuse  *= attenuation;
