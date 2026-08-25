@@ -17,14 +17,10 @@
 #include "model.hpp"
 #include "mesh.hpp"
 
-//Model model;
-
 // window height, width and aspect ratio values
 constexpr const float win_width = 1920.0f;
 constexpr const float win_height = 1080.0f;
 constexpr const float win_aspect = win_width / win_height;
-
-constexpr const double PI = 3.141592653589793; 
 
 // exit window with q or esc keys
 void exit_window(GLFWwindow* window)
@@ -46,10 +42,9 @@ bool first_mouse = true;
 
 void mouse_callback(GLFWwindow* window, double x_pos, double y_pos)
 {
-    // create camera pointer
     Camera* cam = static_cast<Camera*>(glfwGetWindowUserPointer(window));
 
-    // check if this is the first time receiving mouse input
+    // check first time receiving mouse input
     if(first_mouse)
     {
         last_x = x_pos;
@@ -78,39 +73,33 @@ void scroll_callback(GLFWwindow* window, double x_offset, double y_offset)
 }
 
 // control camera with WASD
-void camera_controller(GLFWwindow* window, Camera &camera, float delta_time)
+void camera_controller(GLFWwindow* window, Camera& camera, float delta_time)
 {
-    // move forward with W key
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
     {
         camera.process_keyboard(camera_movement::FORWARD, delta_time);
     }
 
-    // move forward with A key
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
     {
         camera.process_keyboard(camera_movement::LEFT, delta_time);
     }
 
-    // move forward with S key
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
     {
         camera.process_keyboard(camera_movement::BACKWARD, delta_time);
     }
 
-    // move forward with D key
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
     {
         camera.process_keyboard(camera_movement::RIGHT, delta_time);
     }
 }
 
-// main
 int main()
 {
     glfwInit();
 
-    // declare window name and size
     GLFWwindow* window = glfwCreateWindow(win_width, win_height, "Test Lighting", nullptr, nullptr);
 
     if (!window)
@@ -133,7 +122,7 @@ int main()
 
     std::cout << "GLAD Loaded\n";
 
-    //stbi_set_flip_vertically_on_load(true);
+    // stbi_set_flip_vertically_on_load(true);
 
     // shader code files
     Shader shader("shaders/v_shader.vert", "shaders/f_shader.frag");
@@ -142,13 +131,7 @@ int main()
     Model hum_model_2("assets/models/low_poly_human/scene.gltf");
     // Model suzanne("assets/models/suzanne/suzanne.gltf");
 
-    // angle for rotation
-    float angle = 0.0f;
-
-    // speed for rotation
-    float speed = 0.0f;
-
-    // for consistent timing 
+    // for consistent frame-rate 
     float delta_time = 0.0f;
     float last_frame = 0.0f;
 
@@ -172,7 +155,7 @@ int main()
     // window background color
     glClearColor(0.1f, 0.1f, 0.1f, 1.0f); 
 
-    // main window loop
+    // main render loop
     while (!glfwWindowShouldClose(window))
     {
         // calculate delta time 
@@ -182,14 +165,15 @@ int main()
 
         exit_window(window); // exit window using q or esc key
 
-        // window background color
+        // clear screen's color memory to background color
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // return the view values
         glm::mat4 view = camera.get_view_matrix();
         glm::mat4 projection = camera.get_projection_matrix(win_aspect);
 
-        shader.use(); // shader code
+        // shader code (make sure to call at the top)
+        shader.use(); 
 
         camera_controller(window, camera, delta_time);
 
@@ -212,12 +196,11 @@ int main()
 
         // set directional light vector with a single value
         // shader.set_vec3("light.direction", glm::vec3(-0.2f, -1.0f, -0.3f));
+        // set point light
+        // shader.set_vec3("light.position", glm::vec3(0.0f));
 
         // light direction relative to camera 
         shader.set_vec3("light.direction", camera.front); 
-
-        // set point light
-        // shader.set_vec3("light.position", glm::vec3(0.0f));
 
         // light position relative to camera position
         shader.set_vec3("light.position", camera.position);
