@@ -210,14 +210,23 @@ int main()
         glm::vec3 diffuse_color  = light_color * glm::vec3(0.8f); // direct surface light 
         glm::vec3 specular_color = light_color * glm::vec3(1.0f); // brightness of shine
 
-        // set directional light vector
-        // shader.set_vec3("light.direction", glm::vec3(-0.2f, -1.0f, -0.3f)); 
+        // set directional light vector with a single value
+        // shader.set_vec3("light.direction", glm::vec3(-0.2f, -1.0f, -0.3f));
+
+        // light direction relative to camera 
+        shader.set_vec3("light.direction", camera.front); 
 
         // set point light
-        shader.set_vec3("light.position", glm::vec3(0.0f));
+        // shader.set_vec3("light.position", glm::vec3(0.0f));
 
-        // set the cut off value 
+        // light position relative to camera position
+        shader.set_vec3("light.position", camera.position);
+
+        // set spot light float values
+        #if 1
         shader.set_float("light.cut_off", glm::cos(glm::radians(12.5f))); 
+        shader.set_float("light.outer_cut_off", glm::cos(glm::radians(17.5f))); 
+        #endif
 
         shader.set_vec3("light.ambient", ambient_color);
         shader.set_vec3("light.diffuse", diffuse_color);
