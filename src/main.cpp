@@ -216,6 +216,9 @@ int main()
         // set point light
         shader.set_vec3("light.position", glm::vec3(0.0f));
 
+        // set the cut off value 
+        shader.set_float("light.cut_off", glm::cos(glm::radians(12.5f))); 
+
         shader.set_vec3("light.ambient", ambient_color);
         shader.set_vec3("light.diffuse", diffuse_color);
         shader.set_vec3("light.specular", specular_color);
