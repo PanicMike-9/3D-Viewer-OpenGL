@@ -111,7 +111,7 @@ int main()
     glfwInit();
 
     // declare window name and size
-    GLFWwindow* window = glfwCreateWindow(win_width, win_height, "Test Lighting", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(win_width, win_height, "Test Lighting", nullptr, nullptr);
 
     if (!window)
     {
@@ -140,7 +140,7 @@ int main()
 
     Model hum_model_1("assets/models/low_poly_human/scene.gltf");
     Model hum_model_2("assets/models/low_poly_human/scene.gltf");
-    Model suzanne("assets/models/suzanne/suzanne.gltf");
+    // Model suzanne("assets/models/suzanne/suzanne.gltf");
 
     // angle for rotation
     float angle = 0.0f;
