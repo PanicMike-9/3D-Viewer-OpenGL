@@ -15,13 +15,28 @@ uniform Material material;
 
 struct DirectLight
 {
+    vec3 direction;
+
+    vec3 ambient;
+    vec3 diffuse;
+    vec3 specular;
 };
 uniform DirectLight dir_light;
 
 struct PointLight
 {
+    vec3 position;
+
+    vec3 ambient;
+    vec3 diffuse;
+    vec3 specular;
+
+    float constant;
+    float linear;
+    float quadratic;
 };
-uniform PointLight point_light;
+#define POINT_LIGHTS 4
+uniform PointLight point_light[POINT_LIGHTS];
 
 struct Light 
 {
@@ -44,16 +59,50 @@ uniform Light light;
 
 uniform vec3 view_pos;
 
+vec3 calc_directional_light(DirectLight light, vec3 normal, vec3 view_dir)
+{
+    // texture color based on material's texture diffuse and specular
+    //vec4 diff_sample = texture(material.texture_diffuse1, TexCoords);
+
+    vec3 model_color_diff = texture(material.texture_diffuse1, TexCoords).rgb;
+    vec3 model_color_spec = texture(material.texture_specular1, TexCoords).rgb;
+
+    vec3 light_dir = normalize(-light.direction); 
+    float diff = max(dot(normal, light_dir), 0.0);
+    vec3 reflect_dir = reflect(-light_dir, normal);
+
+    vec3 ambient = light.ambient * model_color_diff;
+    vec3 diffuse = light.diffuse * (diff * model_color_diff);
+    vec3 specular = vec3(0.0);
+
+    // backface light leaks protection
+    if (diff > 0.0)
+    {
+        float shine_clamp = max(material.shine, 1.0);
+        float spec = pow(max(dot(view_dir, reflect_dir), 0.0), shine_clamp);
+        specular = light.specular * (spec * model_color_spec);
+    }
+
+    return (ambient + specular + diffuse);
+}
+vec3 calc_point_light(PointLight light, vec3 normal, vec3 frag_pos, vec3 view_dir);
+
 void main()
 {
+    vec3 norm = normalize(Normal);
+    vec3 view_dir = normalize(view_pos - FragPos);
+
+    vec3 result = calc_directional_light(dir_light, norm, view_dir);
+    FragColor = vec4(result, 1.0); 
+}
+/*
+    #if 0
     vec4 diff_sample = texture(material.texture_diffuse1, TexCoords);
     vec3 model_color_diff = diff_sample.rgb;
     vec3 model_color_spec = texture(material.texture_specular1, TexCoords).rgb;
 
-    vec3 norm = normalize(Normal);
     // vec3 light_dir = normalize(-light.direction); // directional light
     vec3 light_dir = normalize(light.position - FragPos); // point light
-    vec3 view_dir = normalize(view_pos - FragPos);
     vec3 reflect_dir = reflect(-light_dir, norm);
 
     vec3 ambient = light.ambient * model_color_diff;
@@ -89,4 +138,5 @@ void main()
 
     vec3 result = ambient + diffuse + specular;
     FragColor = vec4(result, diff_sample.a); // .a preserves alpha channel
-}
+    #endif
+*/
