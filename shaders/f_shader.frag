@@ -13,15 +13,13 @@ struct Material
 };
 uniform Material material;
 
-struct DirectionalLight
+struct DirectLight
 {
-
 };
-uniform DirectionalLight dir_light;
+uniform DirectLight dir_light;
 
 struct PointLight
 {
-
 };
 uniform PointLight point_light;
 
@@ -52,7 +50,6 @@ void main()
     vec3 model_color_diff = diff_sample.rgb;
     vec3 model_color_spec = texture(material.texture_specular1, TexCoords).rgb;
 
-
     vec3 norm = normalize(Normal);
     // vec3 light_dir = normalize(-light.direction); // directional light
     vec3 light_dir = normalize(light.position - FragPos); // point light
@@ -77,7 +74,7 @@ void main()
     float theta = dot(light_dir, normalize(-light.direction));
     float epsilon = light.cut_off - light.outer_cut_off;
     float intensity = clamp((theta - light.outer_cut_off) / epsilon, 0.0, 1.0);
-
+    
     diffuse  *= intensity;
     specular *= intensity;
 
