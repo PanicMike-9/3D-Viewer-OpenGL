@@ -13,6 +13,18 @@ struct Material
 };
 uniform Material material;
 
+struct DirectionalLight
+{
+
+};
+uniform DirectionalLight dir_light;
+
+struct PointLight
+{
+
+};
+uniform PointLight point_light;
+
 struct Light 
 {
     vec3 position; // for point light
