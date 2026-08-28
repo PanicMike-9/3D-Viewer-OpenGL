@@ -9,7 +9,6 @@
 
 // basic C++ libs
 #include <iostream>
-#include <vector>
 
 // header files
 #include "shader.hpp"
