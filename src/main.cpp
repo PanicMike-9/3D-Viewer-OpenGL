@@ -18,9 +18,9 @@
 #include "mesh.hpp"
 
 // window height, width and aspect ratio values
-constexpr const float win_width = 1920.0f;
-constexpr const float win_height = 1080.0f;
-constexpr const float win_aspect = win_width / win_height;
+static constexpr float WIN_WIDTH = 1920.0f;
+static constexpr float WIN_HEIGHT = 1080.0f;
+static constexpr float WIN_ASPECT = WIN_WIDTH / WIN_HEIGHT;
 
 // exit window with q or esc keys
 void exit_window(GLFWwindow* window)
@@ -36,8 +36,8 @@ void framebuffer_size_callback(GLFWwindow* window, float width, float height)
 }
 
 // cursor to the center of the window
-float last_x = win_width / 2.0f;
-float last_y = win_height / 2.0f;
+float last_x = WIN_WIDTH / 2.0f;
+float last_y = WIN_HEIGHT / 2.0f;
 bool first_mouse = true;
 
 void mouse_callback(GLFWwindow* window, double x_pos, double y_pos)
@@ -100,7 +100,7 @@ int main()
 {
     glfwInit();
 
-    GLFWwindow* window = glfwCreateWindow(win_width, win_height, "Test Lighting", nullptr, nullptr);
+    GLFWwindow* window = glfwCreateWindow(WIN_WIDTH, WIN_HEIGHT, "Test Lighting", nullptr, nullptr);
 
     if (!window)
     {
@@ -170,7 +170,7 @@ int main()
 
         // return the view values
         glm::mat4 view = camera.get_view_matrix();
-        glm::mat4 projection = camera.get_projection_matrix(win_aspect);
+        glm::mat4 projection = camera.get_projection_matrix(WIN_ASPECT);
 
         // shader code (make sure to call at the top)
         shader.use(); 
@@ -180,7 +180,7 @@ int main()
         shader.set_mat4("view", view);
         shader.set_mat4("projection", projection);
 
-        // while light color
+        // white light color
         glm::vec3 light_color = glm::vec3(1.0f);
 
         #if 0
@@ -188,16 +188,9 @@ int main()
         light_color.x = sin(glfwGetTime() * 2.0f);
         light_color.y = cos(glfwGetTime() * 0.7f);
         light_color.z = sin(glfwGetTime() * 1.3f);
-        #endif
 
-        glm::vec3 ambient_color  = light_color * glm::vec3(0.1f); // shadow brightness
-        glm::vec3 diffuse_color  = light_color * glm::vec3(0.8f); // direct surface light 
-        glm::vec3 specular_color = light_color * glm::vec3(1.0f); // brightness of shine
-
-        // set directional light vector with a single value
-        // shader.set_vec3("light.direction", glm::vec3(-0.2f, -1.0f, -0.3f));
         // set point light
-        // shader.set_vec3("light.position", glm::vec3(0.0f));
+        shader.set_vec3("light.position", glm::vec3(0.0f));
 
         // light direction relative to camera 
         shader.set_vec3("light.direction", camera.front); 
@@ -206,26 +199,32 @@ int main()
         shader.set_vec3("light.position", camera.position);
 
         // set spot light float values
-        #if 1
         shader.set_float("light.cut_off", glm::cos(glm::radians(12.5f))); 
         shader.set_float("light.outer_cut_off", glm::cos(glm::radians(17.5f))); 
-        #endif
-
         shader.set_vec3("light.ambient", ambient_color);
         shader.set_vec3("light.diffuse", diffuse_color);
         shader.set_vec3("light.specular", specular_color);
 
-        #if 1
         // light attenuation values
         shader.set_float("light.constant", 1.0f);
         shader.set_float("light.linear", 0.009f);
         shader.set_float("light.quadratic", 0.032f);
-        #endif
 
         // orbiting light position
-        // glm::vec3 light_pos = glm::vec3(sin(glfwGetTime()) * 2.0f, 0.0f, cos(glfwGetTime()) * 2.0f);
+        glm::vec3 light_pos = glm::vec3(sin(glfwGetTime()) * 2.0f, 0.0f, cos(glfwGetTime()) * 2.0f);
+        #endif
 
         shader.set_vec3("view_pos", camera.position);
+
+        glm::vec3 ambient_color  = light_color * glm::vec3(0.1f); // shadow brightness
+        glm::vec3 diffuse_color  = light_color * glm::vec3(0.8f); // direct surface light 
+        glm::vec3 specular_color = light_color * glm::vec3(1.0f); // brightness of shine
+
+        // set directional light vectors 
+        shader.set_vec3("dir_light.direction", glm::vec3(-0.2f, -1.0f, -0.3f));
+        shader.set_vec3("dir_light.ambient", ambient_color);
+        shader.set_vec3("dir_light.diffuse", diffuse_color);
+        shader.set_vec3("dir_light.specular", specular_color);
 
         // material properties
         int mat_diffuse = 0;
@@ -273,7 +272,7 @@ int main()
         suzanne.draw(shader);
         #endif
 
-        framebuffer_size_callback(window, win_width, win_height);
+        framebuffer_size_callback(window, WIN_WIDTH, WIN_HEIGHT);
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
