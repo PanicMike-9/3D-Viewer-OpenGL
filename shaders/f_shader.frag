@@ -62,8 +62,6 @@ uniform vec3 view_pos;
 vec3 calc_directional_light(DirectLight light, vec3 normal, vec3 view_dir)
 {
     // texture color based on material's texture diffuse and specular
-    //vec4 diff_sample = texture(material.texture_diffuse1, TexCoords);
-
     vec3 model_color_diff = texture(material.texture_diffuse1, TexCoords).rgb;
     vec3 model_color_spec = texture(material.texture_specular1, TexCoords).rgb;
 
@@ -87,7 +85,7 @@ vec3 calc_directional_light(DirectLight light, vec3 normal, vec3 view_dir)
 }
 vec3 calc_point_light(PointLight light, vec3 normal, vec3 frag_pos, vec3 view_dir)
 {
-
+    // texture color based on material's texture diffuse and specular
     vec3 model_color_diff = texture(material.texture_diffuse1, TexCoords).rgb;
     vec3 model_color_spec = texture(material.texture_specular1, TexCoords).rgb;
 
