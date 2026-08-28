@@ -155,6 +155,14 @@ int main()
     // window background color
     glClearColor(0.1f, 0.1f, 0.1f, 1.0f); 
 
+    glm::vec3 point_lights_pos[4] =
+    {
+        glm::vec3( 2.0f,  3.0f, 0.0f),
+        glm::vec3(-2.0f,  3.0f, 0.0f),
+        glm::vec3( 2.0f,  3.0f, 1.0f),
+        glm::vec3(-2.0f,  3.0f, 1.0f),
+    };
+
     // main render loop
     while (!glfwWindowShouldClose(window))
     {
@@ -179,9 +187,6 @@ int main()
 
         shader.set_mat4("view", view);
         shader.set_mat4("projection", projection);
-
-        // white light color
-        glm::vec3 light_color = glm::vec3(1.0f);
 
         #if 0
         // multiple colors for presentation
@@ -216,15 +221,74 @@ int main()
 
         shader.set_vec3("view_pos", camera.position);
 
-        glm::vec3 ambient_color  = light_color * glm::vec3(0.1f); // shadow brightness
-        glm::vec3 diffuse_color  = light_color * glm::vec3(0.8f); // direct surface light 
-        glm::vec3 specular_color = light_color * glm::vec3(1.0f); // brightness of shine
+        // white light color
+        glm::vec3 light_color = glm::vec3(1.0f);
 
+        glm::vec3 ambient_color  = light_color * glm::vec3(0.05f); // shadow brightness
+        glm::vec3 diffuse_color  = light_color * glm::vec3(0.4f); // direct surface light 
+        glm::vec3 specular_color = light_color * glm::vec3(0.5f); // brightness of shine
+
+        #if 0 
+        // turn on directional light 0
         // set directional light vectors 
         shader.set_vec3("dir_light.direction", glm::vec3(-0.2f, -1.0f, -0.3f));
         shader.set_vec3("dir_light.ambient", ambient_color);
         shader.set_vec3("dir_light.diffuse", diffuse_color);
         shader.set_vec3("dir_light.specular", specular_color);
+        #endif
+
+        // ------ point light 1 ------
+        // set point light vector
+        shader.set_vec3("point_lights[0].position", point_lights_pos[0]);
+
+        // set point light shading components (basic values for testing)
+        // red color light just for point light[0] to test
+        shader.set_vec3("point_lights[0].ambient", glm::vec3(1.0f, 0.0f, 0.0f) *
+                                                   glm::vec3(0.05f)); 
+
+        shader.set_vec3("point_lights[0].diffuse", glm::vec3(1.0f, 0.0f, 0.0f) *
+                                                   glm::vec3(0.4f));
+
+        shader.set_vec3("point_lights[0].specular",glm::vec3(1.0f, 0.0f, 0.0f) *
+                                                   glm::vec3(0.5f));
+
+        // set point light attenuation values
+        shader.set_float("point_lights[0].constant", 1.0f);
+        shader.set_float("point_lights[0].linear", 0.009f);
+        shader.set_float("point_lights[0].quadratic", 0.032f);
+
+        // ------ point light 2 ------
+        shader.set_vec3("point_lights[1].position", point_lights_pos[1]);
+
+        shader.set_vec3("point_lights[1].ambient", ambient_color);
+        shader.set_vec3("point_lights[1].diffuse", diffuse_color);
+        shader.set_vec3("point_lights[1].specular", specular_color);
+
+        shader.set_float("point_lights[1].constant", 1.0f);
+        shader.set_float("point_lights[1].linear", 0.009f);
+        shader.set_float("point_lights[1].quadratic", 0.032f);
+
+        // ------ point light 3 ------
+        shader.set_vec3("point_lights[2].position", point_lights_pos[2]);
+
+        shader.set_vec3("point_lights[2].ambient", ambient_color);
+        shader.set_vec3("point_lights[2].diffuse", diffuse_color);
+        shader.set_vec3("point_lights[2].specular", specular_color);
+
+        shader.set_float("point_lights[2].constant", 1.0f);
+        shader.set_float("point_lights[2].linear", 0.009f);
+        shader.set_float("point_lights[2].quadratic", 0.032f);
+
+        // ------ point light 4 ------
+        shader.set_vec3("point_lights[3].position", point_lights_pos[3]);
+
+        shader.set_vec3("point_lights[3].ambient", ambient_color);
+        shader.set_vec3("point_lights[3].diffuse", diffuse_color);
+        shader.set_vec3("point_lights[3].specular", specular_color);
+
+        shader.set_float("point_lights[3].constant", 1.0f);
+        shader.set_float("point_lights[3].linear", 0.009f);
+        shader.set_float("point_lights[3].quadratic", 0.032f);
 
         // material properties
         int mat_diffuse = 0;
