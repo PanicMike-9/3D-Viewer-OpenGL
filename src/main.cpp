@@ -227,7 +227,7 @@ int main()
         glm::vec3 diffuse_color  = light_color * glm::vec3(0.4f); // direct surface light 
         glm::vec3 specular_color = light_color * glm::vec3(0.5f); // brightness of shine
 
-        #if 0 
+        #if 1 
         // turn on directional light 0
         // set directional light vectors 
         shader.set_vec3("dir_light.direction", glm::vec3(-0.2f, -1.0f, -0.3f));
