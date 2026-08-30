@@ -236,20 +236,19 @@ int main()
         shader.set_vec3("dir_light.specular", specular_color);
         #endif
 
+        glm::vec3 red    = glm::vec3(1.0f, 0.0f, 0.0f);
+        glm::vec3 green  = glm::vec3(0.0f, 1.0f, 0.0f);
+        glm::vec3 blue   = glm::vec3(0.0f, 0.0f, 1.0f);
+        glm::vec3 yellow = glm::vec3(1.0f, 1.0f, 0.0f);
+
         // ------ point light 1 Red color------
         // set point light vector
         shader.set_vec3("point_lights[0].position", point_lights_pos[0]);
 
         // set point light shading components (basic values for testing)
-        // red color light just for point light[0] to test
-        shader.set_vec3("point_lights[0].ambient", glm::vec3(1.0f, 0.0f, 0.0f) *
-                                                   glm::vec3(0.05f)); 
-
-        shader.set_vec3("point_lights[0].diffuse", glm::vec3(1.0f, 0.0f, 0.0f) *
-                                                   glm::vec3(0.4f));
-
-        shader.set_vec3("point_lights[0].specular",glm::vec3(1.0f, 0.0f, 0.0f) *
-                                                   glm::vec3(0.5f));
+        shader.set_vec3("point_lights[0].ambient", red * glm::vec3(0.05f)); 
+        shader.set_vec3("point_lights[0].diffuse", red * glm::vec3(0.4f));
+        shader.set_vec3("point_lights[0].specular", red * glm::vec3(0.5f));
 
         // set point light attenuation values
         shader.set_float("point_lights[0].constant", 1.0f);
@@ -258,15 +257,10 @@ int main()
 
         // ------ point light 2 Green color ------
         shader.set_vec3("point_lights[1].position", point_lights_pos[1]);
-
-        shader.set_vec3("point_lights[1].ambient", glm::vec3(0.0f, 1.0f, 0.0f) *
-                                                   glm::vec3(0.05f)); 
-
-        shader.set_vec3("point_lights[1].diffuse", glm::vec3(0.0f, 1.0f, 0.0f) *
-                                                   glm::vec3(0.4f));
-
-        shader.set_vec3("point_lights[1].specular",glm::vec3(0.0f, 1.0f, 0.0f) *
-                                                   glm::vec3(0.5f));
+        
+        shader.set_vec3("point_lights[1].ambient", green * glm::vec3(0.05f)); 
+        shader.set_vec3("point_lights[1].diffuse", green * glm::vec3(0.4f));
+        shader.set_vec3("point_lights[1].specular", green * glm::vec3(0.5f));
 
         shader.set_float("point_lights[1].constant", 1.0f);
         shader.set_float("point_lights[1].linear", 0.009f);
@@ -275,14 +269,9 @@ int main()
         // ------ point light 3 Blue color ------
         shader.set_vec3("point_lights[2].position", point_lights_pos[2]);
 
-        shader.set_vec3("point_lights[2].ambient", glm::vec3(0.0f, 0.0f, 1.0f) *
-                                                   glm::vec3(0.05f)); 
-
-        shader.set_vec3("point_lights[2].diffuse", glm::vec3(0.0f, 0.0f, 1.0f) *
-                                                   glm::vec3(0.4f));
-
-        shader.set_vec3("point_lights[2].specular",glm::vec3(0.0f, 0.0f, 1.0f) *
-                                                   glm::vec3(0.5f));
+        shader.set_vec3("point_lights[2].ambient", blue * glm::vec3(0.05f)); 
+        shader.set_vec3("point_lights[2].diffuse", blue * glm::vec3(0.4f));
+        shader.set_vec3("point_lights[2].specular", blue * glm::vec3(0.5f));
 
         shader.set_float("point_lights[2].constant", 1.0f);
         shader.set_float("point_lights[2].linear", 0.009f);
@@ -291,14 +280,9 @@ int main()
         // ------ point light 4 Yellow color ------
         shader.set_vec3("point_lights[3].position", point_lights_pos[3]);
 
-        shader.set_vec3("point_lights[3].ambient", glm::vec3(1.0f, 1.0f, 0.0f) *
-                                                  glm::vec3(0.05f)); 
-
-        shader.set_vec3("point_lights[3].diffuse", glm::vec3(1.0f, 1.0f, 0.0f) *
-                                                  glm::vec3(0.4f));
-
-        shader.set_vec3("point_lights[3].specular",glm::vec3(1.0f, 1.0f, 0.0f) *
-                                                   glm::vec3(0.5f));
+        shader.set_vec3("point_lights[3].ambient", yellow * glm::vec3(0.05f)); 
+        shader.set_vec3("point_lights[3].diffuse", yellow * glm::vec3(0.4f));
+        shader.set_vec3("point_lights[3].specular", yellow * glm::vec3(0.5f));
 
         shader.set_float("point_lights[3].constant", 1.0f);
         shader.set_float("point_lights[3].linear", 0.009f);
