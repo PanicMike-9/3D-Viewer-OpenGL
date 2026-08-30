@@ -57,7 +57,6 @@ struct Light
 };
 uniform Light light;
 
-uniform vec3 view_pos;
 
 vec3 calc_directional_light(DirectLight light, vec3 normal, vec3 view_dir)
 {
@@ -83,6 +82,7 @@ vec3 calc_directional_light(DirectLight light, vec3 normal, vec3 view_dir)
 
     return (ambient + specular + diffuse);
 }
+
 vec3 calc_point_light(PointLight light, vec3 normal, vec3 frag_pos, vec3 view_dir)
 {
     // texture color based on material's texture diffuse and specular
@@ -117,6 +117,8 @@ vec3 calc_point_light(PointLight light, vec3 normal, vec3 frag_pos, vec3 view_di
     return (ambient + diffuse + specular);
 }
 
+uniform vec3 view_pos;
+
 void main()
 {
     vec3 norm = normalize(Normal);
@@ -129,7 +131,8 @@ void main()
         result += calc_point_light(point_lights[i], norm, FragPos, view_dir);
     }
 
-    FragColor = vec4(result, 1.0); 
+    float alpha = texture(material.texture_diffuse1, TexCoords).a;
+    FragColor = vec4(result, alpha); 
 }
 /*
     #if 0
