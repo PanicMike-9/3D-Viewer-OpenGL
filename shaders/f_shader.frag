@@ -57,7 +57,6 @@ struct Light
 };
 uniform Light light;
 
-
 vec3 calc_directional_light(DirectLight light, vec3 normal, vec3 view_dir)
 {
     // texture color based on material's texture diffuse and specular
@@ -106,9 +105,10 @@ vec3 calc_point_light(PointLight light, vec3 normal, vec3 frag_pos, vec3 view_di
     }
 
     // point light calculation
+    const float EPSILON = 1e-6f;
     float distance = length(light.position - frag_pos);
-    float attenuation = 1.0 / (light.constant + light.linear * distance + light.quadratic * 
-                              (distance * distance));
+    float attenuation = 1.0 / max(light.constant + light.linear * distance + light.quadratic * 
+                              (distance * distance), EPSILON);
 
     ambient  *= attenuation;
     diffuse  *= attenuation;
