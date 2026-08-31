@@ -9,6 +9,7 @@
 
 // basic C++ libs
 #include <iostream>
+#include <string>
 
 // header files
 #include "shader.hpp"
@@ -17,9 +18,9 @@
 #include "mesh.hpp"
 
 // window height, width and aspect ratio values
-static constexpr float WIN_WIDTH = 1920.0f;
-static constexpr float WIN_HEIGHT = 1080.0f;
-static constexpr float WIN_ASPECT = WIN_WIDTH / WIN_HEIGHT;
+constexpr float WIN_WIDTH = 1280.0f;
+constexpr float WIN_HEIGHT = 720.0f;
+constexpr float WIN_ASPECT = WIN_WIDTH / WIN_HEIGHT;
 
 // exit window with q or esc keys
 void exit_window(GLFWwindow* window)
@@ -95,6 +96,49 @@ void camera_controller(GLFWwindow* window, Camera& camera, float delta_time)
     }
 }
 
+glm::vec3 point_lights_pos[4] =
+{
+    glm::vec3( 2.0f,  3.0f, 0.0f),
+    glm::vec3(-2.0f,  3.0f, 0.0f),
+    glm::vec3( 2.0f,  3.0f, 1.0f),
+    glm::vec3(-2.0f,  3.0f, 1.0f),
+};
+
+void point_light_system(Shader& shader)
+{
+    // point light colors
+    constexpr glm::vec3 red    = glm::vec3(1.0f, 0.0f, 0.0f);
+    constexpr glm::vec3 green  = glm::vec3(0.0f, 1.0f, 0.0f);
+    constexpr glm::vec3 blue   = glm::vec3(0.0f, 0.0f, 1.0f);
+    constexpr glm::vec3 yellow = glm::vec3(1.0f, 1.0f, 0.0f);
+
+    constexpr glm::vec3 pl_specular = glm::vec3(0.5f);
+    constexpr glm::vec3 pl_diffuse =  glm::vec3(0.4f);
+    constexpr glm::vec3 pl_ambient =  glm::vec3(0.05f);
+
+    constexpr float pl_constant = 1.0f;
+    constexpr float pl_linear = 0.009f;
+    constexpr float pl_quadratic = 0.032f;
+
+    constexpr glm::vec3 point_lights_colors[] = {red, blue, green, yellow};
+
+    // running the loop 4 times, for 4 point lights and 4 colors
+    for (int i = 0; i < 4; ++i)
+    {
+        std::string base = "point_lights[" + std::to_string(i) + "].";
+
+        shader.set_vec3(base + "position", point_lights_pos[i]);
+
+        shader.set_vec3(base + "ambient",  point_lights_colors[i] * pl_ambient); 
+        shader.set_vec3(base + "diffuse",  point_lights_colors[i] * pl_diffuse);
+        shader.set_vec3(base + "specular", point_lights_colors[i] * pl_specular);
+
+        shader.set_float(base + "constant",  pl_constant);
+        shader.set_float(base + "linear",    pl_linear);
+        shader.set_float(base + "quadratic", pl_quadratic);
+    }
+}
+
 int main()
 {
     glfwInit();
@@ -121,15 +165,6 @@ int main()
 
     std::cout << "GLAD Loaded\n";
 
-    // stbi_set_flip_vertically_on_load(true);
-
-    // shader code files
-    Shader shader("shaders/v_shader.vert", "shaders/f_shader.frag");
-
-    Model hum_model_1("assets/models/low_poly_human/scene.gltf");
-    Model hum_model_2("assets/models/low_poly_human/scene.gltf");
-    // Model suzanne("assets/models/suzanne/suzanne.gltf");
-
     // for consistent frame-rate 
     float delta_time = 0.0f;
     float last_frame = 0.0f;
@@ -151,16 +186,16 @@ int main()
     // enable depth test to view in 3d
     glEnable(GL_DEPTH_TEST);
 
-    // window background color
-    glClearColor(0.1f, 0.1f, 0.1f, 1.0f); 
+    // window background color (experimental sky blue)
+    glClearColor(0.6f, 0.8f, 1.0f, 1.0f); 
 
-    glm::vec3 point_lights_pos[4] =
-    {
-        glm::vec3( 2.0f,  3.0f, 0.0f),
-        glm::vec3(-2.0f,  3.0f, 0.0f),
-        glm::vec3( 2.0f,  3.0f, 1.0f),
-        glm::vec3(-2.0f,  3.0f, 1.0f),
-    };
+    // shader code files
+    Shader shader("shaders/v_shader.vert", "shaders/f_shader.frag");
+
+    // load assets
+    Model hum_model_1("assets/models/low_poly_human/scene.gltf");
+    Model hum_model_2("assets/models/low_poly_human/scene.gltf");
+    Model floor("assets/models/checkered_tile_floor/scene.gltf");
 
     // main render loop
     while (!glfwWindowShouldClose(window))
@@ -221,81 +256,44 @@ int main()
         shader.set_vec3("view_pos", camera.position);
 
         // white light color
-        glm::vec3 light_color = glm::vec3(1.0f);
+       constexpr glm::vec3 light_color = glm::vec3(1.0f);
 
-        glm::vec3 ambient_color  = light_color * glm::vec3(0.05f); // shadow brightness
-        glm::vec3 diffuse_color  = light_color * glm::vec3(0.4f); // direct surface light 
-        glm::vec3 specular_color = light_color * glm::vec3(0.5f); // brightness of shine
+       constexpr glm::vec3 ambient_color  = light_color * glm::vec3(0.2f); // shadow brightness
+       constexpr glm::vec3 diffuse_color  = light_color * glm::vec3(0.8f); // direct surface light 
+       constexpr glm::vec3 specular_color = light_color * glm::vec3(1.0f); // brightness of shine
 
         #if 1 
-        // turn on directional light 0
+        // turn on directional light 1
         // set directional light vectors 
-        shader.set_vec3("dir_light.direction", glm::vec3(-0.2f, -1.0f, -0.3f));
+        glm::vec3 light_direction = glm::normalize(glm::vec3(-0.2f, -1.0f, -0.3f));
+
+        shader.set_vec3("dir_light.direction", light_direction);
         shader.set_vec3("dir_light.ambient", ambient_color);
         shader.set_vec3("dir_light.diffuse", diffuse_color);
         shader.set_vec3("dir_light.specular", specular_color);
         #endif
 
-        glm::vec3 red    = glm::vec3(1.0f, 0.0f, 0.0f);
-        glm::vec3 green  = glm::vec3(0.0f, 1.0f, 0.0f);
-        glm::vec3 blue   = glm::vec3(0.0f, 0.0f, 1.0f);
-        glm::vec3 yellow = glm::vec3(1.0f, 1.0f, 0.0f);
-
-        // ------ point light 1 Red color------
-        // set point light vector
-        shader.set_vec3("point_lights[0].position", point_lights_pos[0]);
-
-        // set point light shading components (basic values for testing)
-        shader.set_vec3("point_lights[0].ambient", red * glm::vec3(0.05f)); 
-        shader.set_vec3("point_lights[0].diffuse", red * glm::vec3(0.4f));
-        shader.set_vec3("point_lights[0].specular", red * glm::vec3(0.5f));
-
-        // set point light attenuation values
-        shader.set_float("point_lights[0].constant", 1.0f);
-        shader.set_float("point_lights[0].linear", 0.009f);
-        shader.set_float("point_lights[0].quadratic", 0.032f);
-
-        // ------ point light 2 Green color ------
-        shader.set_vec3("point_lights[1].position", point_lights_pos[1]);
-        
-        shader.set_vec3("point_lights[1].ambient", green * glm::vec3(0.05f)); 
-        shader.set_vec3("point_lights[1].diffuse", green * glm::vec3(0.4f));
-        shader.set_vec3("point_lights[1].specular", green * glm::vec3(0.5f));
-
-        shader.set_float("point_lights[1].constant", 1.0f);
-        shader.set_float("point_lights[1].linear", 0.009f);
-        shader.set_float("point_lights[1].quadratic", 0.032f);
-
-        // ------ point light 3 Blue color ------
-        shader.set_vec3("point_lights[2].position", point_lights_pos[2]);
-
-        shader.set_vec3("point_lights[2].ambient", blue * glm::vec3(0.05f)); 
-        shader.set_vec3("point_lights[2].diffuse", blue * glm::vec3(0.4f));
-        shader.set_vec3("point_lights[2].specular", blue * glm::vec3(0.5f));
-
-        shader.set_float("point_lights[2].constant", 1.0f);
-        shader.set_float("point_lights[2].linear", 0.009f);
-        shader.set_float("point_lights[2].quadratic", 0.032f);
-
-        // ------ point light 4 Yellow color ------
-        shader.set_vec3("point_lights[3].position", point_lights_pos[3]);
-
-        shader.set_vec3("point_lights[3].ambient", yellow * glm::vec3(0.05f)); 
-        shader.set_vec3("point_lights[3].diffuse", yellow * glm::vec3(0.4f));
-        shader.set_vec3("point_lights[3].specular", yellow * glm::vec3(0.5f));
-
-        shader.set_float("point_lights[3].constant", 1.0f);
-        shader.set_float("point_lights[3].linear", 0.009f);
-        shader.set_float("point_lights[3].quadratic", 0.032f);
+        point_light_system(shader);
 
         // material properties
-        int mat_diffuse = 0;
-        int mat_specular = 1; 
-        float shininess = 128.0f;
+        constexpr int mat_diffuse = 0;
+        constexpr int mat_specular = 1;
+        constexpr float shininess = 128.0f;
 
         shader.set_int("material.texture_diffuse1", mat_diffuse);
         shader.set_int("material.texture_specular1", mat_specular);
         shader.set_float("material.shine", shininess);
+
+        // floor flat plane texture
+        glm::mat4 floor_plane = glm::mat4(1.0f);
+        floor_plane = glm::translate(floor_plane, glm::vec3(0.0f));
+        floor_plane = glm::scale(floor_plane, glm::vec3(0.25f));
+
+        // rotate the plane 90 radians on x axis
+        floor_plane = glm::rotate(floor_plane, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+
+        shader.set_mat4("model", floor_plane);
+        floor.draw(shader);
 
         // render the model poly-human 1
         glm::mat4 model = glm::mat4(1.0f);
@@ -321,18 +319,6 @@ int main()
 
         shader.set_mat4("model", model);
         hum_model_2.draw(shader);
-
-        #if 0
-        // suzanne model is buggy
-        model = glm::mat4(1.0f);
-        model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
-        model = glm::scale(model, glm::vec3(0.1f));
-
-        model = glm::rotate(model, rotate_by, glm::vec3(0.0f, 1.0f, 0.0f));
-
-        shader.set_mat4("model", model);
-        suzanne.draw(shader);
-        #endif
 
         framebuffer_size_callback(window, WIN_WIDTH, WIN_HEIGHT);
         glfwSwapBuffers(window);
