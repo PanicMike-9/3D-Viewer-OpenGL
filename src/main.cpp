@@ -268,9 +268,9 @@ int main()
         glm::vec3 light_direction = glm::normalize(glm::vec3(-0.2f, -1.0f, -0.3f));
 
         shader.set_vec3("dir_light.direction", light_direction);
-        shader.set_vec3("dir_light.ambient", ambient_color);
-        shader.set_vec3("dir_light.diffuse", diffuse_color);
-        shader.set_vec3("dir_light.specular", specular_color);
+        shader.set_vec3("dir_light.ambient",   ambient_color);
+        shader.set_vec3("dir_light.diffuse",   diffuse_color);
+        shader.set_vec3("dir_light.specular",  specular_color);
         #endif
 
         point_light_system(shader);
