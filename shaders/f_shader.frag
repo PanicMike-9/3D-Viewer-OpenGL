@@ -38,24 +38,24 @@ struct PointLight
 #define POINT_LIGHTS 4
 uniform PointLight point_lights[POINT_LIGHTS];
 
-struct Light 
+struct SpotLight
 {
-    vec3 position; // for point light
-    vec3 direction; // for directional light
-    vec3 ambient;
-    vec3 diffuse;
-    vec3 specular;
+    vec3 position;
+    vec3 direction;
 
-    // point light values
+    vec3 diffuse;
+    vec3 ambient;
+    vec3 specular;
+    
+    float cut_off;
+    float outer_cut_off;
+
     float constant;
     float linear;
     float quadratic;
-
-    // spot light value(s)
-    float cut_off;
-    float outer_cut_off;
 };
-uniform Light light;
+#define SPOT_LIGHTS 2
+SpotLight spot_lights[SPOT_LIGHTS];
 
 vec3 calc_directional_light(DirectLight light, vec3 normal, vec3 view_dir)
 {
@@ -115,6 +115,21 @@ vec3 calc_point_light(PointLight light, vec3 normal, vec3 frag_pos, vec3 view_di
     specular *= attenuation;
 
     return (ambient + diffuse + specular);
+}
+
+vec3 calc_spot_light(SpotLight light, float cut_off, float outer_cut_off)
+{
+    // Todo: Finish spot light function
+    vec3 light_dir = normalize(light.position - frag_pos); // point light
+    // spot light calculation
+    float theta = dot(light_dir, normalize(-light.direction));
+    float epsilon = light.cut_off - light.outer_cut_off;
+    float intensity = clamp((theta - light.outer_cut_off) / epsilon, 0.0, 1.0);
+
+    diffuse  *= intensity;
+    specular *= intensity;
+
+    return (diffuse + specular);
 }
 
 uniform vec3 view_pos;
