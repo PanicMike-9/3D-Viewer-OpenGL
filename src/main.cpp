@@ -139,6 +139,10 @@ void point_light_system(Shader& shader)
     }
 }
 
+void spot_light_system(Shader& shader)
+{
+}
+
 int main()
 {
     glfwInit();
