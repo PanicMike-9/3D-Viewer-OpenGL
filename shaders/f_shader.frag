@@ -54,8 +54,9 @@ struct SpotLight
     float linear;
     float quadratic;
 };
-#define SPOT_LIGHTS 2
-SpotLight spot_lights[SPOT_LIGHTS];
+// #define SPOT_LIGHTS 1
+// SpotLight spot_lights[SPOT_LIGHTS];
+SpotLight spot_lights;
 
 vec3 calc_directional_light(DirectLight light, vec3 normal, vec3 view_dir)
 {
@@ -117,8 +118,7 @@ vec3 calc_point_light(PointLight light, vec3 normal, vec3 frag_pos, vec3 view_di
     return (ambient + diffuse + specular);
 }
 
-vec3 calc_spot_light(SpotLight light, float cut_off, float outer_cut_off, vec3 normal, 
-                     vec3 frag_pos, vec3 view_dir)
+vec3 calc_spot_light(SpotLight light, vec3 normal, vec3 frag_pos, vec3 view_dir)
 {
     vec3 model_color_diff = texture(material.texture_diffuse1, TexCoords).rgb;
     vec3 model_color_spec = texture(material.texture_specular1, TexCoords).rgb;
@@ -140,13 +140,19 @@ vec3 calc_spot_light(SpotLight light, float cut_off, float outer_cut_off, vec3 n
         specular = light.specular * (spec * model_color_spec);
     }
 
+    const float EPSILON = 1e-6f;
+    float distance = length(light.position - frag_pos);
+    float attenuation = 1.0 / max(light.constant + light.linear * distance + light.quadratic * 
+                              (distance * distance), EPSILON);
+
     // spot light calculation
     float theta = dot(light_dir, normalize(-light.direction));
     float epsilon = light.cut_off - light.outer_cut_off;
     float intensity = clamp((theta - light.outer_cut_off) / epsilon, 0.0, 1.0);
 
-    diffuse  *= intensity;
-    specular *= intensity;
+    ambient *= intensity * attenuation;
+    diffuse  *= intensity * attenuation;
+    specular *= intensity * attenuation;
 
     return (diffuse + specular + ambient);
 }
@@ -165,11 +171,14 @@ void main()
         result += calc_point_light(point_lights[i], norm, FragPos, view_dir);
     }
 
+    result += calc_spot_light(spot_lights, norm, FragPos, view_dir);
+
+#if 0
     for (int i = 0; i < SPOT_LIGHTS; ++i)
     {
-        result += calc_spot_light(spot_lights[i], spot_lights[i].cut_off, spot_lights[i].outer_cut_off,
-                                 norm, FragPos, view_dir);
+        result += calc_spot_light(spot_lights[i], norm, FragPos, view_dir);
     }
+#endif
 
     float alpha = texture(material.texture_diffuse1, TexCoords).a;
     FragColor = vec4(result, alpha); 
