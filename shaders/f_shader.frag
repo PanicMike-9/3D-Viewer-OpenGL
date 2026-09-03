@@ -119,8 +119,25 @@ vec3 calc_point_light(PointLight light, vec3 normal, vec3 frag_pos, vec3 view_di
 
 vec3 calc_spot_light(SpotLight light, float cut_off, float outer_cut_off)
 {
-    // Todo: Finish spot light function
+    vec3 model_color_diff = texture(material.texture_diffuse1, TexCoords).rgb;
+    vec3 model_color_spec = texture(material.texture_specular1, TexCoords).rgb;
+
     vec3 light_dir = normalize(light.position - frag_pos); // point light
+
+    float diff = max(dot(normal, light_dir), 0.0);
+
+    vec3 ambient = light.ambient * model_color_diff;
+    vec3 diffuse = light.diffuse * (diff * model_color_diff);
+    vec3 specular = vec3(0.0);
+
+    // backface light leaks protection
+    if (diff > 0.0)
+    {
+        float shine_clamp = max(material.shine, 1.0);
+        float spec = pow(max(dot(view_dir, reflect_dir), 0.0), shine_clamp);
+        specular = light.specular * (spec * model_color_spec);
+    }
+
     // spot light calculation
     float theta = dot(light_dir, normalize(-light.direction));
     float epsilon = light.cut_off - light.outer_cut_off;
@@ -129,7 +146,7 @@ vec3 calc_spot_light(SpotLight light, float cut_off, float outer_cut_off)
     diffuse  *= intensity;
     specular *= intensity;
 
-    return (diffuse + specular);
+    return (diffuse + specular + ambient);
 }
 
 uniform vec3 view_pos;
@@ -144,6 +161,11 @@ void main()
     for (int i = 0; i < POINT_LIGHTS; ++i)
     {
         result += calc_point_light(point_lights[i], norm, FragPos, view_dir);
+    }
+
+    for (int i = 0; i < SPOT_LIGHTS; ++i)
+    {
+        result += calc_spot_light(spot_lights[i], spot_lights[i].cut_off, spot_lights[i].outer_cut_off);
     }
 
     float alpha = texture(material.texture_diffuse1, TexCoords).a;
