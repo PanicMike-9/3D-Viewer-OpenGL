@@ -117,7 +117,8 @@ vec3 calc_point_light(PointLight light, vec3 normal, vec3 frag_pos, vec3 view_di
     return (ambient + diffuse + specular);
 }
 
-vec3 calc_spot_light(SpotLight light, float cut_off, float outer_cut_off)
+vec3 calc_spot_light(SpotLight light, float cut_off, float outer_cut_off, vec3 normal, 
+                     vec3 frag_pos, vec3 view_dir)
 {
     vec3 model_color_diff = texture(material.texture_diffuse1, TexCoords).rgb;
     vec3 model_color_spec = texture(material.texture_specular1, TexCoords).rgb;
@@ -125,6 +126,7 @@ vec3 calc_spot_light(SpotLight light, float cut_off, float outer_cut_off)
     vec3 light_dir = normalize(light.position - frag_pos); // point light
 
     float diff = max(dot(normal, light_dir), 0.0);
+    vec3 reflect_dir = reflect(-light_dir, normal);
 
     vec3 ambient = light.ambient * model_color_diff;
     vec3 diffuse = light.diffuse * (diff * model_color_diff);
@@ -165,7 +167,8 @@ void main()
 
     for (int i = 0; i < SPOT_LIGHTS; ++i)
     {
-        result += calc_spot_light(spot_lights[i], spot_lights[i].cut_off, spot_lights[i].outer_cut_off);
+        result += calc_spot_light(spot_lights[i], spot_lights[i].cut_off, spot_lights[i].outer_cut_off,
+                                 norm, FragPos, view_dir);
     }
 
     float alpha = texture(material.texture_diffuse1, TexCoords).a;
