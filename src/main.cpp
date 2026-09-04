@@ -139,36 +139,48 @@ void point_light_system(Shader& shader)
     }
 }
 
+glm::vec3 spot_lights_pos[2] =
+{
+    glm::vec3( 2.0f,  5.0f, 1.0f),
+    glm::vec3(-2.0f,  5.0f, 1.0f),
+};
+
 void spot_light_system(Shader& shader, Camera& camera)
 {
+    constexpr glm::vec3 red    = glm::vec3(0.5f, 0.0f, 0.0f);
+    constexpr glm::vec3 yellow  = glm::vec3(0.5f, 0.5f, 0.0f);
+
     constexpr glm::vec3 sl_specular = glm::vec3(1.0f);
     constexpr glm::vec3 sl_diffuse =  glm::vec3(1.0f);
-    constexpr glm::vec3 sl_ambient =  glm::vec3(0.0f);
+    constexpr glm::vec3 sl_ambient =  glm::vec3(1.0f);
 
     constexpr float sl_constant = 1.0f;
-    constexpr float sl_linear = 0.009f;
+    constexpr float sl_linear = 0.09f;
     constexpr float sl_quadratic = 0.032f;
 
     float sl_cut_off = glm::cos(glm::radians(12.5f));
     float sl_outer_cut_off = glm::cos(glm::radians(17.5f));
 
-    #if 0
-    std::string base = "spot_lights[" + std::to_string(i) + "].";
-    #endif
+    constexpr glm::vec3 spot_lights_colors[] = {red, yellow};
 
-    shader.set_vec3("spot_lights.position", camera.position);
-    shader.set_vec3("spot_lights.direction", camera.front);
+    for (int i = 0; i < 2; ++i)
+    {
+        std::string base = "spot_lights[" + std::to_string(i) + "].";
 
-    shader.set_vec3("spot_lights.ambient",  sl_ambient); 
-    shader.set_vec3("spot_lights.diffuse",  sl_diffuse);
-    shader.set_vec3("spot_lights.specular", sl_specular);
+        shader.set_vec3(base + "position", spot_lights_pos[i]);
+        shader.set_vec3(base + "direction", glm::vec3(0.0f, -1.0f, 0.0f));
 
-    shader.set_float("spot_lights.constant",  sl_constant);
-    shader.set_float("spot_lights.linear",    sl_linear);
-    shader.set_float("spot_lights.quadratic", sl_quadratic);
+        shader.set_vec3(base + "ambient",  spot_lights_colors[i] * sl_ambient); 
+        shader.set_vec3(base + "diffuse",  spot_lights_colors[i] * sl_diffuse);
+        shader.set_vec3(base + "specular", spot_lights_colors[i] * sl_specular);
 
-    shader.set_float("spot_lights.cut_off",  sl_cut_off); 
-    shader.set_float("spot_lights.outer_cut_off", sl_outer_cut_off); 
+        shader.set_float(base + "constant",  sl_constant);
+        shader.set_float(base + "linear",    sl_linear);
+        shader.set_float(base + "quadratic", sl_quadratic);
+
+        shader.set_float(base + "cut_off",  sl_cut_off); 
+        shader.set_float(base + "outer_cut_off", sl_outer_cut_off); 
+    }
 }
 
 int main()
@@ -219,7 +231,7 @@ int main()
     glEnable(GL_DEPTH_TEST);
 
     // window background color (experimental sky blue)
-    glClearColor(0.0f, 0.0f, 0.0f, 1.0f); 
+    glClearColor(0.5f, 0.2f, 0.6f, 1.0f); 
 
     // shader code files
     Shader shader("shaders/v_shader.vert", "shaders/f_shader.frag");
@@ -278,7 +290,7 @@ int main()
 
         // light attenuation values
         shader.set_float("light.constant", 1.0f);
-        shader.set_float("light.linear", 0.009f);
+        shader.set_float("light.linear", 0.09f);
         shader.set_float("light.quadratic", 0.032f);
 
         // orbiting light position
