@@ -139,8 +139,36 @@ void point_light_system(Shader& shader)
     }
 }
 
-void spot_light_system(Shader& shader)
+void spot_light_system(Shader& shader, Camera& camera)
 {
+    constexpr glm::vec3 sl_specular = glm::vec3(1.0f);
+    constexpr glm::vec3 sl_diffuse =  glm::vec3(1.0f);
+    constexpr glm::vec3 sl_ambient =  glm::vec3(0.0f);
+
+    constexpr float sl_constant = 1.0f;
+    constexpr float sl_linear = 0.009f;
+    constexpr float sl_quadratic = 0.032f;
+
+    float sl_cut_off = glm::cos(glm::radians(12.5f));
+    float sl_outer_cut_off = glm::cos(glm::radians(17.5f));
+
+    #if 0
+    std::string base = "spot_lights[" + std::to_string(i) + "].";
+    #endif
+
+    shader.set_vec3("spot_lights.position", camera.position);
+    shader.set_vec3("spot_lights.direction", camera.front);
+
+    shader.set_vec3("spot_lights.ambient",  sl_ambient); 
+    shader.set_vec3("spot_lights.diffuse",  sl_diffuse);
+    shader.set_vec3("spot_lights.specular", sl_specular);
+
+    shader.set_float("spot_lights.constant",  sl_constant);
+    shader.set_float("spot_lights.linear",    sl_linear);
+    shader.set_float("spot_lights.quadratic", sl_quadratic);
+
+    shader.set_float("spot_lights.cut_off",  sl_cut_off); 
+    shader.set_float("spot_lights.outer_cut_off", sl_outer_cut_off); 
 }
 
 int main()
@@ -191,7 +219,7 @@ int main()
     glEnable(GL_DEPTH_TEST);
 
     // window background color (experimental sky blue)
-    glClearColor(0.6f, 0.8f, 1.0f, 1.0f); 
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f); 
 
     // shader code files
     Shader shader("shaders/v_shader.vert", "shaders/f_shader.frag");
@@ -228,9 +256,9 @@ int main()
 
         #if 0
         // multiple colors for presentation
-        light_color.x = sin(glfwGetTime() * 2.0f);
-        light_color.y = cos(glfwGetTime() * 0.7f);
-        light_color.z = sin(glfwGetTime() * 1.3f);
+        // light_color.x = sin(glfwGetTime() * 2.0f);
+        // light_color.y = cos(glfwGetTime() * 0.7f);
+        // light_color.z = sin(glfwGetTime() * 1.3f);
 
         // set point light
         shader.set_vec3("light.position", glm::vec3(0.0f));
@@ -254,7 +282,7 @@ int main()
         shader.set_float("light.quadratic", 0.032f);
 
         // orbiting light position
-        glm::vec3 light_pos = glm::vec3(sin(glfwGetTime()) * 2.0f, 0.0f, cos(glfwGetTime()) * 2.0f);
+        // glm::vec3 light_pos = glm::vec3(sin(glfwGetTime()) * 2.0f, 0.0f, cos(glfwGetTime()) * 2.0f);
         #endif
 
         shader.set_vec3("view_pos", camera.position);
@@ -266,7 +294,7 @@ int main()
        constexpr glm::vec3 diffuse_color  = light_color * glm::vec3(0.8f); // direct surface light 
        constexpr glm::vec3 specular_color = light_color * glm::vec3(1.0f); // brightness of shine
 
-        #if 1 
+        #if 0 
         // turn on directional light 1
         // set directional light vectors 
         glm::vec3 light_direction = glm::normalize(glm::vec3(-0.2f, -1.0f, -0.3f));
@@ -278,6 +306,7 @@ int main()
         #endif
 
         point_light_system(shader);
+        spot_light_system(shader, camera);
 
         // material properties
         constexpr int mat_diffuse = 0;
