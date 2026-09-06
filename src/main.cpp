@@ -10,6 +10,7 @@
 // basic C++ libs
 #include <iostream>
 #include <string>
+#include <array>
 
 // header files
 #include "shader.hpp"
@@ -96,8 +97,8 @@ void camera_controller(GLFWwindow* window, Camera& camera, float delta_time)
     }
 }
 
-glm::vec3 point_lights_pos[4] =
-{
+constexpr std::array<glm::vec3, 4> point_lights_pos 
+{    
     glm::vec3( 2.0f,  3.0f, 0.0f),
     glm::vec3(-2.0f,  3.0f, 0.0f),
     glm::vec3( 2.0f,  3.0f, 1.0f),
@@ -139,7 +140,7 @@ void point_light_system(Shader& shader)
     }
 }
 
-glm::vec3 spot_lights_pos[2] =
+constexpr std::array<glm::vec3, 2> spot_lights_pos
 {
     glm::vec3( 2.0f,  5.0f, 1.0f),
     glm::vec3(-2.0f,  5.0f, 1.0f),
@@ -318,7 +319,7 @@ int main()
         #endif
 
         point_light_system(shader);
-        spot_light_system(shader, camera);
+        // spot_light_system(shader, camera);
 
         // material properties
         constexpr int mat_diffuse = 0;
