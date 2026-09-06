@@ -6,7 +6,7 @@
 #include <glm/gtc/type_ptr.hpp>
 
 // camera movement directions
-enum class camera_movement
+enum class CameraMovement
 {
     FORWARD,
     BACKWARD,
@@ -41,7 +41,7 @@ class Camera
         glm::mat4 get_projection_matrix(float aspect_ratio);
 
         // process keyboard for camera movement
-        void process_keyboard(camera_movement direction, float delta_time);
+        void process_keyboard(CameraMovement direction, float delta_time);
 
         // process mouse movement
         void process_mouse_movement(double x_offset, double y_offset);
