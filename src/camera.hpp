@@ -5,7 +5,12 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-// camera movement directions
+enum class CameraMode
+{
+    FPS,
+    FLY,
+};
+
 enum class CameraMovement
 {
     FORWARD,
@@ -24,7 +29,7 @@ class Camera
         glm::vec3 right =    glm::vec3(1.0f, 0.0f, 0.0f);
         glm::vec3 world_up = glm::vec3(0.0f, 1.0f, 0.0f);
         
-        // camera options
+        // camera details
         float speed = 5.5f;
         float fov =   45.0f;
 
