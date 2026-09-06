@@ -95,6 +95,24 @@ void camera_controller(GLFWwindow* window, Camera& camera, float delta_time)
     {
         camera.process_keyboard(CameraMovement::RIGHT, delta_time);
     }
+
+    // press 'c' to swtich to FPS and back to FLY
+    static bool c_key_was_pressed = false;
+    bool c_key_is_pressed = (glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS);
+
+    if (c_key_is_pressed && !c_key_was_pressed)
+    {
+        if (camera.mode == CameraMode::FPS)
+        {
+            camera.mode = CameraMode::FLY;
+        }
+        else 
+        {
+            camera.mode = CameraMode::FPS;
+            camera.position.y = 3.0f;
+        }
+    }
+    c_key_was_pressed = c_key_is_pressed;
 }
 
 constexpr std::array<glm::vec3, 4> point_lights_pos 
