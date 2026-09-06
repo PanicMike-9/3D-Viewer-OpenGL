@@ -77,22 +77,22 @@ void camera_controller(GLFWwindow* window, Camera& camera, float delta_time)
 {
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
     {
-        camera.process_keyboard(camera_movement::FORWARD, delta_time);
+        camera.process_keyboard(CameraMovement::FORWARD, delta_time);
     }
 
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
     {
-        camera.process_keyboard(camera_movement::LEFT, delta_time);
+        camera.process_keyboard(CameraMovement::LEFT, delta_time);
     }
 
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
     {
-        camera.process_keyboard(camera_movement::BACKWARD, delta_time);
+        camera.process_keyboard(CameraMovement::BACKWARD, delta_time);
     }
 
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
     {
-        camera.process_keyboard(camera_movement::RIGHT, delta_time);
+        camera.process_keyboard(CameraMovement::RIGHT, delta_time);
     }
 }
 

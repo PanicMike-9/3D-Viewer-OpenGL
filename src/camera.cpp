@@ -19,28 +19,28 @@ glm::mat4 Camera::get_projection_matrix(float aspect_ratio)
 }
 
 // process keyboard input for camera movement
-void Camera::process_keyboard(camera_movement direction, float delta_time)
+void Camera::process_keyboard(CameraMovement direction, float delta_time)
 {
     // walk around camera with WASD
     float velocity = speed * delta_time;
 
     // press W for camera forward
-    if (direction == camera_movement::FORWARD)
+    if (direction == CameraMovement::FORWARD)
     {
         position += velocity * front;
     }
     // press S for camera backward
-    if (direction == camera_movement::BACKWARD)
+    if (direction == CameraMovement::BACKWARD)
     {
         position -= velocity * front;
     }
     // press A for camera left
-    if (direction == camera_movement::LEFT)
+    if (direction == CameraMovement::LEFT)
     {
         position -= right * velocity;
     }
     // press D for camera right
-    if (direction == camera_movement::RIGHT)
+    if (direction == CameraMovement::RIGHT)
     {
         position += right * velocity;
     }
