@@ -121,7 +121,7 @@ void point_light_system(Shader& shader)
     constexpr float pl_linear = 0.009f;
     constexpr float pl_quadratic = 0.032f;
 
-    constexpr glm::vec3 point_lights_colors[] = {red, blue, green, yellow};
+    constexpr std::array<glm::vec3, 4> point_lights_colors {red, blue, green, yellow};
 
     // running the loop 4 times, for 4 point lights and 4 colors
     for (int i = 0; i < 4; ++i)
@@ -142,14 +142,14 @@ void point_light_system(Shader& shader)
 
 constexpr std::array<glm::vec3, 2> spot_lights_pos
 {
-    glm::vec3( 2.0f,  5.0f, 1.0f),
-    glm::vec3(-2.0f,  5.0f, 1.0f),
+    glm::vec3( 6.0f,  5.0f, 1.0f),
+    glm::vec3(-6.0f,  5.0f, 1.0f),
 };
 
 void spot_light_system(Shader& shader, Camera& camera)
 {
     constexpr glm::vec3 red    = glm::vec3(0.5f, 0.0f, 0.0f);
-    constexpr glm::vec3 yellow  = glm::vec3(0.5f, 0.5f, 0.0f);
+    constexpr glm::vec3 white  = glm::vec3(1.0f);
 
     constexpr glm::vec3 sl_specular = glm::vec3(1.0f);
     constexpr glm::vec3 sl_diffuse =  glm::vec3(1.0f);
@@ -162,7 +162,7 @@ void spot_light_system(Shader& shader, Camera& camera)
     float sl_cut_off = glm::cos(glm::radians(12.5f));
     float sl_outer_cut_off = glm::cos(glm::radians(17.5f));
 
-    constexpr glm::vec3 spot_lights_colors[] = {red, yellow};
+    constexpr std::array<glm::vec3, 2> spot_lights_colors {red, white};
 
     for (int i = 0; i < 2; ++i)
     {
@@ -319,7 +319,7 @@ int main()
         #endif
 
         point_light_system(shader);
-        // spot_light_system(shader, camera);
+        spot_light_system(shader, camera);
 
         // material properties
         constexpr int mat_diffuse = 0;
