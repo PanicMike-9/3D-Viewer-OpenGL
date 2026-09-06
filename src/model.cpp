@@ -173,7 +173,7 @@ unsigned int texture_from_file(const char* path, const std::string& directory)
     }
     else
     {
-        std::cout << "Texture failed to load at path: " << path << '\n';
+        std::cout << "TEXTURE FAILED TO LOAD AT PATH: " << path << '\n';
         stbi_image_free(data);
     }
 
