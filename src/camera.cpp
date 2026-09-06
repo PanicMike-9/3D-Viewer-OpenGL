@@ -22,27 +22,40 @@ glm::mat4 Camera::get_projection_matrix(float aspect_ratio)
 void Camera::process_keyboard(CameraMovement direction, float delta_time)
 {
     // walk around camera with WASD
-    float velocity = speed * delta_time;
+    float velocity {speed * delta_time};
 
-    // press W for camera forward
+    // new variables for FPS mode
+    glm::vec3 move_front = front;
+    glm::vec3 move_right = right;
+
+    // x & z ground plane
+    if (mode == CameraMode::FPS)
+    {
+        move_front = glm::normalize(glm::vec3(front.x, 0.0f, front.z));
+        move_right = glm::normalize(glm::vec3(right.x, 0.0f, right.z));
+    }
+
+    // movement
     if (direction == CameraMovement::FORWARD)
     {
-        position += velocity * front;
+        position += move_front * velocity;
     }
-    // press S for camera backward
     if (direction == CameraMovement::BACKWARD)
     {
-        position -= velocity * front;
+        position -= move_front * velocity;
     }
-    // press A for camera left
     if (direction == CameraMovement::LEFT)
     {
-        position -= right * velocity;
+        position -= move_right * velocity;
     }
-    // press D for camera right
     if (direction == CameraMovement::RIGHT)
     {
-        position += right * velocity;
+        position += move_right * velocity;
+    }
+
+    if (mode == CameraMode::FPS)
+    {
+        position.y = 3.0f;
     }
 }
 
@@ -58,8 +71,8 @@ void Camera::process_mouse_movement(double x_offset, double y_offset)
     pitch += y_offset;
 
     // minimum and maximum pitch values
-    float min_pitch = -89.0f; 
-    float max_pitch = 89.0f;
+    float min_pitch {-89.0f};
+    float max_pitch {89.0f};
 
     // clamp between min and max values
     pitch = glm::clamp(pitch, min_pitch, max_pitch);
@@ -72,8 +85,8 @@ void Camera::process_mouse_movement(double x_offset, double y_offset)
 void Camera::process_scroll_wheel(double y_offset)
 {
     // min max values for field of view
-    float max_fov = 45.0f;
-    float min_fov = 1.0f;
+    float max_fov {45.0f};
+    float min_fov {1.0f};
 
     // adjust field of view based on scroll wheel input
     fov -= static_cast<float>(y_offset);
@@ -90,11 +103,11 @@ void Camera::update_camera_vectors()
 
     // spherical angles to 3D cartesian direction vector (x, y, z)
     direction.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
-    direction.y = sin(glm::radians(pitch));
+    direction.y = sin(glm::radians(pitch));                       
     direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
 
     // directions for the camera
     front = glm::normalize(direction);
     right = glm::normalize(glm::cross(front, world_up));
-    up = glm::normalize(glm::cross(right, front));
+    up    = glm::normalize(glm::cross(right, front));
 }
