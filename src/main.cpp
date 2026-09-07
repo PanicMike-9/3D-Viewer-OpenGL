@@ -24,14 +24,14 @@ constexpr float WIN_HEIGHT = 720.0f;
 constexpr float WIN_ASPECT = WIN_WIDTH / WIN_HEIGHT;
 
 // exit window with q or esc keys
-void exit_window(GLFWwindow* window)
+inline void exit_window(GLFWwindow* window)
 {
     if(glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
 }
 
 //  for window resizing
-void framebuffer_size_callback(GLFWwindow* window, float width, float height)
+inline void framebuffer_size_callback(GLFWwindow* window, float width, float height)
 {
     glViewport(0, 0, width, height);
 }
@@ -41,7 +41,7 @@ float last_x = WIN_WIDTH / 2.0f;
 float last_y = WIN_HEIGHT / 2.0f;
 bool first_mouse = true;
 
-void mouse_callback(GLFWwindow* window, double x_pos, double y_pos)
+inline void mouse_callback(GLFWwindow* window, double x_pos, double y_pos)
 {
     Camera* cam = static_cast<Camera*>(glfwGetWindowUserPointer(window));
 
@@ -65,7 +65,7 @@ void mouse_callback(GLFWwindow* window, double x_pos, double y_pos)
 }
 
 // take scroll wheel input
-void scroll_callback(GLFWwindow* window, double x_offset, double y_offset)
+inline void scroll_callback(GLFWwindow* window, double x_offset, double y_offset)
 {
     // create camera pointer
     Camera* cam = static_cast<Camera*>(glfwGetWindowUserPointer(window));
@@ -74,7 +74,7 @@ void scroll_callback(GLFWwindow* window, double x_offset, double y_offset)
 }
 
 // control camera with WASD
-void camera_controller(GLFWwindow* window, Camera& camera, float delta_time)
+inline void camera_controller(GLFWwindow* window, Camera& camera, const float delta_time)
 {
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
     {
@@ -97,8 +97,8 @@ void camera_controller(GLFWwindow* window, Camera& camera, float delta_time)
     }
 
     // press 'c' to swtich to FPS and back to FLY
-    static bool c_key_was_pressed = false;
-    bool c_key_is_pressed = (glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS);
+    static bool c_key_was_pressed {false};
+    bool c_key_is_pressed {(glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS)};
 
     if (c_key_is_pressed && !c_key_was_pressed)
     {
@@ -115,7 +115,25 @@ void camera_controller(GLFWwindow* window, Camera& camera, float delta_time)
     c_key_was_pressed = c_key_is_pressed;
 }
 
-constexpr std::array<glm::vec3, 4> point_lights_pos 
+inline void directional_light_system(Shader& shader)
+{
+    constexpr glm::vec3 light_color {1.0f, 1.0f, 1.0f};
+
+    constexpr glm::vec3 ambient_color  {light_color * glm::vec3(0.2f)}; // shadow brightness
+    constexpr glm::vec3 diffuse_color  {light_color * glm::vec3(0.8f)}; // direct surface light 
+    constexpr glm::vec3 specular_color {light_color * glm::vec3(1.0f)}; // brightness of shine
+
+    constexpr glm::vec3 light_dir_pos {-0.2f, -1.0f, -0.3f};
+    glm::vec3 light_direction = glm::normalize(light_dir_pos);
+
+    shader.set_vec3("dir_light.direction", light_direction);
+    shader.set_vec3("dir_light.ambient",   ambient_color);
+    shader.set_vec3("dir_light.diffuse",   diffuse_color);
+    shader.set_vec3("dir_light.specular",  specular_color);
+}
+
+constexpr std::size_t MAX_POINT_LIGHTS {4};
+constexpr std::array<glm::vec3, MAX_POINT_LIGHTS> point_lights_pos 
 {    
     glm::vec3( 2.0f,  3.0f, 0.0f),
     glm::vec3(-2.0f,  3.0f, 0.0f),
@@ -123,26 +141,26 @@ constexpr std::array<glm::vec3, 4> point_lights_pos
     glm::vec3(-2.0f,  3.0f, 1.0f),
 };
 
-void point_light_system(Shader& shader)
+inline void point_light_system(Shader& shader)
 {
     // point light colors
-    constexpr glm::vec3 red    = glm::vec3(1.0f, 0.0f, 0.0f);
-    constexpr glm::vec3 green  = glm::vec3(0.0f, 1.0f, 0.0f);
-    constexpr glm::vec3 blue   = glm::vec3(0.0f, 0.0f, 1.0f);
-    constexpr glm::vec3 yellow = glm::vec3(1.0f, 1.0f, 0.0f);
+    constexpr glm::vec3 red    {1.0f, 0.0f, 0.0f};
+    constexpr glm::vec3 green  {0.0f, 1.0f, 0.0f};
+    constexpr glm::vec3 blue   {0.0f, 0.0f, 1.0f};
+    constexpr glm::vec3 yellow {1.0f, 1.0f, 0.0f};
 
-    constexpr glm::vec3 pl_specular = glm::vec3(0.5f);
-    constexpr glm::vec3 pl_diffuse =  glm::vec3(0.4f);
-    constexpr glm::vec3 pl_ambient =  glm::vec3(0.05f);
+    constexpr glm::vec3 pl_diffuse  {0.4f};
+    constexpr glm::vec3 pl_ambient  {0.05f};
+    constexpr glm::vec3 pl_specular {0.5f};
 
-    constexpr float pl_constant = 1.0f;
-    constexpr float pl_linear = 0.009f;
-    constexpr float pl_quadratic = 0.032f;
+    constexpr float pl_constant  {1.0f};
+    constexpr float pl_linear    {0.09f};
+    constexpr float pl_quadratic {0.032f};
 
-    constexpr std::array<glm::vec3, 4> point_lights_colors {red, blue, green, yellow};
+    constexpr std::array<glm::vec3, MAX_POINT_LIGHTS> point_lights_colors {red, blue, green, yellow};
 
     // running the loop 4 times, for 4 point lights and 4 colors
-    for (int i = 0; i < 4; ++i)
+    for (std::size_t i {0}; i < MAX_POINT_LIGHTS; ++i)
     {
         std::string base = "point_lights[" + std::to_string(i) + "].";
 
@@ -158,31 +176,32 @@ void point_light_system(Shader& shader)
     }
 }
 
-constexpr std::array<glm::vec3, 2> spot_lights_pos
+constexpr std::size_t MAX_SPOT_LIGHTS {2};
+constexpr std::array<glm::vec3, MAX_SPOT_LIGHTS> spot_lights_pos
 {
     glm::vec3( 6.0f,  5.0f, 1.0f),
     glm::vec3(-6.0f,  5.0f, 1.0f),
 };
 
-void spot_light_system(Shader& shader, Camera& camera)
+inline void spot_light_system(Shader& shader)
 {
-    constexpr glm::vec3 red    = glm::vec3(0.5f, 0.0f, 0.0f);
-    constexpr glm::vec3 white  = glm::vec3(1.0f);
+    constexpr glm::vec3 red   {0.5f, 0.0f, 0.0f};
+    constexpr glm::vec3 white {1.0f};
 
-    constexpr glm::vec3 sl_specular = glm::vec3(1.0f);
-    constexpr glm::vec3 sl_diffuse =  glm::vec3(1.0f);
-    constexpr glm::vec3 sl_ambient =  glm::vec3(1.0f);
+    constexpr glm::vec3 sl_diffuse  {1.0f};
+    constexpr glm::vec3 sl_ambient  {1.0f};
+    constexpr glm::vec3 sl_specular {1.0f};
 
-    constexpr float sl_constant = 1.0f;
-    constexpr float sl_linear = 0.09f;
-    constexpr float sl_quadratic = 0.032f;
+    constexpr float sl_constant   {1.0f};
+    constexpr float sl_linear     {0.09f};
+    constexpr float sl_quadratic  {0.032f};
 
-    float sl_cut_off = glm::cos(glm::radians(12.5f));
-    float sl_outer_cut_off = glm::cos(glm::radians(17.5f));
+    float sl_cut_off       {glm::cos(glm::radians(12.5f))};
+    float sl_outer_cut_off {glm::cos(glm::radians(17.5f))};
 
-    constexpr std::array<glm::vec3, 2> spot_lights_colors {red, white};
+    constexpr std::array<glm::vec3, MAX_SPOT_LIGHTS> spot_lights_colors {red, white};
 
-    for (int i = 0; i < 2; ++i)
+    for (std::size_t i {0}; i < MAX_SPOT_LIGHTS; ++i)
     {
         std::string base = "spot_lights[" + std::to_string(i) + "].";
 
@@ -202,6 +221,15 @@ void spot_light_system(Shader& shader, Camera& camera)
     }
 }
 
+inline void window_background_color()
+{
+    // rgb phases
+    constexpr float red_bgc    {0.1f};
+    constexpr float green_bgc  {0.1f};
+    constexpr float blue_bgc   {0.12f};
+    glClearColor(red_bgc, green_bgc, blue_bgc, 1.0f); 
+}
+
 int main()
 {
     glfwInit();
@@ -210,27 +238,27 @@ int main()
 
     if (!window)
     {
-        std::cerr << "Could not create window!\n";
+        std::cerr << "COULD NOT CREATE WINDOW!\n";
         glfwTerminate();
         return -1;
     }
 
-    std::cout << "Window created!\n";
+    std::cout << "WINDOW CREATED!\n";
 
     // create window
     glfwMakeContextCurrent(window);
 
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
     {
-        std::cerr << "Could not initialize GLAD\n";
+        std::cerr << "COULD NOT INITIALIZE GLAD\n";
         return -1;
     }
 
-    std::cout << "GLAD Loaded\n";
+    std::cout << "GLAD LOADED!\n";
 
     // for consistent frame-rate 
-    float delta_time = 0.0f;
-    float last_frame = 0.0f;
+    float delta_time {0.0f};
+    float last_frame {0.0f};
 
     // camera class obj
     Camera camera;
@@ -249,8 +277,7 @@ int main()
     // enable depth test to view in 3d
     glEnable(GL_DEPTH_TEST);
 
-    // window background color (experimental sky blue)
-    glClearColor(0.5f, 0.2f, 0.6f, 1.0f); 
+    window_background_color();
 
     // shader code files
     Shader shader("shaders/v_shader.vert", "shaders/f_shader.frag");
@@ -264,11 +291,11 @@ int main()
     while (!glfwWindowShouldClose(window))
     {
         // calculate delta time 
-        float current_frame = static_cast<float>(glfwGetTime()); 
+        float current_frame {static_cast<float>(glfwGetTime())}; 
         delta_time = current_frame - last_frame;
         last_frame = current_frame;
 
-        exit_window(window); // exit window using q or esc key
+        exit_window(window); 
 
         // clear screen's color memory to background color
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -285,64 +312,16 @@ int main()
         shader.set_mat4("view", view);
         shader.set_mat4("projection", projection);
 
-        #if 0
-        // multiple colors for presentation
-        // light_color.x = sin(glfwGetTime() * 2.0f);
-        // light_color.y = cos(glfwGetTime() * 0.7f);
-        // light_color.z = sin(glfwGetTime() * 1.3f);
-
-        // set point light
-        shader.set_vec3("light.position", glm::vec3(0.0f));
-
-        // light direction relative to camera 
-        shader.set_vec3("light.direction", camera.front); 
-
-        // light position relative to camera position
-        shader.set_vec3("light.position", camera.position);
-
-        // set spot light float values
-        shader.set_float("light.cut_off", glm::cos(glm::radians(12.5f))); 
-        shader.set_float("light.outer_cut_off", glm::cos(glm::radians(17.5f))); 
-        shader.set_vec3("light.ambient", ambient_color);
-        shader.set_vec3("light.diffuse", diffuse_color);
-        shader.set_vec3("light.specular", specular_color);
-
-        // light attenuation values
-        shader.set_float("light.constant", 1.0f);
-        shader.set_float("light.linear", 0.09f);
-        shader.set_float("light.quadratic", 0.032f);
-
-        // orbiting light position
-        // glm::vec3 light_pos = glm::vec3(sin(glfwGetTime()) * 2.0f, 0.0f, cos(glfwGetTime()) * 2.0f);
-        #endif
-
         shader.set_vec3("view_pos", camera.position);
 
-        // white light color
-       constexpr glm::vec3 light_color = glm::vec3(1.0f);
-
-       constexpr glm::vec3 ambient_color  = light_color * glm::vec3(0.2f); // shadow brightness
-       constexpr glm::vec3 diffuse_color  = light_color * glm::vec3(0.8f); // direct surface light 
-       constexpr glm::vec3 specular_color = light_color * glm::vec3(1.0f); // brightness of shine
-
-        #if 0 
-        // turn on directional light 1
-        // set directional light vectors 
-        glm::vec3 light_direction = glm::normalize(glm::vec3(-0.2f, -1.0f, -0.3f));
-
-        shader.set_vec3("dir_light.direction", light_direction);
-        shader.set_vec3("dir_light.ambient",   ambient_color);
-        shader.set_vec3("dir_light.diffuse",   diffuse_color);
-        shader.set_vec3("dir_light.specular",  specular_color);
-        #endif
-
+        directional_light_system(shader);
         point_light_system(shader);
-        spot_light_system(shader, camera);
+        spot_light_system(shader);
 
         // material properties
-        constexpr int mat_diffuse = 0;
-        constexpr int mat_specular = 1;
-        constexpr float shininess = 128.0f;
+        constexpr int mat_diffuse   {0};
+        constexpr int mat_specular  {1};
+        constexpr float shininess   {128.0f};
 
         shader.set_int("material.texture_diffuse1", mat_diffuse);
         shader.set_int("material.texture_specular1", mat_specular);
@@ -365,7 +344,7 @@ int main()
         model = glm::scale(model, glm::vec3(0.2f)); // model size/scale
 
         // model rotation speed
-        float rotate_by = glfwGetTime() * 0.8f;
+        float rotate_by {static_cast<float>(glfwGetTime()) * 0.8f};
 
         // rotate the model on y-axis, for presentation 
         model = glm::rotate(model, rotate_by, glm::vec3(0.0f, 1.0f, 0.0f));
@@ -389,13 +368,12 @@ int main()
         glfwPollEvents();
     }
 
-    // destroy window
+    // destroy window & terminate
     glfwDestroyWindow(window);
-    std::cout << "glfwDestroyWindow(window) executed\n";
+    std::cout << "glfwDestroyWindow(window) EXECUTED\n";
 
-    // terminate glfw
     glfwTerminate();
-    std::cout << "glfwTerminate() executed\n";
+    std::cout << "glfwTerminate() EXECUTED\n";
 
     return 0;
 }
