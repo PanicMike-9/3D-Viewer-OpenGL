@@ -36,6 +36,7 @@ struct PointLight
     float quadratic;
 };
 #define POINT_LIGHTS 4
+uniform int num_point_lights;
 uniform PointLight point_lights[POINT_LIGHTS];
 
 struct SpotLight
@@ -55,6 +56,7 @@ struct SpotLight
     float quadratic;
 };
 #define SPOT_LIGHTS 2
+uniform int num_spot_lights;
 uniform SpotLight spot_lights[SPOT_LIGHTS];
 
 vec3 calc_directional_light(DirectLight light, vec3 normal, vec3 view_dir)
