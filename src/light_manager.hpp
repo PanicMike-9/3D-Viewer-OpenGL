@@ -32,13 +32,15 @@ class LightManager
 
             constexpr glm::vec3 light_color {1.0f, 1.0f, 1.0f};
 
+            #if 0
             constexpr glm::vec3 ambient_color  {light_color * glm::vec3(0.2f)}; // shadow brightness
             constexpr glm::vec3 diffuse_color  {light_color * glm::vec3(0.8f)}; // direct surface light 
             constexpr glm::vec3 specular_color {light_color * glm::vec3(1.0f)}; // brightness of shine
+            #endif
 
-            shader.set_vec3("dir_light.direction", dir_light.direction);
-            shader.set_vec3("dir_light.ambient",   dir_light.ambient);
-            shader.set_vec3("dir_light.diffuse",   dir_light.diffuse);
-            shader.set_vec3("dir_light.specular",  dir_light.specular);
+            shader.set_vec3("dir_light.direction", light_color * dir_light.direction);
+            shader.set_vec3("dir_light.ambient",   light_color * dir_light.ambient);
+            shader.set_vec3("dir_light.diffuse",   light_color * dir_light.diffuse);
+            shader.set_vec3("dir_light.specular",  light_color * dir_light.specular);
         }
 };
