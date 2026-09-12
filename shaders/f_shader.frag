@@ -168,12 +168,12 @@ void main()
 
     vec3 result = calc_directional_light(dir_light, norm, view_dir);
 
-    for (int i = 0; i < point_lights_num; ++i)
+    for (int i = 0; i < num_point_lights; ++i)
     {
         result += calc_point_light(point_lights[i], norm, FragPos, view_dir);
     }
 
-    for (int i = 0; i < spot_lights_num; ++i)
+    for (int i = 0; i < num_spot_lights; ++i)
     {
         result += calc_spot_light(spot_lights[i], norm, FragPos, view_dir);
     }
