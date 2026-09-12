@@ -116,21 +116,18 @@ inline void camera_controller(GLFWwindow* window, Camera& camera, const float de
     c_key_was_pressed = c_key_is_pressed;
 }
 
+// single light manager object
+LightManager light_manager;
+
 inline void directional_light_system(Shader& shader)
 {
-    constexpr glm::vec3 light_color {1.0f, 1.0f, 1.0f};
-
-    constexpr glm::vec3 ambient_color  {light_color * glm::vec3(0.2f)}; // shadow brightness
-    constexpr glm::vec3 diffuse_color  {light_color * glm::vec3(0.8f)}; // direct surface light 
-    constexpr glm::vec3 specular_color {light_color * glm::vec3(1.0f)}; // brightness of shine
-
+    #if 0
+    // might need later
     constexpr glm::vec3 light_dir_pos {-0.2f, -1.0f, -0.3f};
     glm::vec3 light_direction = glm::normalize(light_dir_pos);
+    #endif
 
-    shader.set_vec3("dir_light.direction", light_direction);
-    shader.set_vec3("dir_light.ambient",   ambient_color);
-    shader.set_vec3("dir_light.diffuse",   diffuse_color);
-    shader.set_vec3("dir_light.specular",  specular_color);
+    light_manager.update_shader_uniforms(shader);
 }
 
 constexpr std::size_t MAX_POINT_LIGHTS {4};
@@ -150,30 +147,18 @@ inline void point_light_system(Shader& shader)
     constexpr glm::vec3 blue   {0.0f, 0.0f, 1.0f};
     constexpr glm::vec3 yellow {1.0f, 1.0f, 0.0f};
 
-    constexpr glm::vec3 pl_diffuse  {0.4f};
-    constexpr glm::vec3 pl_ambient  {0.05f};
-    constexpr glm::vec3 pl_specular {0.5f};
-
-    constexpr float pl_constant  {1.0f};
-    constexpr float pl_linear    {0.09f};
-    constexpr float pl_quadratic {0.032f};
-
     constexpr std::array<glm::vec3, MAX_POINT_LIGHTS> point_lights_colors {red, blue, green, yellow};
 
     // running the loop 4 times, for 4 point lights and 4 colors
     for (std::size_t i {0}; i < MAX_POINT_LIGHTS; ++i)
     {
-        std::string base = "point_lights[" + std::to_string(i) + "].";
+        PointLight light;
+        light.position = point_lights_pos[i];
+        light.diffuse = point_lights_colors[i];
+        light.specular = point_lights_colors[i];
+        light.ambient = point_lights_colors[i];
 
-        shader.set_vec3(base + "position", point_lights_pos[i]);
-
-        shader.set_vec3(base + "ambient",  point_lights_colors[i] * pl_ambient); 
-        shader.set_vec3(base + "diffuse",  point_lights_colors[i] * pl_diffuse);
-        shader.set_vec3(base + "specular", point_lights_colors[i] * pl_specular);
-
-        shader.set_float(base + "constant",  pl_constant);
-        shader.set_float(base + "linear",    pl_linear);
-        shader.set_float(base + "quadratic", pl_quadratic);
+        light_manager.add_point_lights(light);
     }
 }
 
@@ -204,21 +189,21 @@ inline void spot_light_system(Shader& shader)
 
     for (std::size_t i {0}; i < MAX_SPOT_LIGHTS; ++i)
     {
-        std::string base = "spot_lights[" + std::to_string(i) + "].";
+        SpotLight light;
+        light.position =  spot_lights_pos[i];
+        light.direction = glm::vec3(0.0f, -1.0f, 0.0f);
+        light.diffuse =   spot_lights_colors[i];
+        light.specular =  spot_lights_colors[i];
+        light.ambient =   spot_lights_colors[i];
 
-        shader.set_vec3(base + "position", spot_lights_pos[i]);
-        shader.set_vec3(base + "direction", glm::vec3(0.0f, -1.0f, 0.0f));
+        light.linear =    sl_linear;
+        light.constant =  sl_constant;
+        light.quadratic = sl_quadratic;
 
-        shader.set_vec3(base + "ambient",  spot_lights_colors[i] * sl_ambient); 
-        shader.set_vec3(base + "diffuse",  spot_lights_colors[i] * sl_diffuse);
-        shader.set_vec3(base + "specular", spot_lights_colors[i] * sl_specular);
+        light.outer_cut_off = sl_outer_cut_off;
+        light.cut_off =       sl_cut_off;
 
-        shader.set_float(base + "constant",  sl_constant);
-        shader.set_float(base + "linear",    sl_linear);
-        shader.set_float(base + "quadratic", sl_quadratic);
-
-        shader.set_float(base + "cut_off",  sl_cut_off); 
-        shader.set_float(base + "outer_cut_off", sl_outer_cut_off); 
+        light_manager.add_spot_lights(light);
     }
 }
 
