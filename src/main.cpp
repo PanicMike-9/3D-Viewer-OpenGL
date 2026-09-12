@@ -17,6 +17,7 @@
 #include "camera.hpp"
 #include "model.hpp"
 #include "mesh.hpp"
+#include "light_manager.hpp"
 
 // window height, width and aspect ratio values
 constexpr float WIN_WIDTH = 1280.0f;
