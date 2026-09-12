@@ -26,7 +26,7 @@ class LightManager
             spot_lights.push_back(light);
         }
 
-        void update_shader_uniforms(Shader& shader, [[maybe_unused]] const Camera& camera)
+        void update_shader_uniforms(Shader& shader) /* [[maybe_unused]] const Camera& camera */
         {
             shader.use();
 
