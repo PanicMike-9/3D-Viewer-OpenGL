@@ -1,3 +1,4 @@
+#if 0
 #pragma once
 
 #include <glm/glm.hpp>
@@ -33,10 +34,11 @@ struct SpotLight
     glm::vec3 diffuse  {1.0f, 1.0f, 1.0f};
     glm::vec3 specular {1.0f, 1.0f, 1.0f};
     
-    float cut_off       {12.5f};
-    float outer_cut_off {15.0f};
+    float cut_off       {12.0f};
+    float outer_cut_off {17.0f};
 
     float constant  {1.0f};
     float linear    {0.09f};
     float quadratic {0.032f};
 };
+#endif

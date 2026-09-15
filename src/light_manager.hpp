@@ -1,3 +1,4 @@
+#if 0
 #pragma once
 
 #include <vector>
@@ -13,30 +14,26 @@ class LightManager
 {
     public:
         DirectLight dir_light;
-        std::vector<SpotLight>  spot_lights;
-        std::vector<PointLight> point_lights;
 
+        std::vector<PointLight> point_lights;
         inline void add_point_lights(const PointLight& light)
         {
             point_lights.push_back(light);
         }
 
+        #if 1
+        std::vector<SpotLight>  spot_lights;
         inline void add_spot_lights(const SpotLight& light)
         {
             spot_lights.push_back(light);
         }
+        #endif
 
         void update_shader_uniforms(Shader& shader) /* [[maybe_unused]] const Camera& camera */
         {
             shader.use();
 
             constexpr glm::vec3 light_color {1.0f, 1.0f, 1.0f};
-
-            #if 0
-            constexpr glm::vec3 ambient_color  {light_color * glm::vec3(0.2f)}; // shadow brightness
-            constexpr glm::vec3 diffuse_color  {light_color * glm::vec3(0.8f)}; // direct surface light 
-            constexpr glm::vec3 specular_color {light_color * glm::vec3(1.0f)}; // brightness of shine
-            #endif
 
             shader.set_vec3("dir_light.direction", light_color * dir_light.direction);
             shader.set_vec3("dir_light.ambient",   light_color * dir_light.ambient);
@@ -61,6 +58,7 @@ class LightManager
                 shader.set_float(base + "quadratic", point_lights[i].quadratic);
             }
 
+            #if 1
             // spot light
             shader.set_int("num_spot_lights", static_cast<int>(spot_lights.size()));
 
@@ -79,8 +77,10 @@ class LightManager
                 shader.set_float(base + "linear",    spot_lights[i].linear);
                 shader.set_float(base + "quadratic", spot_lights[i].quadratic);
 
-                shader.set_float(base + "cut_off",  spot_lights[i].cut_off); 
-                shader.set_float(base + "outer_cut_off", spot_lights[i].outer_cut_off); 
+                shader.set_float(base + "cut_off",  glm::cos(glm::radians(spot_lights[i].cut_off))); 
+                shader.set_float(base + "outer_cut_off", glm::cos(glm::radians(spot_lights[i].outer_cut_off))); 
             }
+            #endif
         }
 };
+#endif
