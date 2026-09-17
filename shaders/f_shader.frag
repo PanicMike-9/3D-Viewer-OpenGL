@@ -145,7 +145,7 @@ vec3 calc_spot_light(SpotLight light, vec3 normal, vec3 frag_pos, vec3 view_dir)
     const float EPSILON = 1e-6f;
     float distance = length(light.position - frag_pos);
     float attenuation = 1.0 / max(light.constant + light.linear * distance + light.quadratic * 
-                              (distance * distance), EPSILON);
+                                 (distance * distance), EPSILON);
 
     // spot light calculation
     float theta = dot(light_dir, normalize(-light.direction));
