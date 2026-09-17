@@ -116,94 +116,109 @@ inline void camera_controller(GLFWwindow* window, Camera& camera, const float de
     c_key_was_pressed = c_key_is_pressed;
 }
 
-// single light manager object
-LightManager light_manager;
-
 inline void directional_light_system(Shader& shader)
 {
-    #if 0
-    // might need later
-    constexpr glm::vec3 light_dir_pos {-0.2f, -1.0f, -0.3f};
-    glm::vec3 light_direction = glm::normalize(light_dir_pos);
-    #endif
+    constexpr glm::vec3 light_color {1.0f, 1.0f, 1.0f};
 
-    light_manager.update_shader_uniforms(shader);
+    constexpr glm::vec3 ambient  {light_color * glm::vec3{0.25f}};
+    constexpr glm::vec3 diffuse  {light_color * glm::vec3{0.8f}};
+    constexpr glm::vec3 specular {light_color * glm::vec3{1.0f}};
+
+    constexpr glm::vec3 light_pos {-0.2f, -1.0f, -0.3f};
+
+    glm::vec3 light_dir {glm::normalize(light_pos)};
+
+    shader.set_vec3("dir_light.direction", light_dir);
+    shader.set_vec3("dir_light.ambient", ambient);
+    shader.set_vec3("dir_light.diffuse", diffuse);
+    shader.set_vec3("dir_light.specular", specular);
 }
 
 constexpr std::size_t MAX_POINT_LIGHTS {4};
 constexpr std::array<glm::vec3, MAX_POINT_LIGHTS> point_lights_pos 
 {    
-    glm::vec3( 2.0f,  3.0f, 0.0f),
-    glm::vec3(-2.0f,  3.0f, 0.0f),
-    glm::vec3( 2.0f,  3.0f, 1.0f),
-    glm::vec3(-2.0f,  3.0f, 1.0f),
+    glm::vec3{ 4.0f,  3.0f, 0.0f},
+    glm::vec3{-4.0f,  3.0f, 0.0f},
+    glm::vec3{ 4.0f,  3.0f, 1.0f},
+    glm::vec3{-4.0f,  3.0f, 1.0f},
 };
 
 inline void point_light_system(Shader& shader)
 {
     // point light colors
-    constexpr glm::vec3 red    {1.0f, 0.0f, 0.0f};
-    constexpr glm::vec3 green  {0.0f, 1.0f, 0.0f};
-    constexpr glm::vec3 blue   {0.0f, 0.0f, 1.0f};
-    constexpr glm::vec3 yellow {1.0f, 1.0f, 0.0f};
+    constexpr glm::vec3 color1 {1.0f, 0.0f, 0.0f};
+    constexpr glm::vec3 color2 {0.0f, 1.0f, 0.0f};
+    constexpr glm::vec3 color3 {0.0f, 0.0f, 1.0f};
+    constexpr glm::vec3 color4 {1.0f, 1.0f, 0.0f};
 
-    constexpr std::array<glm::vec3, MAX_POINT_LIGHTS> point_lights_colors {red, blue, green, yellow};
+    constexpr glm::vec3 pl_ambient {0.02f, 0.02f, 0.02f};
+
+    constexpr float pl_constant  {1.0f};
+    constexpr float pl_linear    {0.09f};
+    constexpr float pl_quadratic {0.032f};
+    
+
+    constexpr std::array<glm::vec3, MAX_POINT_LIGHTS> point_lights_colors {color1, color3, color2, color4};
 
     // running the loop 4 times, for 4 point lights and 4 colors
+    // shader.set_int("num_point_lights", static_cast<int>(point_lights.size()));
+
     for (std::size_t i {0}; i < MAX_POINT_LIGHTS; ++i)
     {
-        PointLight light;
-        light.position = point_lights_pos[i];
-        light.diffuse = point_lights_colors[i];
-        light.specular = point_lights_colors[i];
-        light.ambient = point_lights_colors[i];
+        std::string base = "point_lights[" + std::to_string(i) + "].";
 
-        light_manager.add_point_lights(light);
+        shader.set_vec3(base + "position", point_lights_pos[i]);
+        shader.set_vec3(base + "diffuse",  point_lights_colors[i]);
+        shader.set_vec3(base + "specular", point_lights_colors[i]);
+        shader.set_vec3(base + "ambient",  pl_ambient);
+
+        shader.set_float(base + "constant",  pl_constant);
+        shader.set_float(base + "linear",    pl_linear);
+        shader.set_float(base + "quadratic", pl_quadratic);
     }
 }
 
 constexpr std::size_t MAX_SPOT_LIGHTS {2};
 constexpr std::array<glm::vec3, MAX_SPOT_LIGHTS> spot_lights_pos
 {
-    glm::vec3( 6.0f,  5.0f, 1.0f),
-    glm::vec3(-6.0f,  5.0f, 1.0f),
+    glm::vec3{ 3.0f, 5.0f, 0.0f},
+    glm::vec3{-3.0f, 5.0f, 0.0f},
 };
 
-inline void spot_light_system(Shader& shader)
+inline void spot_light_system(Shader& shader, [[maybe_unused]] Camera& camera)
 {
-    constexpr glm::vec3 red   {0.5f, 0.0f, 0.0f};
-    constexpr glm::vec3 white {1.0f};
+    constexpr glm::vec3 lavender {0.9f, 0.8f, 1.0f};
+    constexpr glm::vec3 yellow   {1.0f, 1.0f, 0.0f};
 
-    constexpr glm::vec3 sl_diffuse  {1.0f};
-    constexpr glm::vec3 sl_ambient  {1.0f};
-    constexpr glm::vec3 sl_specular {1.0f};
+    constexpr glm::vec3 sl_ambient   {0.0f, 0.0f, 0.0f};
+    constexpr glm::vec3 sl_direction {0.0f, -1.0f, 0.0f};
 
-    constexpr float sl_constant   {1.0f};
-    constexpr float sl_linear     {0.09f};
-    constexpr float sl_quadratic  {0.032f};
+    constexpr float sl_constant  {1.0f};
+    constexpr float sl_linear    {0.09f};
+    constexpr float sl_quadratic {0.032f};
 
     float sl_cut_off       {glm::cos(glm::radians(12.5f))};
     float sl_outer_cut_off {glm::cos(glm::radians(17.5f))};
 
-    constexpr std::array<glm::vec3, MAX_SPOT_LIGHTS> spot_lights_colors {red, white};
+    constexpr std::array<glm::vec3, MAX_SPOT_LIGHTS> spot_lights_colors {lavender, yellow};
 
     for (std::size_t i {0}; i < MAX_SPOT_LIGHTS; ++i)
     {
-        SpotLight light;
-        light.position =  spot_lights_pos[i];
-        light.direction = glm::vec3(0.0f, -1.0f, 0.0f);
-        light.diffuse =   spot_lights_colors[i];
-        light.specular =  spot_lights_colors[i];
-        light.ambient =   spot_lights_colors[i];
+        std::string base = "spot_lights[" + std::to_string(i) + "].";
 
-        light.linear =    sl_linear;
-        light.constant =  sl_constant;
-        light.quadratic = sl_quadratic;
+        shader.set_vec3(base + "position", spot_lights_pos[i]);
+        shader.set_vec3(base + "direction", sl_direction);
 
-        light.outer_cut_off = sl_outer_cut_off;
-        light.cut_off =       sl_cut_off;
+        shader.set_vec3(base + "ambient", sl_ambient);
+        shader.set_vec3(base + "diffuse", spot_lights_colors[i]);
+        shader.set_vec3(base + "specular", spot_lights_colors[i]);
 
-        light_manager.add_spot_lights(light);
+        shader.set_float(base + "constant", sl_constant);
+        shader.set_float(base + "linear", sl_linear);
+        shader.set_float(base + "quadratic", sl_quadratic);
+
+        shader.set_float(base + "cut_off", sl_cut_off);
+        shader.set_float(base + "outer_cut_off", sl_outer_cut_off);
     }
 }
 
@@ -300,9 +315,9 @@ int main()
 
         shader.set_vec3("view_pos", camera.position);
 
-        directional_light_system(shader);
+        // directional_light_system(shader);
         point_light_system(shader);
-        spot_light_system(shader);
+        // spot_light_system(shader, camera);
 
         // material properties
         constexpr int mat_diffuse   {0};
@@ -318,8 +333,8 @@ int main()
         floor_plane = glm::translate(floor_plane, glm::vec3(0.0f));
         floor_plane = glm::scale(floor_plane, glm::vec3(0.25f));
 
-        // rotate the plane 90 radians on x axis
-        floor_plane = glm::rotate(floor_plane, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+        // rotate the plane -90 radians on x axis
+        floor_plane = glm::rotate(floor_plane, glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 
         shader.set_mat4("model", floor_plane);
         floor.draw(shader);
