@@ -1,8 +1,9 @@
-#if 0
 #pragma once
 
 #include <vector>
 #include <string>
+#include <cassert>
+
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -10,24 +11,113 @@
 #include "shader.hpp"
 #include "camera.hpp"
 
+struct ManagedPointLight
+{
+    int id {};
+    PointLight pl_data;
+};
+
+struct ManagedSpotLight
+{
+    int id {};
+    SpotLight sl_data;
+};
+
 class LightManager
 {
     public:
         DirectLight dir_light;
 
-        std::vector<PointLight> point_lights;
-        inline void add_point_lights(const PointLight& light)
+        static constexpr std::size_t MAX_SPOT_LIGHTS  {2};
+        static constexpr std::size_t MAX_POINT_LIGHTS {4};
+
+        int next_point_light_id {};
+        int next_spot_light_id {};
+
+        std::vector<ManagedPointLight> point_lights;
+        std::vector<ManagedSpotLight> spot_lights;
+
+        inline int add_point_lights(const PointLight& light)
         {
-            point_lights.push_back(light);
+            if (point_lights.size() >= MAX_POINT_LIGHTS)
+                return -1;
+
+            int id = next_point_light_id++;
+            point_lights.emplace_back(ManagedPointLight{id, light});
+            return id;
         }
 
-        #if 1
-        std::vector<SpotLight>  spot_lights;
-        inline void add_spot_lights(const SpotLight& light)
+        inline int add_spot_lights(const SpotLight& light)
         {
-            spot_lights.push_back(light);
+            if (spot_lights.size() >= MAX_SPOT_LIGHTS)
+                return -1;
+
+            int id = next_spot_light_id++;
+            spot_lights.emplace_back(ManagedSpotLight{id, light});
+            return id;       
         }
-        #endif
+
+        // during point light removal order in the array is maintained
+        // using point_lights.erase(), but can be expensive for larger sizes
+        // as .erase() is O(n)
+        inline bool remove_point_light_ordered(int id)
+        {
+            auto find_id = std::find_if(point_lights.begin(), point_lights.end(), 
+            [id](const ManagedPointLight& managed) { return managed.id == id; });
+
+            if (find_id == point_lights.end())
+                return false;
+
+            point_lights.erase(find_id);
+            return true;
+        }
+
+        // during spot light removal order in the array is maintained
+        // using spot_lights.erase(), but can be expensive for larger sizes
+        // as .erase() is O(n)
+        inline bool remove_spot_light_ordered(int id)
+        {
+            auto find_id = std::find_if(spot_lights.begin(), spot_lights.end(),
+            [id](const ManagedSpotLight& managed) { return managed.id == id; } );
+
+            if (find_id == spot_lights.end())
+                return false;
+            
+            spot_lights.erase(find_id);
+            return true;
+        }
+
+        // unordered removals are better supported for larger sizes
+        // as pop_back() is O(1)
+        // but because of std::move and .back(), the order is lost
+        inline bool remove_point_light_unordered(int id)
+        {
+            auto find_id = std::find_if(point_lights.begin(), point_lights.end(), 
+            [id](const ManagedPointLight& managed) { return managed.id == id; });
+
+            if (find_id == point_lights.end())
+                return false;
+            
+            *find_id = std::move(point_lights.back());
+            point_lights.pop_back();
+            return true;
+        }
+
+        // unordered removals are better supported for larger sizes
+        // as pop_back() is O(1)
+        // but because of std::move and .back(), the order is lost
+        inline bool remove_spot_light_unordered(int id)
+        {
+            auto find_id = std::find_if(spot_lights.begin(), spot_lights.end(), 
+            [id](const ManagedSpotLight& managed) { return managed.id == id; });
+
+            if (find_id == spot_lights.end())
+                return false;
+            
+            *find_id = std::move(spot_lights.back());
+            spot_lights.pop_back();
+            return true;
+        }
 
         void update_shader_uniforms(Shader& shader) /* [[maybe_unused]] const Camera& camera */
         {
@@ -40,6 +130,7 @@ class LightManager
             shader.set_vec3("dir_light.diffuse",   light_color * dir_light.diffuse);
             shader.set_vec3("dir_light.specular",  light_color * dir_light.specular);
 
+            #if 0
             // point lights
             shader.set_int("num_point_lights", static_cast<int>(point_lights.size()));
 
@@ -57,8 +148,9 @@ class LightManager
                 shader.set_float(base + "linear",    point_lights[i].linear);
                 shader.set_float(base + "quadratic", point_lights[i].quadratic);
             }
+            #endif
 
-            #if 1
+            #if 0
             // spot light
             shader.set_int("num_spot_lights", static_cast<int>(spot_lights.size()));
 
@@ -83,4 +175,3 @@ class LightManager
             #endif
         }
 };
-#endif
