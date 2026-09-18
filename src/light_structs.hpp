@@ -1,4 +1,3 @@
-#if 0
 #pragma once
 
 #include <glm/glm.hpp>
@@ -27,18 +26,17 @@ struct PointLight
 
 struct SpotLight
 {
-    glm::vec3 position  {0.0f, 0.0f, 0.0f};
+    glm::vec3 position  {0.0f, 0.0f, 0.0f,};
     glm::vec3 direction {0.0f, -1.0f, 0.0f};
 
     glm::vec3 ambient  {0.0f, 0.0f, 0.0f};
-    glm::vec3 diffuse  {1.0f, 1.0f, 1.0f};
-    glm::vec3 specular {1.0f, 1.0f, 1.0f};
+    glm::vec3 diffuse  {0.0f, 0.0f, 0.0f};
+    glm::vec3 specular {0.0f, 0.0f, 0.0f};
     
-    float cut_off       {12.0f};
-    float outer_cut_off {17.0f};
+    float cut_off       {12.5f};
+    float outer_cut_off {17.5f};
 
     float constant  {1.0f};
     float linear    {0.09f};
     float quadratic {0.032f};
 };
-#endif
