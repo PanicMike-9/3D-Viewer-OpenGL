@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <utility>
 #include <string>
 
 #include <glm/glm.hpp>
@@ -33,9 +34,8 @@ class LightManager
         int next_point_light_id {};
         int next_spot_light_id {};
 
+        // ---- point light ----
         std::vector<ManagedPointLight> point_lights;
-        std::vector<ManagedSpotLight> spot_lights;
-
         inline int add_point_lights(const PointLight& light)
         {
             if (point_lights.size() >= MAX_POINT_LIGHTS)
@@ -44,16 +44,6 @@ class LightManager
             int id = next_point_light_id++;
             point_lights.emplace_back(ManagedPointLight{id, light});
             return id;
-        }
-
-        inline int add_spot_lights(const SpotLight& light)
-        {
-            if (spot_lights.size() >= MAX_SPOT_LIGHTS)
-                return -1;
-
-            int id = next_spot_light_id++;
-            spot_lights.emplace_back(ManagedSpotLight{id, light});
-            return id;       
         }
 
         // during point light removal order in the array is maintained
@@ -69,6 +59,57 @@ class LightManager
 
             point_lights.erase(find_id);
             return true;
+        }
+
+        // unordered removals are better supported for larger sizes
+        // as pop_back() is O(1)
+        // but because of std::move and .back(), the order is lost
+        inline bool remove_point_light_unordered(int id)
+        {
+            auto find_id = std::find_if(point_lights.begin(), point_lights.end(), 
+            [id](const ManagedPointLight& managed) { return managed.id == id; });
+
+            if (find_id == point_lights.end())
+                return false;
+            
+            *find_id = std::move(point_lights.back());
+            point_lights.pop_back();
+            return true;
+        }
+
+        PointLight* get_point_light(int id)
+        {
+            auto find_id = std::find_if(point_lights.begin(), point_lights.end(),
+             [id](const ManagedPointLight& managed) { return managed.id == id; });
+
+            if (find_id == point_lights.end())
+                return nullptr;
+
+            return &find_id->pl_data;
+        }
+
+        std::vector<std::pair<int, PointLight>> get_all_point_lights() const
+        {
+            std::vector<std::pair<int, PointLight>> result;
+
+            for (const ManagedPointLight& i : point_lights)
+            {
+                result.emplace_back(i.id, i.pl_data);
+            }
+
+            return result;
+        }
+
+        // ---- spot light ----
+        std::vector<ManagedSpotLight> spot_lights;
+        inline int add_spot_lights(const SpotLight& light)
+        {
+            if (spot_lights.size() >= MAX_SPOT_LIGHTS)
+                return -1;
+
+            int id = next_spot_light_id++;
+            spot_lights.emplace_back(ManagedSpotLight{id, light});
+            return id;       
         }
 
         // during spot light removal order in the array is maintained
@@ -89,22 +130,6 @@ class LightManager
         // unordered removals are better supported for larger sizes
         // as pop_back() is O(1)
         // but because of std::move and .back(), the order is lost
-        inline bool remove_point_light_unordered(int id)
-        {
-            auto find_id = std::find_if(point_lights.begin(), point_lights.end(), 
-            [id](const ManagedPointLight& managed) { return managed.id == id; });
-
-            if (find_id == point_lights.end())
-                return false;
-            
-            *find_id = std::move(point_lights.back());
-            point_lights.pop_back();
-            return true;
-        }
-
-        // unordered removals are better supported for larger sizes
-        // as pop_back() is O(1)
-        // but because of std::move and .back(), the order is lost
         inline bool remove_spot_light_unordered(int id)
         {
             auto find_id = std::find_if(spot_lights.begin(), spot_lights.end(), 
@@ -118,17 +143,6 @@ class LightManager
             return true;
         }
 
-        PointLight* get_point_light(int id)
-        {
-            auto find_id = std::find_if(point_lights.begin(), point_lights.end(),
-             [id](const ManagedPointLight& managed) { return managed.id == id; });
-
-            if (find_id == point_lights.end())
-                return nullptr;
-
-            return &find_id->pl_data;
-        }
-
         SpotLight* get_spot_light(int id)
         {
             auto find_id = std::find_if(spot_lights.begin(), spot_lights.end(),
@@ -138,6 +152,18 @@ class LightManager
                 return nullptr;
 
             return &find_id->sl_data;
+        }
+
+        std::vector<std::pair<int, SpotLight>> get_all_spot_lights() const
+        {
+            std::vector<std::pair<int, SpotLight>> result;
+
+            for (const ManagedSpotLight& i : spot_lights)
+            {
+                result.emplace_back(i.id, i.sl_data);
+            }
+
+            return result;
         }
 
         void update_shader_uniforms(Shader& shader) /* [[maybe_unused]] const Camera& camera */
