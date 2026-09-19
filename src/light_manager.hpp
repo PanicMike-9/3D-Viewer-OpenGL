@@ -120,7 +120,24 @@ class LightManager
 
         PointLight* get_point_light(int id)
         {
+            auto find_id = std::find_if(point_lights.begin(), point_lights.end(),
+             [id](const ManagedPointLight& managed) { return managed.id == id; });
 
+            if (find_id == point_lights.end())
+                return nullptr;
+
+            return &find_id->pl_data;
+        }
+
+        SpotLight* get_spot_light(int id)
+        {
+            auto find_id = std::find_if(spot_lights.begin(), spot_lights.end(),
+                [id](const ManagedSpotLight& managed) { return managed.id == id; });
+
+            if (find_id == spot_lights.end())
+                return nullptr;
+
+            return &find_id->sl_data;
         }
 
         void update_shader_uniforms(Shader& shader) /* [[maybe_unused]] const Camera& camera */
