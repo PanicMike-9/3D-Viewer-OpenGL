@@ -2,7 +2,6 @@
 
 #include <vector>
 #include <string>
-#include <cassert>
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -117,6 +116,11 @@ class LightManager
             *find_id = std::move(spot_lights.back());
             spot_lights.pop_back();
             return true;
+        }
+
+        PointLight* get_point_light(int id)
+        {
+
         }
 
         void update_shader_uniforms(Shader& shader) /* [[maybe_unused]] const Camera& camera */
