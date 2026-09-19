@@ -36,7 +36,7 @@ struct PointLight
     float quadratic;
 };
 #define MAX_POINT_LIGHTS 4
-// uniform int num_point_lights;
+uniform int num_point_lights;
 uniform PointLight point_lights[MAX_POINT_LIGHTS];
 
 struct SpotLight
@@ -56,7 +56,7 @@ struct SpotLight
     float quadratic;
 };
 #define MAX_SPOT_LIGHTS 2
-// uniform int num_spot_lights;
+uniform int num_spot_lights;
 uniform SpotLight spot_lights[MAX_SPOT_LIGHTS];
 
 vec3 calc_directional_light(DirectLight light, vec3 normal, vec3 view_dir)
@@ -169,14 +169,14 @@ void main()
 
     vec3 result = calc_directional_light(dir_light, norm, view_dir);
 
-    // int point_lights_count = min(num_point_lights, POINT_LIGHTS);
-    for (int i = 0; i < MAX_POINT_LIGHTS; ++i)
+    int point_lights_count = min(num_point_lights, POINT_LIGHTS);
+    for (int i = 0; i < point_lights_count; ++i)
     {
         result += calc_point_light(point_lights[i], norm, FragPos, view_dir);
     }
 
-    // int spot_lights_count = min(num_spot_lights, SPOT_LIGHTS);
-    for (int i = 0; i < MAX_SPOT_LIGHTS; ++i)
+    int spot_lights_count = min(num_spot_lights, SPOT_LIGHTS);
+    for (int i = 0; i < spot_lights_count; ++i)
     {
         result += calc_spot_light(spot_lights[i], norm, FragPos, view_dir);
     }
