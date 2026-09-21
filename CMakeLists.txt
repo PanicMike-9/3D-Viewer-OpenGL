@@ -11,6 +11,7 @@ add_executable(app src/main.cpp
                    src/camera.cpp
                    src/mesh.cpp
                    src/model.cpp
+                   src/light_manager.cpp
               )
 
 # final app.exe
@@ -36,3 +37,12 @@ PRIVATE
 opengl32
 ${CMAKE_SOURCE_DIR}/lib/glfw3.lib
 )
+
+# Automatically copy .dll dependencies
+if(WIN32)
+    add_custom_command(TARGET app POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            $<TARGET_FILE:assimp>
+            $<TARGET_FILE_DIR:app>
+)
+endif()
