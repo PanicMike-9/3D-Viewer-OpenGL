@@ -169,17 +169,33 @@ void main()
 
     vec3 result = calc_directional_light(dir_light, norm, view_dir);
 
-    int point_lights_count = min(num_point_lights, POINT_LIGHTS);
+    // point and spot light loop without LightManager class
+    #if 1
+    for (int i = 0; i < MAX_POINT_LIGHTS; ++i)
+    {
+        result += calc_point_light(point_lights[i], norm, FragPos, view_dir);
+    }
+
+    for (int i = 0; i < MAX_SPOT_LIGHTS; ++i)
+    {
+        result += calc_spot_light(spot_lights[i], norm, FragPos, view_dir);
+    }
+    #endif
+
+    // point and spot light loop through LightManager class
+    #if 0
+    int point_lights_count = min(num_point_lights, MAX_POINT_LIGHTS);
     for (int i = 0; i < point_lights_count; ++i)
     {
         result += calc_point_light(point_lights[i], norm, FragPos, view_dir);
     }
 
-    int spot_lights_count = min(num_spot_lights, SPOT_LIGHTS);
+    int spot_lights_count = min(num_spot_lights, MAX_SPOT_LIGHTS);
     for (int i = 0; i < spot_lights_count; ++i)
     {
         result += calc_spot_light(spot_lights[i], norm, FragPos, view_dir);
     }
+    #endif
 
     float alpha = texture(material.texture_diffuse1, TexCoords).a;
     FragColor = vec4(result, alpha); 
