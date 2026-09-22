@@ -12,7 +12,7 @@ An OpenGL project built in C++ to explore 3D rendering, shaders, camera systems 
 - CMake 3.10 or higher
 - MSVC or MinGW
 
-## Generate & Build
+## Generate & Build (Windows Only)
 
 ```bash
    git clone https://github.com/PanicMike-9/3D-Viewer-OpenGL.git
@@ -27,6 +27,6 @@ An OpenGL project built in C++ to explore 3D rendering, shaders, camera systems 
 ```
 ## Project Images
 
-![](screenshots/X-cube1.png)
+![](screenshots/point_and_spot_light.png)
 
-![](screenshots/X-cube2.png)
+![](screenshots/spot_light.png)
