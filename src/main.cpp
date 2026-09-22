@@ -146,10 +146,10 @@ constexpr std::array<glm::vec3, MAX_POINT_LIGHTS> point_lights_pos
 inline void point_light_system(Shader& shader)
 {
     // point light colors
-    constexpr glm::vec3 color1 {1.0f, 0.0f, 0.0f};
-    constexpr glm::vec3 color2 {0.0f, 1.0f, 0.0f};
-    constexpr glm::vec3 color3 {0.0f, 0.0f, 1.0f};
-    constexpr glm::vec3 color4 {1.0f, 1.0f, 0.0f};
+    constexpr glm::vec3 red {1.0f, 0.0f, 0.0f};
+    constexpr glm::vec3 green {0.0f, 1.0f, 0.0f};
+    constexpr glm::vec3 blue {0.0f, 0.0f, 1.0f};
+    constexpr glm::vec3 yellow {1.0f, 1.0f, 0.0f};
 
     constexpr glm::vec3 pl_ambient {0.02f, 0.02f, 0.02f};
 
@@ -158,7 +158,7 @@ inline void point_light_system(Shader& shader)
     constexpr float pl_quadratic {0.032f};
     
 
-    constexpr std::array<glm::vec3, MAX_POINT_LIGHTS> point_lights_colors {color1, color3, color2, color4};
+    constexpr std::array<glm::vec3, MAX_POINT_LIGHTS> point_lights_colors {red, blue, green, yellow};
 
     // running the loop 4 times, for 4 point lights and 4 colors
     // shader.set_int("num_point_lights", static_cast<int>(point_lights.size()));
@@ -231,11 +231,13 @@ inline void window_background_color()
     glClearColor(red_bgc, green_bgc, blue_bgc, 1.0f); 
 }
 
+LightManager light_manager;
+
 int main()
 {
     glfwInit();
 
-    GLFWwindow* window = glfwCreateWindow(WIN_WIDTH, WIN_HEIGHT, "Test Lighting", nullptr, nullptr);
+    GLFWwindow* window = glfwCreateWindow(WIN_WIDTH, WIN_HEIGHT, "3D Renderer", nullptr, nullptr);
 
     if (!window)
     {
@@ -315,9 +317,9 @@ int main()
 
         shader.set_vec3("view_pos", camera.position);
 
-        // directional_light_system(shader);
+        light_manager.update_shader_uniforms(shader);
         point_light_system(shader);
-        // spot_light_system(shader, camera);
+        spot_light_system(shader, camera);
 
         // material properties
         constexpr int mat_diffuse   {0};
