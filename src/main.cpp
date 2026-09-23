@@ -9,6 +9,7 @@
 
 // basic C++ libs
 #include <iostream>
+#include <print>
 #include <string>
 #include <array>
 
@@ -20,8 +21,8 @@
 #include "light_manager.hpp"
 
 // window height, width and aspect ratio values
-constexpr float WIN_WIDTH = 1280.0f;
-constexpr float WIN_HEIGHT = 720.0f;
+constexpr float WIN_WIDTH = 1920.0f;
+constexpr float WIN_HEIGHT = 1080.0f;
 constexpr float WIN_ASPECT = WIN_WIDTH / WIN_HEIGHT;
 
 // exit window with q or esc keys
@@ -317,6 +318,7 @@ int main()
 
         shader.set_vec3("view_pos", camera.position);
 
+        // TODO: use LightManager to manage point and spot lights
         light_manager.update_shader_uniforms(shader);
         point_light_system(shader);
         spot_light_system(shader, camera);
