@@ -324,9 +324,9 @@ int main()
         spot_light_system(shader, camera);
 
         // material properties
-        constexpr int mat_diffuse   {0};
-        constexpr int mat_specular  {1};
-        constexpr float shininess   {128.0f};
+        constexpr int mat_diffuse  {0};
+        constexpr int mat_specular {1};
+        constexpr float shininess  {128.0f};
 
         shader.set_int("material.texture_diffuse1", mat_diffuse);
         shader.set_int("material.texture_specular1", mat_specular);
