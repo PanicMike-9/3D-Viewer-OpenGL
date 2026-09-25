@@ -117,6 +117,8 @@ inline void camera_controller(GLFWwindow* window, Camera& camera, const float de
     c_key_was_pressed = c_key_is_pressed;
 }
 
+#if 0
+// setting raw hard-coded light casters
 inline void directional_light_system(Shader& shader)
 {
     constexpr glm::vec3 light_color {1.0f, 1.0f, 1.0f};
@@ -134,15 +136,6 @@ inline void directional_light_system(Shader& shader)
     shader.set_vec3("dir_light.diffuse", diffuse);
     shader.set_vec3("dir_light.specular", specular);
 }
-
-constexpr std::size_t MAX_POINT_LIGHTS {4};
-constexpr std::array<glm::vec3, MAX_POINT_LIGHTS> point_lights_pos 
-{    
-    glm::vec3{ 4.0f,  3.0f, 0.0f},
-    glm::vec3{-4.0f,  3.0f, 0.0f},
-    glm::vec3{ 4.0f,  3.0f, 1.0f},
-    glm::vec3{-4.0f,  3.0f, 1.0f},
-};
 
 inline void point_light_system(Shader& shader)
 {
@@ -178,13 +171,6 @@ inline void point_light_system(Shader& shader)
         shader.set_float(base + "quadratic", pl_quadratic);
     }
 }
-
-constexpr std::size_t MAX_SPOT_LIGHTS {2};
-constexpr std::array<glm::vec3, MAX_SPOT_LIGHTS> spot_lights_pos
-{
-    glm::vec3{ 3.0f, 5.0f, 0.0f},
-    glm::vec3{-3.0f, 5.0f, 0.0f},
-};
 
 inline void spot_light_system(Shader& shader, [[maybe_unused]] Camera& camera)
 {
@@ -222,6 +208,101 @@ inline void spot_light_system(Shader& shader, [[maybe_unused]] Camera& camera)
         shader.set_float(base + "outer_cut_off", sl_outer_cut_off);
     }
 }
+#endif
+
+constexpr std::size_t MAX_POINT_LIGHTS {4};
+constexpr std::array<glm::vec3, MAX_POINT_LIGHTS> point_lights_pos 
+{    
+    glm::vec3{ 4.0f,  3.0f, 0.0f},
+    glm::vec3{-4.0f,  3.0f, 0.0f},
+    glm::vec3{ 4.0f,  3.0f, 1.0f},
+    glm::vec3{-4.0f,  3.0f, 1.0f},
+};
+
+inline void managed_point_light(LightManager& light_manager)
+{
+    // point light colors
+    constexpr glm::vec3 neon_cyan     {0.0f, 0.9f, 1.0f};
+    constexpr glm::vec3 hot_magenta   {1.0f, 0.0f, 0.6f};
+    constexpr glm::vec3 sunset_orange {1.0f, 0.35f, 0.1f};
+    constexpr glm::vec3 royal_purple  {0.45f, 0.2f, 0.7f};
+
+    // for grey monochromatic ambient light
+    // constexpr glm::vec3 pl_ambient {0.02f, 0.02f, 0.02f};
+
+    constexpr float pl_constant  {1.0f};
+    constexpr float pl_linear    {0.09f};
+    constexpr float pl_quadratic {0.032f};
+
+    constexpr std::array<glm::vec3, MAX_POINT_LIGHTS> point_lights_colors 
+    {
+        neon_cyan, hot_magenta, sunset_orange, royal_purple
+    };
+
+    // running the loop 4 times, for 4 point lights and 4 colors
+    for (std::size_t i {0}; i < MAX_POINT_LIGHTS; ++i)
+    {
+        PointLight light;
+
+        light.position = point_lights_pos[i];
+
+        // light.ambient  = pl_ambient; // monochrome, no tint
+        light.ambient  = point_lights_colors[i] * 0.05f;
+        light.diffuse  = point_lights_colors[i];
+        light.specular = point_lights_colors[i];
+
+        light.constant  = pl_constant;
+        light.linear    = pl_linear;
+        light.quadratic = pl_quadratic;
+
+        light_manager.add_point_light(light);
+    }
+}
+
+constexpr std::size_t MAX_SPOT_LIGHTS {2};
+constexpr std::array<glm::vec3, MAX_SPOT_LIGHTS> spot_lights_pos
+{
+    glm::vec3{ 2.0f, 6.0f, 0.0f},
+    glm::vec3{-2.0f, 6.0f, 0.0f},
+};
+
+inline void managed_spot_light(LightManager& light_manager)
+{
+    constexpr glm::vec3 royal_purple {0.45f, 0.2f, 0.7f};
+    constexpr glm::vec3 gold_amber    {1.0f, 0.6f, 0.2f};
+
+    constexpr glm::vec3 sl_ambient   {0.0f, 0.0f, 0.0f};
+    constexpr glm::vec3 sl_direction {0.0f, -1.0f, 0.0f};
+
+    constexpr float sl_constant  {1.0f};
+    constexpr float sl_linear    {0.09f};
+    constexpr float sl_quadratic {0.032f};
+
+    float sl_cut_off       {glm::cos(glm::radians(12.5f))};
+    float sl_outer_cut_off {glm::cos(glm::radians(17.5f))};
+
+    constexpr std::array<glm::vec3, MAX_SPOT_LIGHTS> spot_lights_colors {royal_purple, gold_amber};
+
+    for (std::size_t i {0}; i < MAX_SPOT_LIGHTS; ++i)
+    {
+        SpotLight light;
+        light.position  = spot_lights_pos[i];
+        light.direction = sl_direction;
+
+        light.ambient  = sl_ambient;
+        light.diffuse  = spot_lights_colors[i];
+        light.specular = spot_lights_colors[i];
+
+        light.constant  = sl_constant;
+        light.linear    = sl_linear;
+        light.quadratic = sl_quadratic;
+
+        light.cut_off       = sl_cut_off;
+        light.outer_cut_off = sl_outer_cut_off;
+
+        light_manager.add_spot_light(light);
+    }
+}
 
 inline void window_background_color()
 {
@@ -238,7 +319,7 @@ int main()
 {
     glfwInit();
 
-    GLFWwindow* window = glfwCreateWindow(WIN_WIDTH, WIN_HEIGHT, "3D Renderer", nullptr, nullptr);
+    GLFWwindow* window = glfwCreateWindow(WIN_WIDTH, WIN_HEIGHT, "LightManager Testing", nullptr, nullptr);
 
     if (!window)
     {
@@ -318,10 +399,12 @@ int main()
 
         shader.set_vec3("view_pos", camera.position);
 
-        // TODO: use LightManager to manage point and spot lights
+        // manage light casters
+        managed_point_light(light_manager);
+        managed_spot_light(light_manager);
+
+        // directional light (disabled in LightManager)
         light_manager.update_shader_uniforms(shader);
-        point_light_system(shader);
-        spot_light_system(shader, camera);
 
         // material properties
         constexpr int mat_diffuse  {0};
