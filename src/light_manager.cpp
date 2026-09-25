@@ -51,12 +51,14 @@ void LightManager::update_shader_uniforms(Shader& shader) /* [[maybe_unused]] co
 {
     shader.use();
 
+    #if 0
     constexpr glm::vec3 light_color {1.0f, 1.0f, 1.0f};
 
     shader.set_vec3("dir_light.direction", light_color * dir_light.direction);
     shader.set_vec3("dir_light.ambient",   light_color * dir_light.ambient);
     shader.set_vec3("dir_light.diffuse",   light_color * dir_light.diffuse);
     shader.set_vec3("dir_light.specular",  light_color * dir_light.specular);
+    #endif
 
     // point lights
     shader.set_int("num_point_lights", static_cast<int>(point_lights.size()));
@@ -96,7 +98,7 @@ void LightManager::update_shader_uniforms(Shader& shader) /* [[maybe_unused]] co
         shader.set_float(base + "linear",    light.linear);
         shader.set_float(base + "quadratic", light.quadratic);
 
-        shader.set_float(base + "cut_off",  glm::cos(glm::radians(light.cut_off))); 
-        shader.set_float(base + "outer_cut_off", glm::cos(glm::radians(light.outer_cut_off))); 
+        shader.set_float(base + "cut_off",  light.cut_off); 
+        shader.set_float(base + "outer_cut_off", light.outer_cut_off); 
     }
 }
