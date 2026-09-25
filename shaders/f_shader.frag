@@ -170,7 +170,7 @@ void main()
     vec3 result = calc_directional_light(dir_light, norm, view_dir);
 
     // point and spot light loop without LightManager class
-    #if 1
+    #if 0
     for (int i = 0; i < MAX_POINT_LIGHTS; ++i)
     {
         result += calc_point_light(point_lights[i], norm, FragPos, view_dir);
@@ -183,7 +183,7 @@ void main()
     #endif
 
     // point and spot light loop through LightManager class
-    #if 0
+    #if 1
     int point_lights_count = min(num_point_lights, MAX_POINT_LIGHTS);
     for (int i = 0; i < point_lights_count; ++i)
     {
