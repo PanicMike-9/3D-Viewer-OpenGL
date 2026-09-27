@@ -175,7 +175,7 @@ constexpr std::array<glm::vec3, MAX_SPOT_LIGHTS> spot_lights_pos
 
 inline void managed_spot_light(LightManager& light_manager)
 {
-    constexpr glm::vec3 royal_purple {0.45f, 0.2f, 0.7f};
+    constexpr glm::vec3 royal_purple  {0.45f, 0.2f, 0.7f};
     constexpr glm::vec3 gold_amber    {1.0f, 0.6f, 0.2f};
 
     constexpr glm::vec3 sl_ambient   {0.0f, 0.0f, 0.0f};
@@ -273,6 +273,7 @@ int main()
 
     // shader code files
     Shader shader("shaders/v_shader.vert", "shaders/f_shader.frag");
+    Shader gizmo_shader("shaders/gizmo.vert", "shaders/gizmo.frag");
 
     // load assets
     Model hum_model_1("assets/models/low_poly_human/scene.gltf");
@@ -307,7 +308,7 @@ int main()
         shader.set_vec3("view_pos", camera.position);
 
         // manage light casters
-        managed_point_light(light_manager);
+        // managed_point_light(light_manager);
         managed_spot_light(light_manager);
 
         // directional light (disabled in LightManager)
