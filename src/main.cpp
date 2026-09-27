@@ -220,6 +220,54 @@ inline void window_background_color()
     glClearColor(red_bgc, green_bgc, blue_bgc, 1.0f); 
 }
 
+#if 0
+unsigned int init_cube_gizmo()
+{
+    constexpr float cube_pos[] = 
+    {
+        // front face
+        -0.5f, -0.5f, 0.5f,   0.5f, -0.5f, 0.5f,  0.5f,  0.5f, 0.5f, 
+         0.5f,  0.5f, 0.5f,  -0.5f,  0.5f, 0.5f, -0.5f, -0.5f, 0.5f, 
+
+        // back face
+       -0.5f, -0.5f, -0.5f,  -0.5f,  0.5f, -0.5f,   0.5f,  0.5f, -0.5f,
+        0.5f,  0.5f, -0.5f,   0.5f, -0.5f, -0.5f,  -0.5f, -0.5f, -0.5f,
+
+        // top face
+       -0.5f,  0.5f, -0.5f,  -0.5f,  0.5f,  0.5f,   0.5f,  0.5f,  0.5f,
+        0.5f,  0.5f,  0.5f,   0.5f,  0.5f, -0.5f,  -0.5f,  0.5f, -0.5f,
+
+        // bottom face
+       -0.5f, -0.5f, -0.5f,   0.5f, -0.5f, -0.5f,   0.5f, -0.5f,  0.5f,
+        0.5f, -0.5f,  0.5f,  -0.5f, -0.5f,  0.5f,  -0.5f, -0.5f, -0.5f,
+
+        // right face
+        0.5f, -0.5f, -0.5f,   0.5f,  0.5f, -0.5f,   0.5f,  0.5f,  0.5f,
+        0.5f,  0.5f,  0.5f,   0.5f, -0.5f,  0.5f,   0.5f, -0.5f, -0.5f,
+
+        // left face
+       -0.5f, -0.5f, -0.5f,  -0.5f, -0.5f,  0.5f,  -0.5f,  0.5f,  0.5f,
+       -0.5f,  0.5f,  0.5f,  -0.5f,  0.5f, -0.5f,  -0.5f, -0.5f, -0.5f,
+    };
+
+    unsigned int gizmo_vao;
+    unsigned int gizmo_vbo;
+
+    glGenVertexArrays(1, &gizmo_vao);
+    glGenBuffers(1, &gizmo_vbo);
+
+    glBindVertexArray(gizmo_vao);
+    glBindBuffer(GL_ARRAY_BUFFER, gizmo_vbo);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(cube_pos), cube_pos, GL_STATIC_DRAW);
+
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+
+    glBindVertexArray(0);
+    return gizmo_vao;
+}
+#endif
+
 LightManager light_manager;
 
 int main()
@@ -307,12 +355,12 @@ int main()
 
         shader.set_vec3("view_pos", camera.position);
 
-        // manage light casters
-        // managed_point_light(light_manager);
-        managed_spot_light(light_manager);
-
         // directional light (disabled in LightManager)
         light_manager.update_shader_uniforms(shader);
+
+        // manage light casters
+        managed_point_light(light_manager);
+        managed_spot_light(light_manager);
 
         // material properties
         constexpr int mat_diffuse  {0};
