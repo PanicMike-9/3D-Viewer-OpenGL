@@ -117,6 +117,7 @@ inline void camera_controller(GLFWwindow* window, Camera& camera, const float de
     c_key_was_pressed = c_key_is_pressed;
 }
 
+// TODO: try more than 4 point lights
 constexpr std::size_t MAX_POINT_LIGHTS {4};
 constexpr std::array<glm::vec3, MAX_POINT_LIGHTS> point_lights_pos 
 {    
@@ -166,6 +167,8 @@ inline void managed_point_light(LightManager& light_manager)
     }
 }
 
+// TODO: try more than 2 spot lights
+constexpr std::size_t MAX_POINT_LIGHTS {4};
 constexpr std::size_t MAX_SPOT_LIGHTS {2};
 constexpr std::array<glm::vec3, MAX_SPOT_LIGHTS> spot_lights_pos
 {
