@@ -117,7 +117,6 @@ inline void camera_controller(GLFWwindow* window, Camera& camera, const float de
     c_key_was_pressed = c_key_is_pressed;
 }
 
-// TODO: try more than 4 point lights
 constexpr std::size_t MAX_POINT_LIGHTS {4};
 constexpr std::array<glm::vec3, MAX_POINT_LIGHTS> point_lights_pos 
 {    
@@ -167,7 +166,6 @@ inline void managed_point_light(LightManager& light_manager)
     }
 }
 
-// TODO: try more than 2 spot lights
 constexpr std::size_t MAX_SPOT_LIGHTS {2};
 constexpr std::array<glm::vec3, MAX_SPOT_LIGHTS> spot_lights_pos
 {
@@ -177,10 +175,12 @@ constexpr std::array<glm::vec3, MAX_SPOT_LIGHTS> spot_lights_pos
 
 inline void managed_spot_light(LightManager& light_manager)
 {
-    constexpr glm::vec3 royal_purple  {0.45f, 0.2f, 0.7f};
-    constexpr glm::vec3 gold_amber    {1.0f, 0.6f, 0.2f};
+    constexpr glm::vec3 royal_purple {0.45f, 0.2f, 0.7f};
+    constexpr glm::vec3 gold_amber   {1.0f, 0.6f, 0.2f};
 
-    constexpr glm::vec3 sl_ambient   {0.0f, 0.0f, 0.0f};
+    // for grey monochromatic ambient light
+    // constexpr glm::vec3 sl_ambient   {0.0f, 0.0f, 0.0f};
+
     constexpr glm::vec3 sl_direction {0.0f, -1.0f, 0.0f};
 
     constexpr float sl_constant  {1.0f};
@@ -198,7 +198,8 @@ inline void managed_spot_light(LightManager& light_manager)
         light.position  = spot_lights_pos[i];
         light.direction = sl_direction;
 
-        light.ambient  = sl_ambient;
+        // light.ambient  = sl_ambient;
+        light.ambient  = spot_lights_colors[i] * 0.05f;
         light.diffuse  = spot_lights_colors[i];
         light.specular = spot_lights_colors[i];
 
@@ -216,13 +217,13 @@ inline void managed_spot_light(LightManager& light_manager)
 inline void window_background_color()
 {
     // rgb phases
-    constexpr float red_bgc    {0.1f};
-    constexpr float green_bgc  {0.1f};
-    constexpr float blue_bgc   {0.12f};
+    constexpr float red_bgc   {0.1f};
+    constexpr float green_bgc {0.1f};
+    constexpr float blue_bgc  {0.12f};
     glClearColor(red_bgc, green_bgc, blue_bgc, 1.0f); 
 }    
 
-float cube_vertices[] = 
+constexpr float cube_vertices[] = 
 {
    -0.5f, -0.5f, -0.5f, 
     0.5f, -0.5f, -0.5f,  
@@ -287,7 +288,7 @@ inline void create_gizmo(LightManager& light_manager, Shader& gizmo_shader)
 
     // auto deduces to: const ManagedPointLight&
     // [id, light], structure creates
-    // id -> ManagedPointLight::id
+    // id    -> ManagedPointLight::id
     // light -> ManagedPointLight::light
     for (const auto& [id, light] : light_manager.get_all_point_lights())
     {
@@ -306,7 +307,7 @@ inline void create_gizmo(LightManager& light_manager, Shader& gizmo_shader)
 
     // auto deduces to: const ManagedSpotLight&
     // [id, light], structure creates
-    // id -> ManagedSpotLight::id
+    // id    -> ManagedSpotLight::id
     // light -> ManagedSpotLight::light
     for (const auto& [id, light] : light_manager.get_all_spot_lights())
     {
@@ -333,7 +334,7 @@ int main()
 {
     glfwInit();
 
-    GLFWwindow* window = glfwCreateWindow(WIN_WIDTH, WIN_HEIGHT, "LightManager Testing", nullptr, nullptr);
+    GLFWwindow* window = glfwCreateWindow(WIN_WIDTH, WIN_HEIGHT, "Building GUI", nullptr, nullptr);
 
     if (!window)
     {
