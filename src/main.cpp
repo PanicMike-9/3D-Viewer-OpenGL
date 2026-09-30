@@ -373,16 +373,39 @@ int main()
         gizmo_shader.set_mat4("projection", projection);
         gizmo_shader.set_mat4("view", view);
 
-        glm::mat4 gizmo_model = glm::mat4(1.0f);
-        gizmo_shader.set_mat4("model", gizmo_model);
-
-        gizmo_model = glm::mat4(1.0f);
-        gizmo_model = glm::translate(gizmo_model, glm::vec3(0.0f));
-        gizmo_model = glm::scale(gizmo_model, glm::vec3(0.5f));
-        gizmo_shader.set_mat4("model", gizmo_model);
-
         glBindVertexArray(cube_vao);
-        glDrawArrays(GL_TRIANGLES, 0, 36);
+
+        for (const auto& [id, light] : light_manager.get_all_point_lights())
+        {
+            glm::mat4 gizmo_model = glm::mat4(1.0f);
+            gizmo_shader.set_mat4("model", gizmo_model);
+
+            gizmo_model = glm::mat4(1.0f);
+            gizmo_model = glm::translate(gizmo_model, light.position);
+            gizmo_model = glm::scale(gizmo_model, glm::vec3(0.2f));
+            gizmo_shader.set_mat4("model", gizmo_model);
+
+            gizmo_shader.set_vec3("lightColor", light.diffuse);
+
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+        }
+
+        for (const auto& [id, light] : light_manager.get_all_spot_lights())
+        {
+            glm::mat4 gizmo_model = glm::mat4(1.0f);
+            gizmo_shader.set_mat4("model", gizmo_model);
+
+            gizmo_model = glm::mat4(1.0f);
+            gizmo_model = glm::translate(gizmo_model, light.position);
+            gizmo_model = glm::scale(gizmo_model, glm::vec3(0.2f));
+            gizmo_shader.set_mat4("model", gizmo_model);
+
+            gizmo_shader.set_vec3("lightColor", light.diffuse);
+
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+        }
+
+        glBindVertexArray(0);
 
         // directional light (disabled in LightManager)
         light_manager.update_shader_uniforms(shader);
