@@ -267,6 +267,8 @@ float cube_vertices[] =
    -0.5f,  0.5f, -0.5f, 
 };
 
+inline void create_gizmo(LightManager& light_manager, Shader& gizmo_shader);
+
 LightManager light_manager;
 
 int main()
@@ -397,7 +399,7 @@ int main()
 
             gizmo_model = glm::mat4(1.0f);
             gizmo_model = glm::translate(gizmo_model, light.position);
-            gizmo_model = glm::scale(gizmo_model, glm::vec3(0.2f));
+            gizmo_model = glm::scale(gizmo_model, glm::vec3(0.5f));
             gizmo_shader.set_mat4("model", gizmo_model);
 
             gizmo_shader.set_vec3("lightColor", light.diffuse);
