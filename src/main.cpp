@@ -221,7 +221,52 @@ inline void window_background_color()
     constexpr float green_bgc  {0.1f};
     constexpr float blue_bgc   {0.12f};
     glClearColor(red_bgc, green_bgc, blue_bgc, 1.0f); 
-}
+}    
+float cube_vertices[] = 
+{
+   -0.5f, -0.5f, -0.5f, 
+    0.5f, -0.5f, -0.5f,  
+    0.5f,  0.5f, -0.5f,  
+    0.5f,  0.5f, -0.5f,  
+   -0.5f,  0.5f, -0.5f, 
+   -0.5f, -0.5f, -0.5f, 
+
+   -0.5f, -0.5f,  0.5f, 
+    0.5f, -0.5f,  0.5f,  
+    0.5f,  0.5f,  0.5f,  
+    0.5f,  0.5f,  0.5f,  
+   -0.5f,  0.5f,  0.5f, 
+   -0.5f, -0.5f,  0.5f, 
+
+   -0.5f,  0.5f,  0.5f, 
+   -0.5f,  0.5f, -0.5f, 
+   -0.5f, -0.5f, -0.5f, 
+   -0.5f, -0.5f, -0.5f, 
+   -0.5f, -0.5f,  0.5f, 
+   -0.5f,  0.5f,  0.5f, 
+
+    0.5f,  0.5f,  0.5f,  
+    0.5f,  0.5f, -0.5f,  
+    0.5f, -0.5f, -0.5f,  
+    0.5f, -0.5f, -0.5f,  
+    0.5f, -0.5f,  0.5f,  
+    0.5f,  0.5f,  0.5f,  
+
+   -0.5f, -0.5f, -0.5f, 
+    0.5f, -0.5f, -0.5f,  
+    0.5f, -0.5f,  0.5f,  
+    0.5f, -0.5f,  0.5f,  
+   -0.5f, -0.5f,  0.5f, 
+   -0.5f, -0.5f, -0.5f, 
+
+   -0.5f,  0.5f, -0.5f, 
+    0.5f,  0.5f, -0.5f,  
+    0.5f,  0.5f,  0.5f,  
+    0.5f,  0.5f,  0.5f,  
+   -0.5f,  0.5f,  0.5f, 
+   -0.5f,  0.5f, -0.5f, 
+};
+
 
 LightManager light_manager;
 
@@ -282,6 +327,9 @@ int main()
     Model hum_model_1("assets/models/low_poly_human/scene.gltf");
     Model hum_model_2("assets/models/low_poly_human/scene.gltf");
     Model floor("assets/models/checkered_tile_floor/scene.gltf");
+
+    unsigned int cube_vao, cube_vbo;
+    glGenVertexArrays(1, &cube_vao);
 
     // main render loop
     while (!glfwWindowShouldClose(window))
