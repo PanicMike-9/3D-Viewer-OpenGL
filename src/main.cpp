@@ -168,7 +168,6 @@ inline void managed_point_light(LightManager& light_manager)
 }
 
 // TODO: try more than 2 spot lights
-constexpr std::size_t MAX_POINT_LIGHTS {4};
 constexpr std::size_t MAX_SPOT_LIGHTS {2};
 constexpr std::array<glm::vec3, MAX_SPOT_LIGHTS> spot_lights_pos
 {
@@ -222,6 +221,7 @@ inline void window_background_color()
     constexpr float blue_bgc   {0.12f};
     glClearColor(red_bgc, green_bgc, blue_bgc, 1.0f); 
 }    
+
 float cube_vertices[] = 
 {
    -0.5f, -0.5f, -0.5f, 
@@ -266,7 +266,6 @@ float cube_vertices[] =
    -0.5f,  0.5f,  0.5f, 
    -0.5f,  0.5f, -0.5f, 
 };
-
 
 LightManager light_manager;
 
@@ -328,8 +327,18 @@ int main()
     Model hum_model_2("assets/models/low_poly_human/scene.gltf");
     Model floor("assets/models/checkered_tile_floor/scene.gltf");
 
+    // cube gizmo configuration (temporary)
     unsigned int cube_vao, cube_vbo;
     glGenVertexArrays(1, &cube_vao);
+    glGenBuffers(1, &cube_vbo);
+
+    glBindBuffer(GL_ARRAY_BUFFER, cube_vbo);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(cube_vertices), cube_vertices, GL_STATIC_DRAW);
+
+    glBindVertexArray(cube_vao);
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
 
     // main render loop
     while (!glfwWindowShouldClose(window))
@@ -357,6 +366,23 @@ int main()
         shader.set_mat4("projection", projection);
 
         shader.set_vec3("view_pos", camera.position);
+
+        // set-up gizmo cube using light shader
+        gizmo_shader.use();
+
+        gizmo_shader.set_mat4("projection", projection);
+        gizmo_shader.set_mat4("view", view);
+
+        glm::mat4 gizmo_model = glm::mat4(1.0f);
+        gizmo_shader.set_mat4("model", gizmo_model);
+
+        gizmo_model = glm::mat4(1.0f);
+        gizmo_model = glm::translate(gizmo_model, glm::vec3(0.0f));
+        gizmo_model = glm::scale(gizmo_model, glm::vec3(0.5f));
+        gizmo_shader.set_mat4("model", gizmo_model);
+
+        glBindVertexArray(cube_vao);
+        glDrawArrays(GL_TRIANGLES, 0, 36);
 
         // directional light (disabled in LightManager)
         light_manager.update_shader_uniforms(shader);
