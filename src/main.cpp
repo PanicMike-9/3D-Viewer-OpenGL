@@ -268,8 +268,7 @@ constexpr float cube_vertices[] =
    -0.5f,  0.5f, -0.5f, 
 };
 
-#if 1
-inline void create_gizmo(LightManager& light_manager, Shader& gizmo_shader)
+inline void create_light_gizmo(LightManager& light_manager, Shader& gizmo_shader)
 {
     // cube gizmo configuration (temporary)
     unsigned int cube_vao, cube_vbo;
@@ -326,10 +325,10 @@ inline void create_gizmo(LightManager& light_manager, Shader& gizmo_shader)
 
     glBindVertexArray(0);
 }
-#endif
 
 LightManager light_manager;
 
+// get started with GUI
 int main()
 {
     glfwInit();
@@ -434,7 +433,7 @@ int main()
         gizmo_shader.set_mat4("projection", projection);
         gizmo_shader.set_mat4("view", view);
 
-        create_gizmo(light_manager, gizmo_shader);
+        create_light_gizmo(light_manager, gizmo_shader);
 
         // directional light (disabled in LightManager)
         light_manager.update_shader_uniforms(shader);
