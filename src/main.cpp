@@ -387,19 +387,6 @@ int main()
     Model hum_model_2("assets/models/low_poly_human/scene.gltf");
     Model floor("assets/models/checkered_tile_floor/scene.gltf");
 
-    // cube gizmo configuration (temporary)
-    unsigned int cube_vao, cube_vbo;
-    glGenVertexArrays(1, &cube_vao);
-    glGenBuffers(1, &cube_vbo);
-
-    glBindBuffer(GL_ARRAY_BUFFER, cube_vbo);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(cube_vertices), cube_vertices, GL_STATIC_DRAW);
-
-    glBindVertexArray(cube_vao);
-
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-
     // main render loop
     while (!glfwWindowShouldClose(window))
     {
