@@ -15,7 +15,10 @@ add_executable(app src/main.cpp
               )
 
 # final app.exe
-include_directories(app PRIVATE ${CMAKE_SOURCE_DIR}/include)
+include_directories(app PRIVATE 
+    ${CMAKE_SOURCE_DIR}
+    ${CMAKE_SOURCE_DIR}/include
+)
 
 include(FetchContent)
 FetchContent_Declare( 
@@ -37,6 +40,20 @@ PRIVATE
 opengl32
 ${CMAKE_SOURCE_DIR}/lib/glfw3.lib
 )
+
+# ImGUI integration
+# target_include_directories(${3dViewerOpenGL} PRIVATE vendor/imgui)
+target_include_directories(app PRIVATE vendor/imgui)
+set(IMGUI_SOURCES
+    ${vendor/imgui/imgui.cpp}
+    ${vendor/imgui/imgui_draw.cpp}
+    ${vendor/imgui/imgui_tables.cpp}
+    ${vendor/imgui/imgui_widgets.cpp}
+    ${vendor/imgui/imgui_impl_glfw.cpp}
+    ${vendor/imgui/imgui_impl_opengl3.cpp}
+)
+
+target_sources(app PRIVATE ${IMGUI_SOURCES})
 
 # Automatically copy .dll dependencies
 if(WIN32)
