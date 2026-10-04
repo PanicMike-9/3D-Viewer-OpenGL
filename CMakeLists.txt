@@ -15,9 +15,10 @@ add_executable(app src/main.cpp
               )
 
 # final app.exe
-include_directories(app PRIVATE 
+target_include_directories(app PRIVATE 
     ${CMAKE_SOURCE_DIR}
     ${CMAKE_SOURCE_DIR}/include
+    ${CMAKE_SOURCE_DIR}/vendor/imgui
 )
 
 include(FetchContent)
