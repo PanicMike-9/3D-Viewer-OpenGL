@@ -20,9 +20,14 @@
 #include "mesh.hpp"
 #include "light_manager.hpp"
 
+// ImGui header files
+#include "imgui.h"
+#include "imgui_impl_glfw.h"
+#include "imgui_impl_opengl3.h"
+
 // window height, width and aspect ratio values
-constexpr float WIN_WIDTH = 1920.0f;
-constexpr float WIN_HEIGHT = 1080.0f;
+constexpr float WIN_WIDTH = 1280.0f;
+constexpr float WIN_HEIGHT = 720.0f;
 constexpr float WIN_ASPECT = WIN_WIDTH / WIN_HEIGHT;
 
 // exit window with q or esc keys
@@ -46,6 +51,12 @@ bool first_mouse = true;
 inline void mouse_callback(GLFWwindow* window, double x_pos, double y_pos)
 {
     Camera* cam = static_cast<Camera*>(glfwGetWindowUserPointer(window));
+
+    // skip camera process if ImGui wants focus
+    if (ImGui::GetIO().WantCaptureMouse)
+    {
+        return;
+    }
 
     // check first time receiving mouse input
     if(first_mouse)
@@ -326,16 +337,81 @@ inline void create_light_gizmo(LightManager& light_manager, Shader& gizmo_shader
     glBindVertexArray(0);
 }
 
+inline void init_gui_window(GLFWwindow* main_window)
+{
+    ImGui::CreateContext();
+    ImGui_ImplOpenGL3_Init("#version 410 core");
+    ImGui_ImplGlfw_InitForOpenGL(main_window, true);
+}
+
+inline void start_gui_window_frame()
+{
+    ImGui_ImplOpenGL3_NewFrame();
+    ImGui_ImplGlfw_NewFrame();
+    ImGui::NewFrame();
+}
+
+inline void create_gui_window()
+{
+    ImGuiIO& io = ImGui::GetIO(); (void)io;
+    
+    // must be called oncee, not ever frame
+    static ImVec4 gui_clear_color {1.00f, 1.00f, 1.00f, 1.00f};
+
+    ImGui::Begin("Test GUI");
+    ImGui::Text("FPS %.1f", io.Framerate);
+    ImGui::Text("First GUI Window!");
+    ImGui::ColorEdit3("GUI color", (float*)&gui_clear_color);
+    ImGui::End();
+}
+
+inline void render_gui_window()
+{
+    ImGui::Render();
+    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+}
+
+inline void shutdown_gui_window()
+{
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplGlfw_Shutdown();
+    ImGui::DestroyContext();
+}
+
+inline void toggle_cursor(GLFWwindow* window)
+{
+    static bool gui_mode {true};
+    static bool p_key_was_pressed {false};
+
+    bool p_key_is_pressed {glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS};
+
+    if (p_key_is_pressed && !p_key_was_pressed)
+    {
+        gui_mode = !gui_mode;
+
+        if (gui_mode)
+        {
+            glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+            std::cout << "Cursor Normal\n";
+        }
+        else
+        {
+            glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+            std::cout << "Cursor Disabled\n";
+        }
+    }
+    p_key_was_pressed = p_key_is_pressed;
+}
+
 LightManager light_manager;
 
-// get started with GUI
 int main()
 {
     glfwInit();
 
-    GLFWwindow* window = glfwCreateWindow(WIN_WIDTH, WIN_HEIGHT, "Building GUI", nullptr, nullptr);
+    GLFWwindow* main_window = glfwCreateWindow(WIN_WIDTH, WIN_HEIGHT, "Testing GUI", nullptr, nullptr);
 
-    if (!window)
+    if (!main_window)
     {
         std::cerr << "COULD NOT CREATE WINDOW!\n";
         glfwTerminate();
@@ -345,7 +421,7 @@ int main()
     std::cout << "WINDOW CREATED!\n";
 
     // create window
-    glfwMakeContextCurrent(window);
+    glfwMakeContextCurrent(main_window);
 
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
     {
@@ -362,16 +438,13 @@ int main()
     // camera class obj
     Camera camera;
 
-    glfwSetWindowUserPointer(window, &camera);
-
-    // hide cursor when window is in focus
-    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    glfwSetWindowUserPointer(main_window, &camera);
 
     // set cursor position and call the mouse_callback
-    glfwSetCursorPosCallback(window, mouse_callback);
+    glfwSetCursorPosCallback(main_window, mouse_callback);
 
     // set scroll wheel callback for zoom
-    glfwSetScrollCallback(window, scroll_callback);
+    glfwSetScrollCallback(main_window, scroll_callback);
 
     // enable depth test to view in 3d
     glEnable(GL_DEPTH_TEST);
@@ -387,15 +460,22 @@ int main()
     Model hum_model_2("assets/models/low_poly_human/scene.gltf");
     Model floor("assets/models/checkered_tile_floor/scene.gltf");
 
+    init_gui_window(main_window);
+
     // main render loop
-    while (!glfwWindowShouldClose(window))
+    while (!glfwWindowShouldClose(main_window))
     {
+        glfwPollEvents();
+
+        start_gui_window_frame();
+        toggle_cursor(main_window);
+
         // calculate delta time 
         float current_frame {static_cast<float>(glfwGetTime())}; 
         delta_time = current_frame - last_frame;
         last_frame = current_frame;
 
-        exit_window(window); 
+        exit_window(main_window); 
 
         // clear screen's color memory to background color
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -407,7 +487,7 @@ int main()
         // shader code (make sure to call at the top)
         shader.use(); 
 
-        camera_controller(window, camera, delta_time);
+        camera_controller(main_window, camera, delta_time);
 
         shader.set_mat4("view", view);
         shader.set_mat4("projection", projection);
@@ -428,6 +508,8 @@ int main()
         // manage light casters
         managed_point_light(light_manager);
         managed_spot_light(light_manager);
+
+        create_gui_window();
 
         // material properties
         constexpr int mat_diffuse  {0};
@@ -474,13 +556,16 @@ int main()
         shader.set_mat4("model", model);
         hum_model_2.draw(shader);
 
-        framebuffer_size_callback(window, WIN_WIDTH, WIN_HEIGHT);
-        glfwSwapBuffers(window);
-        glfwPollEvents();
+        render_gui_window();
+
+        framebuffer_size_callback(main_window, WIN_WIDTH, WIN_HEIGHT);
+        glfwSwapBuffers(main_window);
     }
 
+    shutdown_gui_window();
+
     // destroy window & terminate
-    glfwDestroyWindow(window);
+    glfwDestroyWindow(main_window);
     std::cout << "glfwDestroyWindow(window) EXECUTED\n";
 
     glfwTerminate();
