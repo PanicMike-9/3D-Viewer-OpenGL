@@ -356,12 +356,12 @@ inline void create_gui_window()
 {
     ImGuiIO& io = ImGui::GetIO(); (void)io;
     
-    // must be called oncee, not ever frame
+    // must be static & called once, not ever frame
     static ImVec4 gui_clear_color {1.00f, 1.00f, 1.00f, 1.00f};
 
     ImGui::Begin("Test GUI");
     ImGui::Text("FPS %.1f", io.Framerate);
-    ImGui::Text("First GUI Window!");
+    ImGui::Text("Add Button");
     ImGui::ColorEdit3("GUI color", (float*)&gui_clear_color);
     ImGui::End();
 }
