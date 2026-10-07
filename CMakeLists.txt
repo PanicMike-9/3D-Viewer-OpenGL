@@ -44,14 +44,15 @@ ${CMAKE_SOURCE_DIR}/lib/glfw3.lib
 
 # ImGUI integration
 # target_include_directories(${3dViewerOpenGL} PRIVATE vendor/imgui)
-target_include_directories(app PRIVATE vendor/imgui)
+target_include_directories(app PRIVATE ${CMAKE_SOURCE_DIR}/vendor/imgui)
+
 set(IMGUI_SOURCES
-    ${vendor/imgui/imgui.cpp}
-    ${vendor/imgui/imgui_draw.cpp}
-    ${vendor/imgui/imgui_tables.cpp}
-    ${vendor/imgui/imgui_widgets.cpp}
-    ${vendor/imgui/imgui_impl_glfw.cpp}
-    ${vendor/imgui/imgui_impl_opengl3.cpp}
+    ${CMAKE_SOURCE_DIR}/vendor/imgui/imgui.cpp
+    ${CMAKE_SOURCE_DIR}/vendor/imgui/imgui_draw.cpp
+    ${CMAKE_SOURCE_DIR}/vendor/imgui/imgui_tables.cpp
+    ${CMAKE_SOURCE_DIR}/vendor/imgui/imgui_widgets.cpp
+    ${CMAKE_SOURCE_DIR}/vendor/imgui/imgui_impl_glfw.cpp
+    ${CMAKE_SOURCE_DIR}/vendor/imgui/imgui_impl_opengl3.cpp
 )
 
 target_sources(app PRIVATE ${IMGUI_SOURCES})
