@@ -359,10 +359,20 @@ inline void create_gui_window()
     // must be static & called once, not ever frame
     static ImVec4 gui_clear_color {1.00f, 1.00f, 1.00f, 1.00f};
 
+    static int counter {};
+
     ImGui::Begin("Test GUI");
     ImGui::Text("FPS %.1f", io.Framerate);
     ImGui::Text("Add Button");
     ImGui::ColorEdit3("GUI color", (float*)&gui_clear_color);
+
+    if (ImGui::Button("Count"))
+    {
+        counter++;
+    }
+    ImGui::SameLine();
+    ImGui::Text("Value = %d", counter);
+
     ImGui::End();
 }
 
