@@ -4,3 +4,6 @@ Debug/
 *.user
 *.lib
 .vscode/
+
+# ImGui local layout config
+imgui.ini
