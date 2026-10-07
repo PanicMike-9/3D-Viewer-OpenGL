@@ -9,7 +9,6 @@
 
 // basic C++ libs
 #include <iostream>
-#include <print>
 #include <string>
 #include <array>
 
@@ -342,6 +341,7 @@ inline void init_gui_window(GLFWwindow* main_window)
     ImGui::CreateContext();
     ImGui_ImplOpenGL3_Init("#version 410 core");
     ImGui_ImplGlfw_InitForOpenGL(main_window, true);
+
 }
 
 inline void start_gui_window_frame()
@@ -351,22 +351,25 @@ inline void start_gui_window_frame()
     ImGui::NewFrame();
 }
 
-// TODO: implement GUI button
-inline void create_gui_window()
+inline void create_gui_window(const char* gui_win_name, static ImVec4 gui_clear_color, 
+                              const char* button_text)
 {
     ImGuiIO& io = ImGui::GetIO(); (void)io;
+
+    // disable imgui.ini file generation
+    io.IniFilename = nullptr;
     
     // must be static & called once, not ever frame
-    static ImVec4 gui_clear_color {1.00f, 1.00f, 1.00f, 1.00f};
+    // static ImVec4 gui_clear_color {1.00f, 1.00f, 1.00f, 1.00f};
 
     static int counter {};
 
-    ImGui::Begin("Test GUI");
+    ImGui::Begin(gui_win_name);
     ImGui::Text("FPS %.1f", io.Framerate);
     ImGui::Text("Add Button");
     ImGui::ColorEdit3("GUI color", (float*)&gui_clear_color);
 
-    if (ImGui::Button("Count"))
+    if (ImGui::Button(button_text))
     {
         counter++;
     }
@@ -520,7 +523,9 @@ int main()
         managed_point_light(light_manager);
         managed_spot_light(light_manager);
 
-        create_gui_window();
+        // create two gui windows (same functionality)
+        create_gui_window("GUI WINDOW 1", {1.00f, 1.00f, 1.00f, 1.00f}, "Button 1");
+        create_gui_window("GUI WINDOW 2", {0.50f, 0.50f, 0.50f, 1.00f}, "Button 2");
 
         // material properties
         constexpr int mat_diffuse  {0};
