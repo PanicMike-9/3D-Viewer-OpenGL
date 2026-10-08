@@ -29,6 +29,7 @@ constexpr float WIN_WIDTH = 1280.0f;
 constexpr float WIN_HEIGHT = 720.0f;
 constexpr float WIN_ASPECT = WIN_WIDTH / WIN_HEIGHT;
 
+// TODO: create a separate file for free functions, headers, and gui
 // exit window with q or esc keys
 inline void exit_window(GLFWwindow* window)
 {
