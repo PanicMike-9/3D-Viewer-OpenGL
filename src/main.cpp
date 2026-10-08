@@ -18,6 +18,7 @@
 #include "model.hpp"
 #include "mesh.hpp"
 #include "light_manager.hpp"
+#include "input_callbacks.hpp"
 
 // ImGui header files
 #include "imgui.h"
@@ -29,6 +30,7 @@ constexpr float WIN_WIDTH = 1280.0f;
 constexpr float WIN_HEIGHT = 720.0f;
 constexpr float WIN_ASPECT = WIN_WIDTH / WIN_HEIGHT;
 
+#if 0
 // TODO: create a separate file for free functions, headers, and gui
 // exit window with q or esc keys
 inline void exit_window(GLFWwindow* window)
@@ -127,6 +129,7 @@ inline void camera_controller(GLFWwindow* window, Camera& camera, const float de
     }
     c_key_was_pressed = c_key_is_pressed;
 }
+#endif
 
 constexpr std::size_t MAX_POINT_LIGHTS {4};
 constexpr std::array<glm::vec3, MAX_POINT_LIGHTS> point_lights_pos 
