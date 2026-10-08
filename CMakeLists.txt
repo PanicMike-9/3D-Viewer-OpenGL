@@ -12,6 +12,7 @@ add_executable(app src/main.cpp
                    src/mesh.cpp
                    src/model.cpp
                    src/light_manager.cpp
+                   src/input_callbacks.cpp
               )
 
 # final app.exe
