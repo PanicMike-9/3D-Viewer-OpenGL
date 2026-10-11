@@ -13,6 +13,7 @@ add_executable(app src/main.cpp
                    src/model.cpp
                    src/light_manager.cpp
                    src/input_callbacks.cpp
+                   src/editor_ui.cpp
               )
 
 # final app.exe
