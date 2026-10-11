@@ -19,6 +19,7 @@
 #include "mesh.hpp"
 #include "light_manager.hpp"
 #include "input_callbacks.hpp"
+#include "editor_ui.hpp"
 
 // ImGui header files
 #include "imgui.h"
@@ -29,107 +30,6 @@
 constexpr float WIN_WIDTH = 1280.0f;
 constexpr float WIN_HEIGHT = 720.0f;
 constexpr float WIN_ASPECT = WIN_WIDTH / WIN_HEIGHT;
-
-#if 0
-// TODO: create a separate file for free functions, headers, and gui
-// exit window with q or esc keys
-inline void exit_window(GLFWwindow* window)
-{
-    if(glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-        glfwSetWindowShouldClose(window, true);
-}
-
-//  for window resizing
-inline void framebuffer_size_callback(GLFWwindow* window, float width, float height)
-{
-    glViewport(0, 0, width, height);
-}
-
-// cursor to the center of the window
-float last_x = WIN_WIDTH / 2.0f;
-float last_y = WIN_HEIGHT / 2.0f;
-bool first_mouse = true;
-
-inline void mouse_callback(GLFWwindow* window, double x_pos, double y_pos)
-{
-    Camera* cam = static_cast<Camera*>(glfwGetWindowUserPointer(window));
-
-    // skip camera process if ImGui wants focus
-    if (ImGui::GetIO().WantCaptureMouse)
-    {
-        return;
-    }
-
-    // check first time receiving mouse input
-    if(first_mouse)
-    {
-        last_x = x_pos;
-        last_y = y_pos;
-        first_mouse = false; 
-    }
-
-    // calculate offset movement between last frame and current frame
-    float x_offset = x_pos - last_x;
-    float y_offset = last_y - y_pos;
-
-    // new cursor values
-    last_x = x_pos;
-    last_y = y_pos;
-
-    cam->process_mouse_movement(x_offset, y_offset);
-}
-
-// take scroll wheel input
-inline void scroll_callback(GLFWwindow* window, double x_offset, double y_offset)
-{
-    // create camera pointer
-    Camera* cam = static_cast<Camera*>(glfwGetWindowUserPointer(window));
-
-    cam->process_scroll_wheel(y_offset);
-}
-
-// control camera with WASD
-inline void camera_controller(GLFWwindow* window, Camera& camera, const float delta_time)
-{
-    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-    {
-        camera.process_keyboard(CameraMovement::FORWARD, delta_time);
-    }
-
-    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-    {
-        camera.process_keyboard(CameraMovement::LEFT, delta_time);
-    }
-
-    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-    {
-        camera.process_keyboard(CameraMovement::BACKWARD, delta_time);
-    }
-
-    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-    {
-        camera.process_keyboard(CameraMovement::RIGHT, delta_time);
-    }
-
-    // press 'c' to swtich to FPS and back to FLY
-    static bool c_key_was_pressed {false};
-    bool c_key_is_pressed {(glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS)};
-
-    if (c_key_is_pressed && !c_key_was_pressed)
-    {
-        if (camera.mode == CameraMode::FPS)
-        {
-            camera.mode = CameraMode::FLY;
-        }
-        else 
-        {
-            camera.mode = CameraMode::FPS;
-            camera.position.y = 3.0f;
-        }
-    }
-    c_key_was_pressed = c_key_is_pressed;
-}
-#endif
 
 constexpr std::size_t MAX_POINT_LIGHTS {4};
 constexpr std::array<glm::vec3, MAX_POINT_LIGHTS> point_lights_pos 
@@ -340,62 +240,6 @@ inline void create_light_gizmo(LightManager& light_manager, Shader& gizmo_shader
     glBindVertexArray(0);
 }
 
-inline void init_gui_window(GLFWwindow* main_window)
-{
-    ImGui::CreateContext();
-    ImGui_ImplOpenGL3_Init("#version 410 core");
-    ImGui_ImplGlfw_InitForOpenGL(main_window, true);
-
-}
-
-inline void start_gui_window_frame()
-{
-    ImGui_ImplOpenGL3_NewFrame();
-    ImGui_ImplGlfw_NewFrame();
-    ImGui::NewFrame();
-}
-
-inline void create_gui_window(const char* gui_win_name, static ImVec4 gui_clear_color, 
-                              const char* button_text)
-{
-    ImGuiIO& io = ImGui::GetIO(); (void)io;
-
-    // disable imgui.ini file generation
-    io.IniFilename = nullptr;
-    
-    // must be static & called once, not ever frame
-    // static ImVec4 gui_clear_color {1.00f, 1.00f, 1.00f, 1.00f};
-
-    static int counter {};
-
-    ImGui::Begin(gui_win_name);
-    ImGui::Text("FPS %.1f", io.Framerate);
-    ImGui::Text("Add Button");
-    ImGui::ColorEdit3("GUI color", (float*)&gui_clear_color);
-
-    if (ImGui::Button(button_text))
-    {
-        counter++;
-    }
-    ImGui::SameLine();
-    ImGui::Text("Value = %d", counter);
-
-    ImGui::End();
-}
-
-inline void render_gui_window()
-{
-    ImGui::Render();
-    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-}
-
-inline void shutdown_gui_window()
-{
-    ImGui_ImplOpenGL3_Shutdown();
-    ImGui_ImplGlfw_Shutdown();
-    ImGui::DestroyContext();
-}
-
 inline void toggle_cursor(GLFWwindow* window)
 {
     static bool gui_mode {true};
@@ -410,12 +254,12 @@ inline void toggle_cursor(GLFWwindow* window)
         if (gui_mode)
         {
             glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-            std::cout << "Cursor Normal\n";
+            std::cout << "Cursor Normal\n"; // for debug only
         }
         else
         {
             glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-            std::cout << "Cursor Disabled\n";
+            std::cout << "Cursor Disabled\n"; // for debug only
         }
     }
     p_key_was_pressed = p_key_is_pressed;
@@ -478,14 +322,14 @@ int main()
     Model hum_model_2("assets/models/low_poly_human/scene.gltf");
     Model floor("assets/models/checkered_tile_floor/scene.gltf");
 
-    init_gui_window(main_window);
+    ui::init_gui_window(main_window);
 
     // main render loop
     while (!glfwWindowShouldClose(main_window))
     {
         glfwPollEvents();
 
-        start_gui_window_frame();
+        ui::start_gui_window_frame();
         toggle_cursor(main_window);
 
         // calculate delta time 
@@ -528,8 +372,8 @@ int main()
         managed_spot_light(light_manager);
 
         // create two gui windows (same functionality)
-        create_gui_window("GUI WINDOW 1", {1.00f, 1.00f, 1.00f, 1.00f}, "Button 1");
-        create_gui_window("GUI WINDOW 2", {0.50f, 0.50f, 0.50f, 1.00f}, "Button 2");
+        ui::create_gui_window("GUI WINDOW 1", ImVec4{1.00f, 1.00f, 1.00f, 1.00f}, "Button 1");
+        ui::create_gui_window("GUI WINDOW 2", ImVec4{0.50f, 0.50f, 0.50f, 1.00f}, "Button 2");
 
         // material properties
         constexpr int mat_diffuse  {0};
@@ -576,13 +420,13 @@ int main()
         shader.set_mat4("model", model);
         hum_model_2.draw(shader);
 
-        render_gui_window();
+        ui::render_gui_window();
 
         framebuffer_size_callback(main_window, WIN_WIDTH, WIN_HEIGHT);
         glfwSwapBuffers(main_window);
     }
 
-    shutdown_gui_window();
+    ui::shutdown_gui_window();
 
     // destroy window & terminate
     glfwDestroyWindow(main_window);
