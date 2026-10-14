@@ -27,9 +27,9 @@
 #include "imgui_impl_opengl3.h"
 
 // window height, width and aspect ratio values
-constexpr float WIN_WIDTH = 1280.0f;
-constexpr float WIN_HEIGHT = 720.0f;
-constexpr float WIN_ASPECT = WIN_WIDTH / WIN_HEIGHT;
+constexpr int WIN_WIDTH = 1280;
+constexpr int WIN_HEIGHT = 720;
+constexpr float WIN_ASPECT = static_cast<float>(WIN_WIDTH) / static_cast<float>(WIN_HEIGHT);
 
 constexpr std::size_t MAX_POINT_LIGHTS {4};
 constexpr std::array<glm::vec3, MAX_POINT_LIGHTS> point_lights_pos 
