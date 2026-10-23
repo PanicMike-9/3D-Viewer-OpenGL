@@ -372,8 +372,8 @@ int main()
         managed_spot_light(light_manager);
 
         // create two gui windows (same functionality)
-        ui::create_gui_window("GUI WINDOW 1", ImVec4{1.00f, 1.00f, 1.00f, 1.00f}, "Button 1");
-        ui::create_gui_window("GUI WINDOW 2", ImVec4{0.50f, 0.50f, 0.50f, 1.00f}, "Button 2");
+        ui::create_gui_window("GUI WINDOW 1", ImVec4{1.00f, 1.00f, 1.00f, 1.00f}, "Light OFF");
+        ui::create_gui_window("GUI WINDOW 2", ImVec4{0.50f, 0.50f, 0.50f, 1.00f}, "Light ON");
 
         // material properties
         constexpr int mat_diffuse  {0};
