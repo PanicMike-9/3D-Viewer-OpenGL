@@ -27,27 +27,26 @@ void start_gui_window_frame()
     ImGui::NewFrame();
 }
 
-void create_gui_window(const char* gui_win_name, ImVec4& gui_clear_color, 
-                              const char* button_text)
+void create_gui_window(const char* gui_win_name, ImVec4& gui_clear_color, const char* button_text)
 {
     ImGuiIO& io = ImGui::GetIO();
 
     // must be static & called once, not ever frame
     // static ImVec4 gui_clear_color {1.00f, 1.00f, 1.00f, 1.00f};
 
-    static int counter {};
-
     ImGui::Begin(gui_win_name);
     ImGui::Text("FPS %.1f", io.Framerate);
     ImGui::Text("Add Button");
     ImGui::ColorEdit3("GUI color", (float*)&gui_clear_color);
 
+    static bool light_on {false};
     if (ImGui::Button(button_text))
     {
-        counter++;
+        light_on = !light_on;
     }
+
     ImGui::SameLine();
-    ImGui::Text("Value = %d", counter);
+    ImGui::Text("Value = %d", light_on);
 
     ImGui::End();
 }
