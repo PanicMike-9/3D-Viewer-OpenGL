@@ -9,7 +9,6 @@
 
 // basic C++ libs
 #include <iostream>
-#include <string>
 #include <array>
 
 // header files
@@ -23,8 +22,6 @@
 
 // ImGui header files
 #include "imgui.h"
-#include "imgui_impl_glfw.h"
-#include "imgui_impl_opengl3.h"
 
 // window height, width and aspect ratio values
 constexpr int WIN_WIDTH = 1280;
