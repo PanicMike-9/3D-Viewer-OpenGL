@@ -27,6 +27,7 @@ void start_gui_window_frame()
     ImGui::NewFrame();
 }
 
+// implement light on and off using the gui window
 void create_gui_window(const char* gui_win_name, ImVec4& gui_clear_color, const char* button_text)
 {
     ImGuiIO& io = ImGui::GetIO();
