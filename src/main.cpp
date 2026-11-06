@@ -307,6 +307,7 @@ int main()
 
     // enable depth test to view in 3d
     glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LESS);
 
     window_background_color();
 
