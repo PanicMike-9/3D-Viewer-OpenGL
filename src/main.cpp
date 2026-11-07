@@ -309,6 +309,8 @@ int main()
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
 
+    // start working on stencil testing
+
     window_background_color();
 
     // shader code files
