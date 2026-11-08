@@ -309,8 +309,6 @@ int main()
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
 
-    // start working on stencil testing
-
     window_background_color();
 
     // shader code files
@@ -329,7 +327,7 @@ int main()
     {
         glfwPollEvents();
 
-        ui::start_gui_window_frame();
+        // ui::start_gui_window_frame();
         toggle_cursor(main_window);
 
         // calculate delta time 
@@ -371,9 +369,8 @@ int main()
         managed_point_light(light_manager);
         managed_spot_light(light_manager);
 
-        // create two gui windows (same functionality)
-        ui::create_gui_window("GUI WINDOW 1", ImVec4{1.00f, 1.00f, 1.00f, 1.00f}, "Light OFF");
-        ui::create_gui_window("GUI WINDOW 2", ImVec4{0.50f, 0.50f, 0.50f, 1.00f}, "Light ON");
+        // create GUI window
+        // ui::create_gui_window("GUI WINDOW 1", ImVec4{1.00f, 1.00f, 1.00f, 1.00f}, "Light OFF");
 
         // material properties
         constexpr int mat_diffuse  {0};
@@ -420,13 +417,13 @@ int main()
         shader.set_mat4("model", model);
         hum_model_2.draw(shader);
 
-        ui::render_gui_window();
+        // ui::render_gui_window();
 
         framebuffer_size_callback(main_window, WIN_WIDTH, WIN_HEIGHT);
         glfwSwapBuffers(main_window);
     }
 
-    ui::shutdown_gui_window();
+    // ui::shutdown_gui_window();
 
     // destroy window & terminate
     glfwDestroyWindow(main_window);
