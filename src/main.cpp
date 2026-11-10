@@ -309,6 +309,16 @@ int main()
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
 
+    glEnable(GL_STENCIL_TEST);
+
+    // used to set custom bit masks
+    // glStencilMask(0xFF); // bitmask of all 1's
+    // glStencilMask(0x00); // bitmask of all 0's
+
+    // when stencil value of a fragment is '1' the fragment passes the test
+    // and is drawn or discarded (in this case it's discarded)
+    glStencilFunc(GL_EQUAL, 1, 0xFF);
+
     window_background_color();
 
     // shader code files
@@ -338,7 +348,7 @@ int main()
         exit_window(main_window); 
 
         // clear screen's color memory to background color
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
         // return the view values
         glm::mat4 view = camera.get_view_matrix();
