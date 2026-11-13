@@ -262,6 +262,39 @@ inline void toggle_cursor(GLFWwindow* window)
     p_key_was_pressed = p_key_is_pressed;
 }
 
+void begin_stencil_write()
+{
+    glEnable(GL_DEPTH_TEST);
+    glStencilFunc(GL_ALWAYS, 1, 0xFF);
+    glStencilMask(0xFF);
+}
+
+void begin_stencil_outline(Shader& outline_shader, Camera& camera, glm::mat4& model)
+{
+    // set object outling shader
+    glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
+    glStencilMask(0x00);
+    glDisable(GL_DEPTH_TEST);
+
+    outline_shader.use();
+
+    glm::mat4 outline_view = camera.get_view_matrix();
+    glm::mat4 outline_projection = glm::perspective(glm::radians(camera.fov), 
+                                    static_cast<float>(WIN_WIDTH) / static_cast<float>(WIN_HEIGHT), 0.1f, 100.0f);
+
+    outline_shader.set_mat4("model", model);
+    outline_shader.set_mat4("view", outline_view);
+    outline_shader.set_mat4("projection", outline_projection);
+    outline_shader.set_float("outline_thickness", 0.05f);
+}
+
+void end_stencil_outline()
+{
+    glStencilMask(0xFF);
+    glStencilFunc(GL_ALWAYS, 0, 0xFF);
+    glEnable(GL_DEPTH_TEST);
+}
+
 LightManager light_manager;
 
 int main()
@@ -307,23 +340,22 @@ int main()
 
     // enable depth test to view in 3d
     glEnable(GL_DEPTH_TEST);
-    glDepthFunc(GL_LESS);
 
-    glEnable(GL_STENCIL_TEST);
-
-    // used to set custom bit masks
-    // glStencilMask(0xFF); // bitmask of all 1's
-    // glStencilMask(0x00); // bitmask of all 0's
-
+    // stencil test related functions
     // when stencil value of a fragment is '1' the fragment passes the test
     // and is drawn or discarded (in this case it's discarded)
-    glStencilFunc(GL_EQUAL, 1, 0xFF);
+
+    glDepthFunc(GL_LESS);
+    glEnable(GL_STENCIL_TEST);
+    glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
 
     window_background_color();
 
     // shader code files
     Shader shader("shaders/v_shader.vert", "shaders/f_shader.frag");
     Shader gizmo_shader("shaders/gizmo.vert", "shaders/gizmo.frag");
+
+    Shader outline_shader("shaders/obj_outline.vert", "shaders/obj_outline.frag");
 
     // load assets
     Model hum_model_1("assets/models/low_poly_human/scene.gltf");
@@ -402,6 +434,8 @@ int main()
         shader.set_mat4("model", floor_plane);
         floor.draw(shader);
 
+        begin_stencil_write();
+
         // render the model poly-human 1
         glm::mat4 model = glm::mat4(1.0f);
         model = glm::translate(model, glm::vec3(-2.0f, 0.0f, 0.0f)); 
@@ -414,20 +448,29 @@ int main()
         model = glm::rotate(model, rotate_by, glm::vec3(0.0f, 1.0f, 0.0f));
 
         shader.set_mat4("model", model);
-        hum_model_1.draw(shader);
+        hum_model_1.draw(shader); // main shader
 
         // render the model poly-human 2
-        model = glm::mat4(1.0f);
-        model = glm::translate(model, glm::vec3(2.0f, 0.0f, 0.0f)); 
-        model = glm::scale(model, glm::vec3(0.2f)); 
+        glm::mat4 model_2 = glm::mat4(1.0f);
+        model_2 = glm::translate(model_2, glm::vec3(2.0f, 0.0f, 0.0f)); 
+        model_2 = glm::scale(model_2, glm::vec3(0.2f)); 
 
         // rotate the model on y-axis, for presentation
-        model = glm::rotate(model, rotate_by, glm::vec3(0.0f, 1.0f, 0.0f));
+        model_2 = glm::rotate(model_2, rotate_by, glm::vec3(0.0f, 1.0f, 0.0f));
 
-        shader.set_mat4("model", model);
-        hum_model_2.draw(shader);
+        shader.set_mat4("model", model_2);
+        hum_model_2.draw(shader); // main shader
+
+        // set object outling shader
+        begin_stencil_outline(outline_shader, camera, model);
+        hum_model_1.draw(outline_shader);
+
+        begin_stencil_outline(outline_shader, camera, model_2);
+        hum_model_2.draw(outline_shader);
 
         // ui::render_gui_window();
+
+        end_stencil_outline();
 
         framebuffer_size_callback(main_window, WIN_WIDTH, WIN_HEIGHT);
         glfwSwapBuffers(main_window);
