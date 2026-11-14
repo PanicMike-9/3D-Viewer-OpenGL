@@ -290,9 +290,9 @@ void begin_stencil_outline(Shader& outline_shader, Camera& camera, glm::mat4& mo
 
 void end_stencil_outline()
 {
-    glStencilMask(0xFF);
     glStencilFunc(GL_ALWAYS, 0, 0xFF);
     glEnable(GL_DEPTH_TEST);
+    glStencilMask(0xFF);
 }
 
 LightManager light_manager;
