@@ -262,6 +262,7 @@ inline void toggle_cursor(GLFWwindow* window)
     p_key_was_pressed = p_key_is_pressed;
 }
 
+#if 0
 void begin_stencil_write()
 {
     glEnable(GL_DEPTH_TEST);
@@ -278,14 +279,13 @@ void begin_stencil_outline(Shader& outline_shader, Camera& camera, glm::mat4& mo
 
     outline_shader.use();
 
-    glm::mat4 outline_view = camera.get_view_matrix();
-    glm::mat4 outline_projection = glm::perspective(glm::radians(camera.fov), 
-                                    static_cast<float>(WIN_WIDTH) / static_cast<float>(WIN_HEIGHT), 0.1f, 100.0f);
+    // glm::mat4 outline_view = camera.get_view_matrix();
+    // glm::mat4 outline_projection = glm::perspective(glm::radians(camera.fov), WIN_ASPECT, 0.1f, 100.0f);
 
     outline_shader.set_mat4("model", model);
-    outline_shader.set_mat4("view", outline_view);
-    outline_shader.set_mat4("projection", outline_projection);
-    outline_shader.set_float("outline_thickness", 0.05f);
+    // outline_shader.set_mat4("view", outline_view);
+    // outline_shader.set_mat4("projection", outline_projection);
+    outline_shader.set_float("outline_thickness", 0.03f);
 }
 
 void end_stencil_outline()
@@ -294,6 +294,7 @@ void end_stencil_outline()
     glEnable(GL_DEPTH_TEST);
     glStencilMask(0xFF);
 }
+#endif
 
 LightManager light_manager;
 
@@ -434,8 +435,6 @@ int main()
         shader.set_mat4("model", floor_plane);
         floor.draw(shader);
 
-        begin_stencil_write();
-
         // render the model poly-human 1
         glm::mat4 model = glm::mat4(1.0f);
         model = glm::translate(model, glm::vec3(-2.0f, 0.0f, 0.0f)); 
@@ -461,16 +460,7 @@ int main()
         shader.set_mat4("model", model_2);
         hum_model_2.draw(shader); // main shader
 
-        // set object outling shader
-        begin_stencil_outline(outline_shader, camera, model);
-        hum_model_1.draw(outline_shader);
-
-        begin_stencil_outline(outline_shader, camera, model_2);
-        hum_model_2.draw(outline_shader);
-
         // ui::render_gui_window();
-
-        end_stencil_outline();
 
         framebuffer_size_callback(main_window, WIN_WIDTH, WIN_HEIGHT);
         glfwSwapBuffers(main_window);
