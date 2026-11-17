@@ -304,7 +304,7 @@ int main()
 
     GLFWwindow* main_window = glfwCreateWindow(WIN_WIDTH, WIN_HEIGHT, "Testing GUI", nullptr, nullptr);
 
-    if (!main_window)
+    if (!main_window)   
     {
         std::cerr << "COULD NOT CREATE WINDOW!\n";
         glfwTerminate();
@@ -436,6 +436,10 @@ int main()
         floor.draw(shader);
 
         // render the model poly-human 1
+        glEnable(GL_DEPTH_TEST);
+        glStencilFunc(GL_ALWAYS, 1, 0xFF);
+        glStencilMask(0xFF);
+
         glm::mat4 model = glm::mat4(1.0f);
         model = glm::translate(model, glm::vec3(-2.0f, 0.0f, 0.0f)); 
         model = glm::scale(model, glm::vec3(0.2f)); // model size/scale
@@ -461,6 +465,10 @@ int main()
         hum_model_2.draw(shader); // main shader
 
         // ui::render_gui_window();
+
+        glStencilFunc(GL_ALWAYS, 0, 0xFF);
+        glEnable(GL_DEPTH_TEST);
+        glStencilMask(0xFF);
 
         framebuffer_size_callback(main_window, WIN_WIDTH, WIN_HEIGHT);
         glfwSwapBuffers(main_window);
