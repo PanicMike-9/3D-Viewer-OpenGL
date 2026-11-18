@@ -453,6 +453,13 @@ int main()
         shader.set_mat4("model", model);
         hum_model_1.draw(shader); // main shader
 
+        // set object outling shader
+        glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
+        glStencilMask(0x00);
+        glDisable(GL_DEPTH_TEST);
+
+        outline_shader.use();
+
         // render the model poly-human 2
         glm::mat4 model_2 = glm::mat4(1.0f);
         model_2 = glm::translate(model_2, glm::vec3(2.0f, 0.0f, 0.0f)); 
